@@ -5,7 +5,7 @@ from PerformanceOLD import *
 class Aircraft(PerformanceOLD):
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType, AircraftDictionary) -> None:
         super().__init__(AircraftName, CruiseMach, CruiseAltitude, AircraftType)
-
+        # a new change here
         self.Atmosphere_attr()
         self.Emergency = None
         self.Wings = 1

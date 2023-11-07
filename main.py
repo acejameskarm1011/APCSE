@@ -2,9 +2,8 @@
 from ImportAPCSE import *
 from Performance_Classes.AircraftElectric import AircraftElectric
 from Plotting import *
-#test2
+
 main_dir = os.getcwd()
-# print(main_dir)
 
 from ImportAPCSE import *
 
