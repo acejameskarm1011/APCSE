@@ -1,0 +1,10 @@
+{
+    "python.analysis.extraPaths": [
+        "./Aircraft_Dictionaries",
+        "./Aircraft_Dictionaries",
+        "./Embraer_Classes",
+        "./Performance_Objects",
+        "./Performance_Classes"
+    ],
+    "C_Cpp.errorSquiggles": "disabled"
+}
