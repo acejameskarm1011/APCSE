@@ -8,3 +8,4 @@ class Fuselage(Embraer):
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
         self.C_D = 10**(-5)
+ 

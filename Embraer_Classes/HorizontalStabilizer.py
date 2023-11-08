@@ -2,12 +2,14 @@
 
 from ImportEmbraer import Embraer
 import numpy as np
-
+ 
 class HorizontalStabilizer(Embraer):
     PartName = "HorizontalStabilizer"
-    def __init__(self, AircraftName, HybridFactor=0, Mach=0, Altitude=0, Range=0, Endurance=0, PartName = PartName, e0 = 1, C_L = 0) -> None:
-        super().__init__(AircraftName, HybridFactor, Mach, Altitude, Endurance, e0, C_L)
+    def __init__(self, AircraftName, PartName = PartName, e0 = 1, C_L = 0) -> None:
+        self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
+        self.C_L = C_L
+        self.e0 = e0
     def Dictionary_setattr(self, Dictionary):
         super().Dictionary_setattr(Dictionary)
         self.tapratio_h = self.c_tip_h/self.c_root_h

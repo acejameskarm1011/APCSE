@@ -4,10 +4,8 @@ from ImportEmbraer import Embraer
 
 class VerticalStabilizer(Embraer):
     PartName = "VerticalStabilizer"
-    def __init__(self, AircraftName, HybridFactor=0, Mach=0, Altitude=0, Range=0, Endurance=0, PartName = PartName) -> None:
-        super().__init__(AircraftName, HybridFactor, Mach, Altitude, Range, Endurance)
+    def __init__(self, AircraftName, PartName = PartName) -> None:
+        self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
-
-
-        self.C_D = self.C_D0
- 
+    def EvaluateC_D(self):
+        return 10**(-5)

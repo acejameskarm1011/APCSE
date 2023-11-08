@@ -6,8 +6,8 @@ import numpy as np
 
 class Wings(Embraer):
     PartName = "Wings"
-    def __init__(self, AircraftName, Mach=0, Altitude=0, Range=0, Endurance=0, PartName = PartName, e0 = 1) -> None:
-        super().__init__(AircraftName, Mach, Altitude, Endurance, e0)
+    def __init__(self, AircraftName, PartName = PartName, e0 = 1) -> None:
+        self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
         self.e0 = self.e0
 
