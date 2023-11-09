@@ -32,4 +32,4 @@ ERJ175_EV_control.TimestepBeta(dt = 1)
 MyCurrentPlot(ERJ175_EV_control, "Range up to 25,000 ft")
 MyCurrentPlot(ERJ175_control, "Range up to 25,000 ft")
 
-print(f'C_D ranges from {ERJ175_control.C_DArr.min()} to {ERJ175_control.C_DArr.max()} ')
+print(f'C_q ranges from {ERJ175_control.C_DArr.min()} to {ERJ175_control.C_DArr.max()} ')
