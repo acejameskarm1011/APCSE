@@ -1,5 +1,6 @@
 #Horizontal_Stabilizer
-class HorizontalStabilizer:
+from Piper import Piper
+class HorizontalStabilizer(Piper):
     PartName = "HorizontalStabilizer"
     def __init__(self, AircraftName, PartName = PartName, e0 = 1, C_L = 0) -> None:
         self.AircraftName = AircraftName

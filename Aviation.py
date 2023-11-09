@@ -14,17 +14,17 @@ class Aviation:
     fps_to_knots = 0.592484
     knots_to_fps = 1/0.592484 
 
-    def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType = '', Mach = 0, Altitude = 0, Range = 0, Endurance = 0) -> None: 
+    def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType) -> None: 
         #Required upon initalization
         self.AircraftName = AircraftName
         self.CruiseMach = CruiseMach
         self.CruiseAltitude = CruiseAltitude
         self.AircraftType = AircraftType
         #Initial States
-        self.Mach = Mach
-        self.Altitude = Altitude
-        self.Range = Range
-        self.Endurance = Endurance
+        self.Mach = 0
+        self.Altitude = 0
+        self.Range = 0
+        self.Endurance = 0
     
     def EvaluateC_D(self):
         return None
@@ -72,6 +72,7 @@ class Aviation:
         if unit == 's':
              self.TSFC = self.TSFC / 3600
         return self.TSFC
+    
     def Part_Import(self):
         main_dir = os.getcwd()
         if self.AircraftType.upper().__contains__("EMBRAER"):
@@ -80,9 +81,9 @@ class Aviation:
             from ImportEmbraer import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
             os.chdir(main_dir)
         else:
-            Part_dir = main_dir + ".\Embraer_Classes"
+            Part_dir = main_dir + ".\Piper_Cherokee_Classes"
             os.chdir(Part_dir)
-            from ImportEmbraer import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
+            from ImportPiperCherokee import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
             os.chdir(main_dir)
         self.Wings = Wings(self.AircraftType + '_Wings')
         self.HorizontalStabilizer = HorizontalStabilizer(self.AircraftType + '_Horizontal_Stabilizer')

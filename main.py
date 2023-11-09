@@ -3,7 +3,7 @@ from ImportAPCSE import *
 from Performance_Classes.AircraftElectric import AircraftElectric
 from Plotting import *
 
-main_dir = os.getcwd()
+
 
 from ImportAPCSE import *
 
@@ -21,7 +21,7 @@ CS5 = [(250, 1000, 10000, "kts"), (300, 2000, 25000, "kts"), (0.7, 500, 30000, "
 
 ERJ175 = AircraftConventional("ERJ175", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
 ERJ175_EV = AircraftElectric("ERJ175 EV", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
-PA28 = AircraftConventional("PA28", 0.18, 8500, "Piper_Archer_III", PA28_Dict['PA'])
+PA28 = AircraftConventional("PA28", 0.18, 8500, "Piper_Archer_III", PiperArcherIII_Dict)
 
 ERJ175_control = Control(ERJ175, CS4)
 ERJ175_EV_control = Control(ERJ175_EV, CS4)

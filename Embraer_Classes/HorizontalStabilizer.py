@@ -10,6 +10,7 @@ class HorizontalStabilizer(Embraer):
         self.Name = self.AircraftName + PartName
         self.C_L = C_L
         self.e0 = e0
+        self.C_D0 = 0.02
     def Dictionary_setattr(self, Dictionary):
         super().Dictionary_setattr(Dictionary)
         self.tapratio_h = self.c_tip_h/self.c_root_h

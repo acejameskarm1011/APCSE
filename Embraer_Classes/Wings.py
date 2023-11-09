@@ -9,8 +9,8 @@ class Wings(Embraer):
     def __init__(self, AircraftName, PartName = PartName, e0 = 1) -> None:
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
-        self.e0 = self.e0
-
+        self.e0 = e0
+        self.C_D0 = 0.03
 
     def Dictionary_setattr(self, Dictionary):
         super().Dictionary_setattr(Dictionary)

@@ -1,9 +1,7 @@
 #ImportPiperCherokee
 import os
 
-piper_path = os.getcwd()
-main_path = piper_path[:-23]
-os.chdir(main_path)
-from Aviation import *
-from AtmosphereFunction import *
-os.chdir(piper_path)
+from Fuselage import Fuselage
+from Wings import Wings
+from Horizontal_Stabilizer import HorizontalStabilizer
+from Vertical_Stabilizer import VerticalStabilizer

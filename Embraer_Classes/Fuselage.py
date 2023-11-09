@@ -8,4 +8,6 @@ class Fuselage(Embraer):
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + PartName
         self.C_D = 10**(-5)
+    def EvaluateC_D(self):
+        return 0
  

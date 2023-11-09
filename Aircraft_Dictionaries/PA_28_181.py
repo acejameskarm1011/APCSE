@@ -1,6 +1,6 @@
 #PA28
 PA_28_181_wings_dict = dict({
-    'S' : [171.8, "ft2"],
+    'S_wing' : [171.8, "ft2"],
     'b_wing' : [35.5,'ft'],
 })
 
@@ -22,7 +22,7 @@ PA_28_181_Performance_dict = dict({
     "ServiceCeiling" : [13240, "ft"]
 })
 
-PA28_Dict = dict({
+PA_28_181_Dict = dict({
     "Name" : "PA_28_181",
     "Wings" : PA_28_181_wings_dict,
     "Horizontal_Stabilizer" : PA_28_181_HorizontalStabilizer_dict,

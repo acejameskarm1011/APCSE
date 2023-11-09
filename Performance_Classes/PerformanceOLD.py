@@ -9,8 +9,8 @@ os.chdir(perf_dir)
 
 class PerformanceOLD(Aviation):
     
-    def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType, HybridFactor=0, Mach=0, Altitude=0, Range=0, Endurance=0, TotalMass = 0) -> None:
-        super().__init__(AircraftName, CruiseMach, CruiseAltitude, AircraftType, HybridFactor, Mach, Altitude, Range, Endurance)
+    def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType) -> None:
+        super().__init__(AircraftName, CruiseMach, CruiseAltitude, AircraftType)
         self.Mach = Mach
         self.Position = 0
         self.Plots = 0

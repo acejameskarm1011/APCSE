@@ -2,7 +2,7 @@
 
 from PerformanceOLD import *
 
-class Aircraft(PerformanceOLD):
+class Aircraft(Aviation):
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType, AircraftDictionary) -> None:
         super().__init__(AircraftName, CruiseMach, CruiseAltitude, AircraftType)
         # a new change here
@@ -37,6 +37,7 @@ class Aircraft(PerformanceOLD):
         else:
             super().Dictionary_setattr(Dictionary)
         self.EnergyMass = self.MaxFuel
+        self.TotalMass = self.MGTOW
     
 
     def Climb(self, dt = 10): #1000 ft/min, 2 deg #On a quick GoOgle search, it was found that aircraft TYP climb at 250kts below 10k ft, and transition to 300 kts above FL10, then at FL25 AC climb at 0.7 Mach
@@ -60,7 +61,6 @@ class Aircraft(PerformanceOLD):
         self.Power_Thrust = self.Thrust * self.v # Terms of W
         self.v_h = self.v_z * self.m_to_ft
         self.Altitude += self.v_h * dt
-        self.Fuel += self.FuelBurn
         self.EnergyMass += self.FuelBurn 
         return "Climb ran successfully"
     
@@ -77,7 +77,6 @@ class Aircraft(PerformanceOLD):
         self.Thrust = self.Drag
         self.GetSC()
         self.FuelBurn = -self.Thrust*self.TSFC*dt/self.g
-        self.Fuel += self.FuelBurn
         self.EnergyMass += self.FuelBurn 
         self.Power_Thrust = self.Thrust * self.v
         
