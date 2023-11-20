@@ -1,6 +1,6 @@
 #Horizontal_Stabilizer
 
-from ImportEmbraer import Embraer
+from Jet_Classes.ImportJet import Embraer
 import numpy as np
  
 class HorizontalStabilizer(Embraer):

@@ -7,7 +7,7 @@ from AircraftDictionaries import *
 main_dir = os.getcwd()
 embr_dir = main_dir + '\Embraer_Classes'
 engine_dir = main_dir + '\Engine'
-perf_dir = main_dir + '.\Performance_Classes'
+perf_dir = main_dir + '\Performance_Classes'
 
 
 
@@ -22,8 +22,8 @@ os.chdir(engine_dir)
 from Engine import *
 
 os.chdir(perf_dir)
-from AircraftConventional import *
-from Control import *
-from AircraftElectric import *
+from Performance_Classes.AircraftConventional import *
+from Performance_Classes.Control import *
+from Performance_Classes.AircraftElectric import *
 #MUST NOT DELETE THIS ONE, STUFF WILL STOP WORKING IF DELETED
 os.chdir(main_dir)

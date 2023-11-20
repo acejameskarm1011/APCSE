@@ -72,18 +72,18 @@ class Aviation:
         if unit == 's':
              self.TSFC = self.TSFC / 3600
         return self.TSFC
-    
+     
     def Part_Import(self):
         main_dir = os.getcwd()
         if self.AircraftType.upper().__contains__("EMBRAER"):
-            Part_dir = main_dir + ".\Embraer_Classes"
+            Part_dir = main_dir + ".\Jet_Classes"
             os.chdir(Part_dir)
-            from ImportEmbraer import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
+            from Jet_Classes.ImportJet import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
             os.chdir(main_dir)
         else:
-            Part_dir = main_dir + ".\Piper_Cherokee_Classes"
+            Part_dir = main_dir + ".\GA_Classes"
             os.chdir(Part_dir)
-            from ImportPiperCherokee import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
+            from GA_Classes.ImportGA import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
             os.chdir(main_dir)
         self.Wings = Wings(self.AircraftType + '_Wings')
         self.HorizontalStabilizer = HorizontalStabilizer(self.AircraftType + '_Horizontal_Stabilizer')

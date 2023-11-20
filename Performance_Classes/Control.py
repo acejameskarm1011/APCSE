@@ -1,9 +1,9 @@
 #Control
 
-from Aircraft import Aircraft
-from AircraftConventional import AircraftConventional
-from AircraftElectric import AircraftElectric
-import numpy as np
+from Performance_Classes.Aircraft import Aircraft
+from Performance_Classes.AircraftConventional import AircraftConventional
+from Performance_Classes.AircraftElectric import AircraftElectric
+import numpy as nps
 
 
 
@@ -11,6 +11,7 @@ class Control(Aircraft):
     def __init__(self, AircraftInstance, Schedule) -> None:
         self.aircraft = AircraftInstance
         self.Schedule = Schedule
+
         self.ClimbScheduleCheck()
         self.Phase = "TakeOff"
         self.AltitudeArr = np.array([])

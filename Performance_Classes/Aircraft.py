@@ -1,6 +1,6 @@
 #Aircraft
 
-from PerformanceOLD import *
+from Aviation import *
 
 class Aircraft(Aviation):
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType, AircraftDictionary) -> None:
@@ -44,10 +44,8 @@ class Aircraft(Aviation):
         self.Atmosphere_attr()
         #Evaluation
         self.v_z = self.v_h * self.ft_to_m /60
-        FlightAngle = np.arcsin(self.v_z/self.v)
-        gamma = FlightAngle 
-        self.v_x = self.v * np.cos(gamma)
-
+        self.v_x = np.sqrt(self.v**2-self.v_z**2)
+        gamma = np.arctan2(self.v_z,self.v_x) #Flight Angle
         self.DynamicPressure = .5*self.rho*self.v**2
         self.Weight = self.TotalMass * self.g
         self.Lift = self.Weight * np.cos(gamma)
@@ -63,7 +61,7 @@ class Aircraft(Aviation):
         self.Altitude += self.v_h * dt
         self.EnergyMass += self.FuelBurn 
         return "Climb ran successfully"
-    
+      
     def Cruise(self, dt = 10):
         self.Atmosphere_attr()
         self.v = self.acousic_v * self.CruiseMach

@@ -11,15 +11,13 @@ class PerformanceOLD(Aviation):
     
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType) -> None:
         super().__init__(AircraftName, CruiseMach, CruiseAltitude, AircraftType)
-        self.Mach = Mach
+        self.Mach = 0
         self.Position = 0
         self.Plots = 0
         self.rPlots = 0
         self.ePlots = 0
         self.SimTest = False
         self.AircraftType = AircraftType
-        self.Altitude = Altitude
-        self.TotalMass = TotalMass
     
     def Dictionary_setattr(self, Dictionary):
         super().Dictionary_setattr(Dictionary)
