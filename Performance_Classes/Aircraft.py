@@ -80,13 +80,19 @@ class Aircraft(Aviation):
         
     def ZeroThrustGlide(self, dt = 10):
         self.Atmosphere_attr()
-        self.GetC_L_max([self.Wings, self.HorizontalStabilizer])
-        self.GetC_D(self.SubComponents)
-        self.gamma = -np.arctan(self.C_D/self.C_L)
-        self.TotalMass = self.MGTOW - self.MaxFuel
-        self.Weight = self.TotalMass * self.g
-        V_Glide = np.sqrt(2*self.Weight*np.cos(self.gamma)/(self.rho*self.S*self.C_L))
-        self.v = V_Glide
+        if "PIPER" in self.AircraftType.upper():
+            self.v = 76 * self.knots_to_mps
+            self.v_h = -1000
+            self.v_z = self.v_h*self.ft_to_m/60
+            self.gamma = np.arcsin(self.v_z/self.v)
+        else:
+            self.GetC_L_max([self.Wings, self.HorizontalStabilizer])
+            self.GetC_D(self.SubComponents)
+            self.gamma = -np.arctan(self.C_D/self.C_L)
+            self.TotalMass = self.MGTOW - self.MaxFuel
+            self.Weight = self.TotalMass * self.g
+            V_Glide = np.sqrt(2*self.Weight*np.cos(self.gamma)/(self.rho*self.S*self.C_L))
+            self.v = V_Glide
         self.v_x = np.cos(self.gamma)*self.v
         self.v_y = np.zeros(self.v_x.shape)
         self.v_z = np.sin(self.gamma)*self.v
