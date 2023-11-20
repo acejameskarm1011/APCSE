@@ -1,6 +1,6 @@
 #Vertical_Stabilizer
-from Piper import Piper
-class VerticalStabilizer(Piper):
+from GA_Classes.GAAircraft import GAAircraft
+class VerticalStabilizer(GAAircraft):
     PartName = "VerticalStabilizer"
     def __init__(self, AircraftName, PartName = PartName) -> None:
         self.AircraftName = AircraftName

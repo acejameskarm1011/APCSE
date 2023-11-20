@@ -1,9 +1,9 @@
 #Horizontal_Stabilizer
 
-from Jet_Classes.ImportJet import Embraer
+from Jet_Classes.ImportJet import JetAircraft
 import numpy as np
  
-class HorizontalStabilizer(Embraer):
+class HorizontalStabilizer(JetAircraft):
     PartName = "HorizontalStabilizer"
     def __init__(self, AircraftName, PartName = PartName, e0 = 1, C_L = 0) -> None:
         self.AircraftName = AircraftName

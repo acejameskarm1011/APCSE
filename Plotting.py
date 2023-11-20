@@ -19,7 +19,6 @@ def Regular_Plot(x, y, xlabel, ylabel, title, color = 'r'):
     os.chdir(image_dir)
     plt.savefig(title + '.png')
     os.chdir(main_dir)
-    plt.show()
 
 '''
 def MyCurrentPlot(control, title):

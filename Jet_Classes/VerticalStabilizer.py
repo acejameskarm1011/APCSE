@@ -1,8 +1,8 @@
 #Vertical_Stabilizer
 
-from ImportEmbraer import Embraer
+from Jet_Classes.ImportJet import JetAircraft
 
-class VerticalStabilizer(Embraer):
+class VerticalStabilizer(JetAircraft):
     PartName = "VerticalStabilizer"
     def __init__(self, AircraftName, PartName = PartName) -> None:
         self.AircraftName = AircraftName

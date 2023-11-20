@@ -1,6 +1,6 @@
 #Wings 
-from Piper import Piper
-class Wings(Piper):
+from GA_Classes.GAAircraft import GAAircraft
+class Wings(GAAircraft):
     PartName = "Wings"
     def __init__(self, AircraftName, PartName = PartName, e0 = 1) -> None:
         self.AircraftName = AircraftName

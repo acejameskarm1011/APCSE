@@ -1,8 +1,8 @@
 #Fuselage
 
-from ImportEmbraer import Embraer
+from Jet_Classes.ImportJet import JetAircraft
 
-class Fuselage(Embraer):
+class Fuselage(JetAircraft):
     PartName = "Fuselage"
     def __init__(self, AircraftName, PartName = PartName) -> None:
         self.AircraftName = AircraftName

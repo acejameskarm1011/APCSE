@@ -12,4 +12,7 @@ class JetAircraft(Aviation):
         C_D = self.C_D0
         return C_D
 
-from Embraer_Components import *
+from Jet_Classes.Wings import *
+from Jet_Classes.Fuselage import *
+from Jet_Classes.VerticalStabilizer import *
+from Jet_Classes.HorizontalStabilizer import *

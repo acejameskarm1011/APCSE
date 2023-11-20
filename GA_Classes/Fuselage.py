@@ -1,6 +1,6 @@
 #Fuselage
-from Piper import Piper
-class Fuselage(Piper):
+from GA_Classes.GAAircraft import GAAircraft
+class Fuselage(GAAircraft):
     PartName = "Fuselage"
     def __init__(self, AircraftName, PartName = PartName) -> None:
         self.AircraftName = AircraftName

@@ -1,10 +1,10 @@
 #Wings
 
-from ImportEmbraer import Embraer
+from Jet_Classes.ImportJet import JetAircraft
 import numpy as np
 
 
-class Wings(Embraer):
+class Wings(JetAircraft):
     PartName = "Wings"
     def __init__(self, AircraftName, PartName = PartName, e0 = 1) -> None:
         self.AircraftName = AircraftName

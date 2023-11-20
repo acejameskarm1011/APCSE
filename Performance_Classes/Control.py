@@ -3,7 +3,7 @@
 from Performance_Classes.Aircraft import Aircraft
 from Performance_Classes.AircraftConventional import AircraftConventional
 from Performance_Classes.AircraftElectric import AircraftElectric
-import numpy as nps
+import numpy as np
 
 
 
