@@ -101,4 +101,6 @@ class Aircraft(Aviation):
         self.Velocity = np.array([self.v_x, self.v_y, self.v_z])
     def GetSC(self):
         self.GetTSFC(unit = 's')
+        if "PIPER" in self.AircraftType.upper():
+            self.TSFC = 19.9581/3600/self.Thrust*self.g
         return None

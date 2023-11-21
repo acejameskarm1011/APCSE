@@ -23,21 +23,19 @@ CS5 = [(250, 1000, 10000, "kts"), (300, 2000, 25000, "kts"), (0.7, 500, 30000, "
 # import PySimpleGUI as sg
 
 
-ERJ175 = AircraftConventional("ERJ175", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
-ERJ175_EV = AircraftElectric("ERJ175 EV", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
+# ERJ175 = AircraftConventional("ERJ175", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
+# ERJ175_EV = AircraftElectric("ERJ175 EV", CruiseMach, CruiseAltitude, "Embraer_175", Embraer175_Dict)
 PA28 = AircraftConventional("PA28", 0.18, 8500, "Piper_Archer_III", PiperArcherIII_Dict)
 
-ERJ175_control = Control(ERJ175, CS4)
-ERJ175_EV_control = Control(ERJ175_EV, CS4)
+# ERJ175_control = Control(ERJ175, CS4)
+# ERJ175_EV_control = Control(ERJ175_EV, CS4)
 PA28_control = Control(PA28, CSPip)
 
-ERJ175_control.TimestepBeta(dt = 1)
-ERJ175_EV_control.TimestepBeta(dt = 1)
-PA28_control.TimestepBeta(dt = .1)
+# ERJ175_control.TimestepBeta(dt = 1)
+# ERJ175_EV_control.TimestepBeta(dt = 1)
+PA28_control.TimestepBeta(dt = 1)
 
-MyCurrentPlot(ERJ175_EV_control, "Range up to 25,000 ft")
-MyCurrentPlot(ERJ175_control, "Range up to 25,000 ft")
+# MyCurrentPlot(ERJ175_EV_control, "Range up to 25,000 ft")
+# MyCurrentPlot(ERJ175_control, "Range up to 25,000 ft")
 MyCurrentPlot(PA28_control, "Piper Range up to 8,500 ft")
-
-
-print(f'C_q ranges from {ERJ175_control.C_DArr.min()} to {ERJ175_control.C_DArr.max()} ')
+print(PA28.Endurance/3600)

@@ -43,12 +43,12 @@ def MyCurrentPlot(control, title):
     ax[0].set_ylabel("Altitude (ft)")
 
     ax[1].plot(control.vArr, control.AltitudeArr)
-    ax[1].set_xlabel("Velocity (m/s)")
+    ax[1].set_xlabel("Velocity (kts)")
     ax[1].set_ylabel("Altitude (ft)")
 
     ax[2].plot(control.RangeArr, control.vArr)
     ax[2].set_xlabel("Range (nmi)")
-    ax[2].set_ylabel("Velocity (m/s)")
+    ax[2].set_ylabel("Velocity (kts)")
 
     ax[3].plot(control.AltitudeArr, control.Power_ThrustArr)
     ax[3].set_ylabel("Power from Thrust (W)")
@@ -75,8 +75,8 @@ def MyCurrentPlot(control, title):
     gs = GridSpec(3, 2, figure=fig)
     if isinstance(control.aircraft, AircraftConventional):
         title = "Conventional " + title
-        power = control.EnergyMassArr
-        label5x = "Fuel Mass (kg)"
+        power = control.EnergyMassArr * 2.20462/6
+        label5x = "Fuel Mass (gal)"
     elif isinstance(control.aircraft, AircraftElectric):
         title = "Electric " + title
         power = control.percentArr
@@ -98,7 +98,7 @@ def MyCurrentPlot(control, title):
     ax1.plot(control.vArr, control.AltitudeArr)
     ax1.set_xlim(left = 0)
     ax1.set_ylim(bottom = 0)
-    ax1.set_xlabel("Velocity (m/s)")
+    ax1.set_xlabel("Velocity (kts)")
     ax1.set_ylabel("Altitude (ft)")
 
     ax2 =  fig.add_subplot(gs[2,0])
@@ -106,13 +106,13 @@ def MyCurrentPlot(control, title):
     ax2.set_xlim(left = 0)
     ax2.set_ylim(bottom = 0)
     ax2.set_xlabel("Range (nmi)")
-    ax2.set_ylabel("Velocity (m/s)")
+    ax2.set_ylabel("Velocity (kts)")
 
     ax3 = fig.add_subplot(gs[0,1])
-    ax3.plot(control.AltitudeArr, control.Power_ThrustArr)
+    ax3.plot(control.AltitudeArr, control.Power_ThrustArr * 0.00134102)
     ax3.set_xlim(left = 0)
     ax3.set_ylim(bottom = 0)
-    ax3.set_ylabel("Power-T (W)")
+    ax3.set_ylabel("Power-T (hp)")
     ax3.set_xlabel("Altitude (ft)")
 
     ax4 = fig.add_subplot(gs[1,1])

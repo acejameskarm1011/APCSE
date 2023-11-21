@@ -12,6 +12,3 @@ class AircraftConventional(Aircraft):
             self.Power_Thrust = 0
             self.Emergency = "No_Energy"
             print(f'{self.AircraftName} has no fuel')
-    def GetSC(self):
-        self.GetTSFC(unit = 's')
-        return None

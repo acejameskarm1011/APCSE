@@ -95,7 +95,7 @@ class Control(Aircraft):
     def Add_Parameter(self, Run = True):
         if Run:
             self.AltitudeArr = np.append(self.AltitudeArr,self.aircraft.Altitude)
-            self.vArr = np.append(self.vArr, self.aircraft.v)
+            self.vArr = np.append(self.vArr, self.aircraft.v * self.mps_to_knots)
             self.RangeArr = np.append(self.RangeArr, self.aircraft.Range)
             self.Power_ThrustArr = np.append(self.Power_ThrustArr, self.aircraft.Power_Thrust)
             self.ThrustArr = np.append(self.ThrustArr,self.aircraft.Thrust)
