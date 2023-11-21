@@ -102,5 +102,5 @@ class Aircraft(Aviation):
     def GetSC(self):
         self.GetTSFC(unit = 's')
         if "PIPER" in self.AircraftType.upper():
-            self.TSFC = 19.9581/3600/self.Thrust*self.g
+            self.TSFC = 19.9581/3600/self.Thrust*self.g # Hard coded for POH Values
         return None
