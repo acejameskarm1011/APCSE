@@ -29,8 +29,6 @@ class TurboProp(PropEngine):
 
 
 
-
-
 class EngineTest:
     def __init__(self, Name, mass, HF) -> None:
         self.Name = Name
