@@ -33,7 +33,7 @@ PA28_control = Control(PA28, CSPip)
 
 # ERJ175_control.TimestepBeta(dt = 1)
 # ERJ175_EV_control.TimestepBeta(dt = 1)
-PA28_control.TimestepBeta(dt = 1)
+PA28_control.TimestepBeta(dt = 1/7)
 
 # MyCurrentPlot(ERJ175_EV_control, "Range up to 25,000 ft")
 # MyCurrentPlot(ERJ175_control, "Range up to 25,000 ft")
