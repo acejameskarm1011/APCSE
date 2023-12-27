@@ -1,0 +1,2 @@
+class Landing:
+    pass
