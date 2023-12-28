@@ -1,6 +1,6 @@
 #PerformanceV2
 
-from Performance_Classes.Aircraft import *
+from Performance_Classes.AircraftOLD import *
 
 
 class AircraftConventional(Aircraft):

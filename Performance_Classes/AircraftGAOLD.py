@@ -1,4 +1,4 @@
-from Performance_Classes.Aircraft import Aircraft
+from Performance_Classes.AircraftOLD import Aircraft
 import numpy as np
 
 class AircraftGA(Aircraft):

@@ -1,8 +1,8 @@
 #Control
 
-from Performance_Classes.Aircraft import Aircraft
-from Performance_Classes.AircraftConventional import AircraftConventional
-from Performance_Classes.AircraftElectric import AircraftElectric
+from Performance_Classes.AircraftOLD import Aircraft
+from Performance_Classes.AircraftConventionalOLD import AircraftConventional
+from Performance_Classes.AircraftElectricOLD import AircraftElectric
 import numpy as np
 
 
