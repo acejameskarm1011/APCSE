@@ -1,4 +1,4 @@
-from Performance_Classes.Aircraft import Aircraft
+from Performance_Classes.AircraftOLD import Aircraft
 
 class AircraftElectric(Aircraft):
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType, AircraftDictionary, BattDensity = 500) -> None:
