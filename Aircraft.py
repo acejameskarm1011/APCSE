@@ -22,11 +22,8 @@ class Aircraft(Aviation):
         self.Range = 0
         self.Endurance = 0
     
-    def EvaluateC_D(self):
-        return None
-        
     def __str__(self):
-        return f"This aircraft is the {self.AircraftName}, and it can fly a maximum of {self.Endurance}nmi for {self.Range} minutes and a cruise speed of {self.Mach} Mach"
+        return f"This aircraft is the {self.AircraftName}h"
     
     def GetC_D(self, Components):
         C_D = 0
@@ -53,15 +50,15 @@ class Aircraft(Aviation):
                 C_L += P_C_L * 1.05
             k += Part.k
             C_D0 += Part.C_D0
-        #self.gamma = -np.arctan(2*np.sqrt(C_D0*k))
         self.C_L = C_L
         return C_L
-    def Atmosphere_attr(self):
-        self.acousic_v, self.g, self.Pressure, self.Temperature, self.rho, self.mu = AtmosphereFunctionSI(self.Altitude, ['a','g','P','T', 'rho','mu'])               
-    def Dictionary_setattr(self, Dictionary):
-        for key in Dictionary:
-            setattr(self, key, Dictionary[key])
-        return None
+    
+    def Emergency_Check(self):
+        if self.EnergyMass < 0:
+            self.Thrust = 0
+            self.Power_Thrust = 0
+            self.Emergency = "No_Energy"
+
     def GetTSFC(self, unit = 'hr'):
         TSFC = 0.78
         self.TSFC = TSFC

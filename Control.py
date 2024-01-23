@@ -1,8 +1,6 @@
 #Control
 
-from Performance_Classes.AircraftOLD import Aircraft
-from Performance_Classes.AircraftConventionalOLD import AircraftConventional
-from Performance_Classes.AircraftElectricOLD import AircraftElectric
+from AircraftOLD import Aircraft
 import numpy as np
 
 
@@ -35,10 +33,10 @@ class Control(Aircraft):
         self.aircraft.CruiseAltitude = olda
     '''
     def No_Energy(self):
-        if isinstance(self.aircraft, AircraftConventional):
+        if isinstance(self.aircraft):
             self.aircraft.Fuel = 0
             self.Phase = "Glide"
-        if isinstance(self.aircraft, AircraftElectric):
+        if isinstance(self.aircraft):
             self.aircraft.BattEnergy = 0
             self.Phase = "Glide"
     def ClimbScheduleCheck(self):
