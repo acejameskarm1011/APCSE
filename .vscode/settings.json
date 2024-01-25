@@ -5,7 +5,7 @@
         "./Embraer_Classes",
         "./Performance_Objects",
         "./Performance_Classes",
-        "./Piper_Cherokee_Classes"
+        "./Propulsion"
     ],
     "C_Cpp.errorSquiggles": "disabled"
 }

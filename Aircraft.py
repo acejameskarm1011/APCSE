@@ -2,12 +2,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
+from Sizing_And_Geometry.ImportComponents import *
 import os
 
 
 class Aircraft(Aviation): 
     """
-    Stores data that needs to be held within every aircraft in the program. Contains the unit conversions
+    Stores data that needs to be held within every aircraft in the program. 
     """
 
     def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType) -> None: 
@@ -67,17 +68,6 @@ class Aircraft(Aviation):
         return self.TSFC
      
     def Part_Import(self):
-        main_dir = os.getcwd()
-        if self.AircraftType.upper().__contains__("EMBRAER"):
-            Part_dir = main_dir + ".\Jet_Classes"
-            os.chdir(Part_dir)
-            from Jet_Classes.ImportJet import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
-            os.chdir(main_dir)
-        else:
-            Part_dir = main_dir + ".\GA_Classes"
-            os.chdir(Part_dir)
-            from GA_Classes.ImportGA import Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer
-            os.chdir(main_dir)
         self.Wings = Wings(self.AircraftType + '_Wings')
         self.HorizontalStabilizer = HorizontalStabilizer(self.AircraftType + '_Horizontal_Stabilizer')
         self.Fuselage = Fuselage(self.AircraftType + '_Fuselage')

@@ -6,10 +6,25 @@ import numpy as np
 
 
 class Control(Aircraft):
+    """
+    This class handles and operates on the aircraft class. Using controlled phase planning, 
+    it is able to handle mission outlines inputed into the class. 
+
+    Parameters
+    ----------
+    AircraftInstance : Aircraft
+        Must input an instance of an aircraft so that the control class will be able to employ methods that will update the characteristics of the aircraft.
+   
+    Schedule : List of phase objects
+        The list of phases that the plane will be required to fly. Based on engine and aerodynamic limitations, the aircraft may not follow the exact planned course.
+
+    Notes
+    ----
+    This class is still currently under development, and it should not be used until all other components are completed
+    """
     def __init__(self, AircraftInstance, Schedule) -> None:
         self.aircraft = AircraftInstance
         self.Schedule = Schedule
-
         self.ClimbScheduleCheck()
         self.Phase = "TakeOff"
         self.AltitudeArr = np.array([])

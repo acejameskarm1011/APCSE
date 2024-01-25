@@ -1,0 +1,2 @@
+class PilotInputs:
+    pass

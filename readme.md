@@ -1,1 +1,0 @@
-Go to the pdf documentation, and not this right here.

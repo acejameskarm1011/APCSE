@@ -2,6 +2,35 @@
 import numpy as np
 
 def AtmosphereFunction(h_G, want = ['h_G']):
+    """
+    This function evaluates the properties of the atmosphere using the standard atmosphere model.
+
+    Parameters
+    ----------
+    h_G : int/float/numpy.ndarray
+        This is the position in altitude in units of feet.
+    want : list
+        possible properites that can be inputted are:         
+        'h_G' : h_G, 
+            Altitude [ft]
+        'h' : h,   
+            Altitude from center of earth [ft]
+        'T' : T, 
+            Temperature [R]
+        'P' : P,
+            Pressure [psf]
+        'g' : g_hG,
+            Gravity [ft/s^2]
+        'rho' :rho,
+            Air density [slugs/ft^3]
+        'a' : a,
+            Acoustic Velocity [ft/s]
+        'mu' : mu
+            Dynamic Viscousity [psf * s]
+    Notes
+    ----
+    See also AtmosphereFunctionSI if you want terms in SI units
+    """
     array = True
     if type(h_G) != np.ndarray:
         h_G = np.array([h_G])
@@ -61,6 +90,38 @@ def AtmosphereFunction(h_G, want = ['h_G']):
     return data
 
 def AtmosphereFunctionSI(hSI, want = ['h_G'], units = "ft"):
+    """
+    This function evaluates the properties of the atmosphere using the standard atmosphere model.
+
+    Parameters
+    ----------
+    h_G : int/float/numpy.ndarray
+        This is the position in altitude in units of feet as default
+    want : list
+        possible properites that can be inputted are:         
+        'h_G' : h_G, 
+            Altitude [m]
+        'h' : h,   
+            Altitude from center of earth [m]
+        'T' : T, 
+            Temperature [K]
+        'P' : P,
+            Pressure [Pa]
+        'g' : g_hG,
+            Gravity [m/s^2]
+        'rho' :rho,
+            Air density [kg/m^3]
+        'a' : a,
+            Acoustic Velocity [m/s]
+        'mu' : mu
+            Dynamic Viscousity [Pa * s]
+    units : str
+        May want to measure input altitude in meters, so use units = 'm', for that case.
+
+    Notes
+    ----
+    See also AtmosphereFunction if you want terms in Imperial units
+    """
     if units == "ft":
         h_g = hSI
     elif units == "m":
