@@ -90,6 +90,7 @@ def AtmosphereFunction(h_G, want = ['h_G']):
     return data
 
 def AtmosphereFunctionSI(hSI, want = ['h_G'], units = "ft"):
+    
     """
     This function evaluates the properties of the atmosphere using the standard atmosphere model.
 

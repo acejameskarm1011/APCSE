@@ -34,17 +34,7 @@ class EngineTest:
         self.Name = Name
         self.mass = mass
         self.HF = HF
-        self.h = 0 
+        self.h = 0
     def __repr__(self) -> str:
         return f'EngineTest({self.Name}, {self.mass}, {self.HF})'
-    def TSFC(self, h):
-        self.rho = AtmosphereFunctionSI(h)
-        self.TSFC = 0.78
-        pass
-
-test = EngineTest("Conventional Engine", 50, 0)
-
-
-
-
 

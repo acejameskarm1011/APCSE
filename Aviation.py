@@ -22,6 +22,7 @@ class Aviation:
 
     Notes
     -----
+    Class has very few methods, and most code work will need to built up with other child classes
     """
 
     # Multiply by these factors to go from the left units to the right units
@@ -37,7 +38,7 @@ class Aviation:
     def __init__(self, Altitude = 0) -> None:
         self.Altitude = Altitude
         self.Atmosphere_attr()
-    
+
     def Atmosphere_attr(self) -> None:
         """
         Updates the atmospheric attributes within an object based on the aircraft's inheriant altitude
