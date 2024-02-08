@@ -1,3 +1,3 @@
-from Aerodynamics import Aerodynamics
+from Aerodynamic_Classes.Aerodynamics import Aerodynamics
 class Coefficients:
     pass

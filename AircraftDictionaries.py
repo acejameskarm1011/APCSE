@@ -37,10 +37,10 @@ dict_dir = main_dir + '\Aircraft_Dictionaries'
 
 
 
-os.chdir(dict_dir)
+
 from Aircraft_Dictionaries.PA_28_181 import PA_28_181_Dict
 from Aircraft_Dictionaries.Embraer175 import Embraer175_Dict
-os.chdir(main_dir)
+
 
 
 

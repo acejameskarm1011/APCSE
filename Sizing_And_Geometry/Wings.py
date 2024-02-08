@@ -15,8 +15,9 @@ class Wings(Aircraft):
     This class is still under progress
     """
     PartName = "Wings"
-    def __init__(self, AircraftName) -> None:
+    def __init__(self, AircraftName, AircraftDict) -> None:
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + self.PartName
+        self.Dictionary_setattr(AircraftDict[self.PartName])
     def EvaluateC_D(self):
         return 0.03

@@ -1,6 +1,4 @@
 #ImportPiperCherokee
-import os
-
 from Sizing_And_Geometry.Fuselage import Fuselage
 from Sizing_And_Geometry.Wings import Wings
 from Sizing_And_Geometry.Horizontal_Stabilizer import HorizontalStabilizer

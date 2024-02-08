@@ -7,6 +7,7 @@ If there is an issue with a file not existing, the error will likely appear here
 
 
 from Aviation import *
+from Aircraft import Aircraft
 from AircraftDictionaries import *
 from Propulsion.Engine import *
 from Sizing_And_Geometry.ImportComponents import *

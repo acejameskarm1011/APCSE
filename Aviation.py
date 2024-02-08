@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 from AtmosphereFunction import AtmosphereFunctionSI
 import os
 
@@ -45,11 +45,15 @@ class Aviation:
 
         Parameters
         ----------
-        None
-            Call this function in a single line within a an instance method or on an instance of a class
+        This function requires no parameters. Call this function in a single line within a an instance method or on an instance of a class
+
         Returns
         -------
         None
+
+        Notes
+        -----
+        Make sure the class with this function being called within has a value for self.Altitude.
         """
         self.acousic_v, self.g, self.Pressure, self.Temperature, self.rho, self.mu = AtmosphereFunctionSI(self.Altitude, ['a','g','P','T', 'rho','mu'])               
 

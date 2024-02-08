@@ -1,6 +1,5 @@
-#Vertical_Stabilizer
-
-class VerticalStabilizer():
+from Aircraft import Aircraft
+class VerticalStabilizer(Aircraft):
     """
     This class stores all necessary methods for storing the necessary geometry and data of the vertical stabilizer for an aircraft.
 
@@ -14,9 +13,10 @@ class VerticalStabilizer():
     -----
     This class is still under progress
     """
-    PartName = "VerticalStabilizer"
-    def __init__(self, AircraftName) -> None:
+    PartName = "Vertical_Stabilizer"
+    def __init__(self, AircraftName, AircraftDict) -> None:
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + self.PartName
+        self.Dictionary_setattr(AircraftDict[self.PartName])
     def EvaluateC_D(self):
         return 10**(-5)

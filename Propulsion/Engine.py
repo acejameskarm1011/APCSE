@@ -1,7 +1,7 @@
 #Engine
 import os
 engine_dir = os.getcwd()
-main_dir = engine_dir[:-7]
+main_dir = "C:\APCSE"
 os.chdir(main_dir)
 from AtmosphereFunction import AtmosphereFunctionSI
 os.chdir(engine_dir)

@@ -2,30 +2,48 @@ import numpy as np
 from matplotlib import pyplot as plt
 from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
-from Sizing_And_Geometry.ImportComponents import *
-import os
 
 
 class Aircraft(Aviation): 
     """
     Stores data that needs to be held within every aircraft in the program. 
+    
+    Parameters
+    ---------
+    AircraftName : string
+        Name of the aircraft being evaluated
+
+    Wings : instance of Wings class
+        Wings of the aircraft class
+
+    HorizontalStabilizer : instance of HorizontalStabilizer class
+        HorizontalStabilizer of the aircraft class 
+
+    Fuselage : instance of Fuselage class
+        Fuselage of the aircraft class
+
+    VerticalStabilizer : instance of VerticalStabilizer class
+        VerticalStabilizer of the aircraft class
+
+
+    Returns
+    -------
+    None
+
+    Notes
+    ----
+    This class builds up all of the shared data for all components.      
     """
 
-    def __init__(self, AircraftName, CruiseMach, CruiseAltitude, AircraftType) -> None: 
-        #Required upon initalization
+    def __init__(self, AircraftName, Wings, HorizontalStabilizer, VerticalStabilizer, Fuselage) -> None: 
         self.AircraftName = AircraftName
-        self.CruiseMach = CruiseMach
-        self.CruiseAltitude = CruiseAltitude
-        self.AircraftType = AircraftType
-        #Initial States
-        self.Mach = 0
+        self.Wings = Wings
+        self.HorizontalStabilizer = HorizontalStabilizer
+        self.Fuselage = Fuselage
+        self.VerticalStabilizer = VerticalStabilizer
+        self.SubComponents = [Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer]
         self.Altitude = 0
-        self.Range = 0
-        self.Endurance = 0
-    
-    def __str__(self):
-        return f"This aircraft is the {self.AircraftName}h"
-    
+        self.Atmosphere_attr()
     def GetC_D(self, Components):
         C_D = 0
         for Part in Components:
@@ -66,10 +84,3 @@ class Aircraft(Aviation):
         if unit == 's':
              self.TSFC = self.TSFC / 3600
         return self.TSFC
-     
-    def Part_Import(self):
-        self.Wings = Wings(self.AircraftType + '_Wings')
-        self.HorizontalStabilizer = HorizontalStabilizer(self.AircraftType + '_Horizontal_Stabilizer')
-        self.Fuselage = Fuselage(self.AircraftType + '_Fuselage')
-        self.VerticalStabilizer = VerticalStabilizer(self.AircraftType + '_Vertical_Stabilizer')
-        self.SubComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]

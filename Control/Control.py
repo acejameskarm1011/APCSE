@@ -1,6 +1,5 @@
 #Control
-
-from AircraftOLD import Aircraft
+from Aircraft import Aircraft
 import numpy as np
 
 

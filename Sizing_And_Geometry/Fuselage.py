@@ -1,6 +1,5 @@
-
-
-class Fuselage():
+from Aircraft import Aircraft
+class Fuselage(Aircraft):
     """
     This class stores all necessary methods for storing the necessary geometry and data of the fuselage for an aircraft.
 
@@ -15,9 +14,10 @@ class Fuselage():
     This class is still under progress
     """
     PartName = "Fuselage"
-    def __init__(self, AircraftName) -> None:
+    def __init__(self, AircraftName, AircraftDict) -> None:
         self.AircraftName = AircraftName
         self.Name = self.AircraftName + self.PartName
         self.C_D = 10**(-5)
+        self.Dictionary_setattr(AircraftDict[self.PartName])
     def EvaluateC_D(self):
         return self.C_D

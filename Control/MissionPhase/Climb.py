@@ -1,11 +1,6 @@
-import os
-dir_miss = os.getcwd()
-os.chdir(dir_miss[:-12])
-
-from Aircraft_Dictionaries.Units import Units
-os.chdir(dir_miss)
+import scipy as sp
 import numpy as np
-from MissionPhase import MissionPhase
+from Control.MissionPhase.MissionPhase import MissionPhase
 
 class Climb(MissionPhase): 
     """
@@ -17,6 +12,6 @@ class Climb(MissionPhase):
     def __init__(self, Name, Vy, VerticalSpeed) -> None:
         self.Name = Name
         self.Vy = Vy
-        self.V_infty = self.Vy*Units["knots_to_mps"]
+        self.V_infty = self.Vy*sp.constants.knot
         self.VerticalSpeed = VerticalSpeed
 test = Climb("test",76,1000)
