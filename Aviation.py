@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from AtmosphereFunction import AtmosphereFunctionSI
 import os
+import scipy as sp
 
 class Aviation: 
     """
@@ -26,14 +27,14 @@ class Aviation:
     """
 
     # Multiply by these factors to go from the left units to the right units
-    m_to_ft = 1/0.3048
-    ft_to_m = 0.3048
-    m_to_nmi = 1/1852
-    nmi_to_m = 1852
-    knots_to_mps = 0.51444
-    mps_to_knots = 1/0.51444
-    fps_to_knots = 0.592484
-    knots_to_fps = 1/0.592484 
+    m_to_ft = 1/sp.constants.foot
+    ft_to_m = sp.constants.foot
+    m_to_nmi = 1/sp.constants.nautical_mile
+    nmi_to_m = sp.constants.nautical_mile
+    knots_to_mps = sp.constants.knot
+    mps_to_knots = 1/sp.constants.knot
+    fps_to_knots = sp.constants.foot/sp.constants.knot
+    knots_to_fps = sp.constants.knot/sp.constants.foot
 
     def __init__(self, Altitude = 0) -> None:
         self.Altitude = Altitude
