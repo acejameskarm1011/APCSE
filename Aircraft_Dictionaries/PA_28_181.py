@@ -16,10 +16,12 @@ PA_28_181_Fuselage_dict = dict({
 })
 
 PA_28_181_Performance_dict = dict({
-    "MGTOW" : [2550, "lbf"],
-    "MaxFuel" : [48*6, 'lbf'],
-    "GlideSpeed" : [76, "knots"],
-    "ServiceCeiling" : [13240, "ft"]
+    "MGTOW" : [2550., "lbf"],
+    "MaxFuel" : [48*6., 'lbf'],
+    "GlideSpeed" : [76., "knots"],
+    "BestClimbSpeed" : [76., "knots"],
+    "RotationSpeed" : [66., "knots"],
+    "ServiceCeiling" : [13240., "ft"]
 })
 
 PA_28_181_Dict = dict({

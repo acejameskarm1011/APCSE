@@ -35,6 +35,8 @@ class Aviation:
     mps_to_knots = 1/sp.constants.knot
     fps_to_knots = sp.constants.foot/sp.constants.knot
     knots_to_fps = sp.constants.knot/sp.constants.foot
+    lbf_to_kg = sp.constants.pound
+    h_to_s = 60**2
 
     def __init__(self, Altitude = 0) -> None:
         self.Altitude = Altitude
@@ -77,4 +79,3 @@ class Aviation:
             setattr(self, key, Dictionary[key])
 test = Aviation()
 test.Atmosphere_attr()
-print(test.__dict__)
