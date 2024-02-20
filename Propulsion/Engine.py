@@ -7,6 +7,9 @@ from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
 os.chdir(engine_dir)
 import scipy as sp
+import numpy as np
+
+
 
 class Powerplant(Aviation):
     hp_to_watt = sp.constants.hp
@@ -57,8 +60,8 @@ class Propeller():
         Notes: This is NOT the area of the actual propeller, but it is the area of the control section of airflow through the propeller. 
         This is useful in the Rankine-Foude Momentum Theory framework so that we can find the static thrust for the engine and propeller.
         """
-        A_2 = self.Diameter**2*sp.pi/4
-        A_spin = self.Diameter**2*sp.pi/4
+        A_2 = self.Diameter**2*np.pi/4
+        A_spin = self.Diameter**2*np.pi/4/7
         eta_A = 1-A_spin/A_2
         return A_2, eta_A
 
@@ -78,26 +81,45 @@ class EngineTest(Powerplant):
     MaxPower : int/float
         Rated power of the engine in terms of [hp]
     """
-    def __init__(self, Name, AircraftPropeller, MaxPower = 180) -> None:
+    def __init__(self, Name, AircraftPropeller, MaxBreakHorsePower = 180) -> None:
         self.Name = Name
+        # Since this is a test class, we will use the general "Name" to keep track of what the class is
         self.Propeller = AircraftPropeller
-        self.BreakHorsePower = self.MaxPower
-        self.MaxPower = MaxPower * self.hp_to_watt
-        self.BreakPower = self.MaxPower
+        # Propeller information is different between props, so we have a class for those properties
+        self.MaxBreakHorsePower = MaxBreakHorsePower
+        # Units in Horse Power
+        self.MaxBreakPower = self.MaxBreakHorsePower * self.hp_to_watt 
+        # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
+        self.BreakPower = self.MaxBreakPower
+        # Initialize current break power
         self.eta = 0.9
+        # Current Model for the engine to propeller efficiency is unknown
         self.Power = self.BreakPower * self.eta
+        self.MaxPower = self.Power
+        # Current acutual power the aircraft is experiencing
         self.Altitude = 0
         self.Atmosphere_attr()
+        # Engine requires the atmospheric information
     def Thrust_Static(self):
+        """
+        Using the engine's current propeller, power setting, and altitude this method returns the static thrust. This method requires no inputs.
+
+        Returns
+        -------
+        Thrust_Static : float
+            The current thrust of the engine when the velocity is zero.
+        """
+        self.Atmosphere_attr()
         A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
         Thrust_Static = 0.85*self.Power**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
         return Thrust_Static
 
     def Get_Thrust(self, Velocity_infty, Velocity_NE):
+        V = Velocity_infty * sp.constants.knot
         Velocity_Max = Velocity_NE*sp.constants.knot
         Thrust_Max = self.MaxPower/Velocity_Max
         Thrust_Static = self.Thrust_Static()
-        self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*Velocity_infty + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*Velocity_infty**2
+        self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
     def Get_FuelConsumption(self):
         DcDP = (79-72)/(152-135)
@@ -107,5 +129,36 @@ class EngineTest(Powerplant):
 
 ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 engine1 = EngineTest("test", ArcherProp)
-engine1.Get_Thrust(4)
-engine1.Get_FuelConsumption()
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+import scienceplots
+plt.style.use(["science", "grid"])
+fig = plt.figure(figsize=(10,7))
+ax = fig.add_subplot(111)
+
+
+Velocity_Array = np.linspace(0,180, 1000)
+def Thurst_General(Velocity):
+    Velocity = Velocity * sp.constants.knot
+    Power = 180 * sp.constants.hp
+    Velocity[Velocity == 0] = Velocity[np.where(Velocity == 0)[0]+1]
+    return Power / Velocity
+
+ThrustIdeal = Thurst_General(Velocity_Array)
+ThrustReal = engine1.Get_Thrust(Velocity_Array, Velocity_Array.max())
+
+Title = "Plots of Ideal Thrust vs. Acutal Thrust"
+
+ax.set_title(Title)
+ax.set_xlabel(r"Velocity $V_\infty$ [kts]")
+ax.set_ylabel(r"Thrust $T$ [N]")
+ax.plot(Velocity_Array, ThrustIdeal)
+ax.plot(Velocity_Array, ThrustReal)
+ax.set_ylim((0, 0.5*10**4))
+ax.set_xlim(left = 0)
+Title = r"\\" + Title.replace(" ", "_") + ".png"
+plt.savefig("C:\APCSE\Images_From_Code" + Title)
+plt.show()
