@@ -135,6 +135,8 @@ engine1 = EngineTest("test", ArcherProp)
 import matplotlib.pyplot as plt
 import numpy as np
 import scienceplots
+textsize = 18
+plt.rcParams.update({'font.size': textsize})
 plt.style.use(["science", "grid"])
 fig = plt.figure(figsize=(10,7))
 ax = fig.add_subplot(111)
@@ -152,13 +154,21 @@ ThrustReal = engine1.Get_Thrust(Velocity_Array, Velocity_Array.max())
 
 Title = "Plots of Ideal Thrust vs. Acutal Thrust"
 
-ax.set_title(Title)
+ax.set_title(Title[1:])
 ax.set_xlabel(r"Velocity $V_\infty$ [kts]")
 ax.set_ylabel(r"Thrust $T$ [N]")
-ax.plot(Velocity_Array, ThrustIdeal)
-ax.plot(Velocity_Array, ThrustReal)
-ax.set_ylim((0, 0.5*10**4))
+ax.plot(Velocity_Array, ThrustIdeal, "g-", label = r"$T = \frac{P}{V}$", lw = 3)
+ax.plot(Velocity_Array, ThrustReal, "r--", label = "Actual Thrust", lw = 3)
+ax.set_ylim((-1, 0.5*10**4))
 ax.set_xlim(left = 0)
-Title = r"\\" + Title.replace(" ", "_") + ".png"
-plt.savefig("C:\APCSE\Images_From_Code" + Title)
+
+ax.text(150, 3500, f"$P = {engine1.MaxBreakHorsePower}$ hp\n Altitude = {engine1.Altitude} ft",
+            ha="center", va="center", rotation=0, size=textsize,
+            bbox=dict(boxstyle="square,pad=.3",
+                      fc="white", ec="black", lw=1))
+Title = Title.replace(" ", "_") + ".png"
+plt.legend()
+os.chdir("C:\\APCSE\\Images_From_Code")
+plt.savefig(Title)
+os.chdir(engine_dir)
 plt.show()
