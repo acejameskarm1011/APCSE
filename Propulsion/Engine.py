@@ -150,7 +150,7 @@ def Thurst_General(Velocity):
     return Power / Velocity
 
 ThrustIdeal = Thurst_General(Velocity_Array)
-ThrustReal = engine1.Get_Thrust(Velocity_Array, Velocity_Array.max())
+
 
 Title = "Plots of Ideal Thrust vs. Acutal Thrust"
 
@@ -158,7 +158,11 @@ ax.set_title(Title[1:])
 ax.set_xlabel(r"Velocity $V_\infty$ [kts]")
 ax.set_ylabel(r"Thrust $T$ [N]")
 ax.plot(Velocity_Array, ThrustIdeal, "g-", label = r"$T = \frac{P}{V}$", lw = 3)
-ax.plot(Velocity_Array, ThrustReal, "r--", label = "Actual Thrust", lw = 3)
+Altitude = [0,2000,4000,6000,8000]
+for h in Altitude:
+    engine1.Altitude = h
+    ThrustReal = engine1.Get_Thrust(Velocity_Array, Velocity_Array.max())
+    ax.plot(Velocity_Array, ThrustReal, ls = "--", label = f"Actual Thrust at h = {engine1.Altitude}", lw = 3)
 ax.set_ylim((-1, 0.5*10**4))
 ax.set_xlim(left = 0)
 
