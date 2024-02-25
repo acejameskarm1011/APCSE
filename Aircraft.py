@@ -24,6 +24,9 @@ class Aircraft(Aviation):
 
     VerticalStabilizer : instance of VerticalStabilizer class
         VerticalStabilizer of the aircraft class
+    
+    Engine : Instance of the Engine class
+        Engine and propeller combination for the aircraft
 
 
     Returns
@@ -45,7 +48,6 @@ class Aircraft(Aviation):
         self.SubComponents = [Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer, Engine]
         self.Altitude = 0
         self.Atmosphere_attr()
-        self.Dictionary_setattr() 
     def GetC_D(self, Components):
         C_D = 0
         for Part in Components:

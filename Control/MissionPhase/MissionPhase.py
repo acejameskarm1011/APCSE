@@ -9,11 +9,3 @@ class MissionPhase:
 
 class subphase(MissionPhase):
     pass
-
-
-CLIMB = MissionPhase('CLIMB')
-climb = subphase("climb")
-
-print(climb.weather)
-CLIMB.changeweather("Good")
-print(climb.weather)

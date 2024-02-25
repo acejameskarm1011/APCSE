@@ -13,4 +13,3 @@ class Position:
 
 
 position1 = Position(0,0,0)
-print(position1.cartesian)

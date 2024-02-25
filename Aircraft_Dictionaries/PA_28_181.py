@@ -21,6 +21,7 @@ PA_28_181_Performance_dict = dict({
     "GlideSpeed" : [76., "knots"],
     "BestClimbSpeed" : [76., "knots"],
     "RotationSpeed" : [66., "knots"],
+    "NeverExceedSpeed" : [182., "knots"],
     "ServiceCeiling" : [13240., "ft"]
 })
 

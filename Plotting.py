@@ -2,8 +2,59 @@ import matplotlib.pyplot as plt
 from ImportAPCSE import *
 import os
 main_dir = os.getcwd()
-image_dir = main_dir + '.\Images_From_Code'
+image_dir = main_dir + "\\Images_From_Code"
+import scipy as sp
 from matplotlib.gridspec import GridSpec
+import scienceplots
+plt.style.use(["science","grid"])
+textsize = 18
+plt.rcParams.update({'font.size': textsize})
+def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
+    """
+    Using the TakeOff class, we can use the data stored within it in order to plot how each of the paramters are changing over time.
+
+    Parameters
+    ----------
+    TakeOff : Instance of the TakeOff class
+
+    Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
+    """
+    linewidth = 3
+    V_infty = TakeOff.Velocity_x / sp.constants.knot
+    Distance = TakeOff.Position_x / sp.constants.foot
+    time = TakeOff.Times
+    V_NE = TakeOff.aircraft.NeverExceedSpeed
+    Thrust = TakeOff.Thrust
+    Weight = TakeOff.Weight
+    Lift = TakeOff.Lift
+    Drag = TakeOff.Drag
+
+    fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (16,10))
+    axs[0,0].plot(time, Distance, "g-", linewidth=linewidth)
+    axs[0,0].set_ylabel(r"Ground Roll - $d$ [ft]")
+    axs[0,0].set_xlim((0,time.max()))
+    axs[0,1].plot(time, V_infty, linewidth=linewidth)
+    axs[0,1].set_ylabel(r"Velocoity - $V_\infty$ [kts]")
+    axs[0,1].set_xlim((0,time.max()))
+    axs[1,0].plot(time, Thrust, "r-", linewidth=linewidth)
+    axs[1,0].set_ylabel(r"Thrust - $T$ [N]")
+    axs[1,0].set_xlim((0,time.max()))
+    axs[1,1].plot(time, Weight, "y--", linewidth=linewidth)
+    axs[1,1].set_ylabel(r"Weight - $W$ [N]")
+    axs[1,1].set_xlim((0,time.max()))
+    axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
+    axs[2,0].set_ylabel(r"Lift - $L$ [N]")
+    axs[2,0].set_xlim((0,time.max()))
+    axs[2,1].plot(time, Drag, "r--", linewidth=linewidth)
+    axs[2,1].set_ylabel(r"Drag - $D$ [N]")
+    axs[2,1].set_xlim((0,time.max()))
+    axs[2,1].set_xlabel(r"Time - $t$ [s]")
+    axs[1,0].set_ylim((0, Thrust.max()*1.2))
+    axs[1,1].set_ylim((0, Weight.max()*1.2))
+    fig.suptitle(title)
+    plt.savefig(image_dir + r"\\Take_Off_Performance\\" + title+".png")
+    plt.show()
+
 
 
 def Regular_Plot(x, y, xlabel, ylabel, title, color = 'r'):

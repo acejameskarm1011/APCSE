@@ -33,7 +33,7 @@ def Dict2SI(ACDict):
     return ACDict
 
 main_dir = os.getcwd()
-dict_dir = main_dir + '\Aircraft_Dictionaries'
+dict_dir = main_dir + r'\Aircraft_Dictionaries'
 
 
 

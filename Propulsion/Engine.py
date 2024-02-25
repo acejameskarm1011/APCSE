@@ -1,11 +1,13 @@
 #Engine
 import os
-engine_dir = os.getcwd()
-main_dir = "C:\\APCSE"
-os.chdir(main_dir)
+# engine_dir = os.getcwd()
+# main_dir = engine_dir[:-20]
+# print(engine_dir[:-20])
+# main_dir = "C:\\APCSE"
+# os.chdir(main_dir)
 from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
-os.chdir(engine_dir)
+# os.chdir(engine_dir)
 import scipy as sp
 import numpy as np
 
@@ -61,7 +63,7 @@ class Propeller():
         This is useful in the Rankine-Foude Momentum Theory framework so that we can find the static thrust for the engine and propeller.
         """
         A_2 = self.Diameter**2*np.pi/4
-        A_spin = self.Diameter**2*np.pi/4/7
+        A_spin = self.Spinner_Diameter**2*np.pi/4
         eta_A = 1-A_spin/A_2
         return A_2, eta_A
 
@@ -126,12 +128,14 @@ class EngineTest(Powerplant):
         cmax = DcDP*(180-152) + 79
         cmax_Si = cmax * self.lbf_to_kg / self.h_to_s
         mdot = -cmax_Si
-
+        return mdot
+class ElectricEngineTest(EngineTest):
+    
 ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 engine1 = EngineTest("test", ArcherProp)
 
 
-
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 import scienceplots
@@ -175,4 +179,5 @@ plt.legend()
 os.chdir("C:\\APCSE\\Images_From_Code")
 plt.savefig(Title)
 os.chdir(engine_dir)
-plt.show()
+plt.show()"""
+None
