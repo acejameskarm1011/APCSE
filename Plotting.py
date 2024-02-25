@@ -49,6 +49,7 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     axs[2,1].set_ylabel(r"Drag - $D$ [N]")
     axs[2,1].set_xlim((0,time.max()))
     axs[2,1].set_xlabel(r"Time - $t$ [s]")
+    axs[2,0].set_xlabel(r"Time - $t$ [s]")
     axs[1,0].set_ylim((0, Thrust.max()*1.2))
     axs[1,1].set_ylim((0, Weight.max()*1.2))
     fig.suptitle(title)

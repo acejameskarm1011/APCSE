@@ -135,7 +135,7 @@ ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 engine1 = EngineTest("test", ArcherProp)
 
 
-"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scienceplots
@@ -176,8 +176,4 @@ ax.text(150, 3500, f"$P = {engine1.MaxBreakHorsePower}$ hp\n Altitude = {engine1
                       fc="white", ec="black", lw=1))
 Title = Title.replace(" ", "_") + ".png"
 plt.legend()
-os.chdir("C:\\APCSE\\Images_From_Code")
-plt.savefig(Title)
-os.chdir(engine_dir)
-plt.show()"""
-None
+plt.close()
