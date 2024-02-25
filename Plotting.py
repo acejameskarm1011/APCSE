@@ -120,7 +120,7 @@ def MyCurrentPlot(control, title):
 '''
 
 
-
+"""
 def MyCurrentPlot(control, title):
     fig = plt.figure(constrained_layout=True)
     gs = GridSpec(3, 2, figure=fig)
@@ -183,4 +183,4 @@ def MyCurrentPlot(control, title):
     os.chdir(image_dir)
     plt.savefig(title + '.png')
     os.chdir(main_dir)
-    fig.show()
+    fig.show()"""

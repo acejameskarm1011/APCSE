@@ -130,7 +130,7 @@ class EngineTest(Powerplant):
         mdot = -cmax_Si
         return mdot
 class ElectricEngineTest(EngineTest):
-    
+    pass
 ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 engine1 = EngineTest("test", ArcherProp)
 
