@@ -94,7 +94,7 @@ class EngineTest(Powerplant):
         # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
         self.BreakPower = self.MaxBreakPower
         # Initialize current break power
-        self.eta = 0.9
+        self.eta = 0.  
         # Current Model for the engine to propeller efficiency is unknown
         self.Power = self.BreakPower * self.eta
         self.MaxPower = self.Power
@@ -130,8 +130,10 @@ class EngineTest(Powerplant):
         mdot = -cmax_Si
         return mdot
 class ElectricEngineTest(EngineTest):
-    pass
-ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
+    def Get_FuelConsumption(self):
+        return 0
+
+ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 0)
 engine1 = EngineTest("test", ArcherProp)
 
 

@@ -38,22 +38,26 @@ class Aircraft(Aviation):
     This class builds up all of the shared data for all components.      
     """
 
-    def __init__(self, AircraftName, Wings, HorizontalStabilizer, VerticalStabilizer, Fuselage, Engine) -> None: 
+    def __init__(self, AircraftName, AircraftDict, **Components) -> None: 
         self.AircraftName = AircraftName
-        self.Wings = Wings
-        self.HorizontalStabilizer = HorizontalStabilizer
-        self.Fuselage = Fuselage
-        self.VerticalStabilizer = VerticalStabilizer
-        self.Engine = Engine
-        self.SubComponents = [Wings, HorizontalStabilizer, Fuselage, VerticalStabilizer, Engine]
+        self.AircraftDict = AircraftDict
+        self.Components = Components
+        self.Wings = Components["Wings"]
+        self.HorizontalStabilizer = Components["HorizontalStabilizer"]
+        self.Fuselage = Components["Fuselage"]
+        self.VerticalStabilizer = Components["VerticalStabilizer"]
+        self.Engine = Components["Engine"]
+        self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Altitude = 0
         self.Atmosphere_attr()
-    def GetC_D(self, Components):
+    def GetTotalThrust(self):
+        Thrust = self.Engine
+    def GetTotalC_D(self):
         C_D = 0
-        for Part in Components:
+        for Part in self.ExtertnalComponents:
             Part.C_L = self.C_L
             Part.Mach = self.Mach
-            Part.rho = self.rho
+            Part.Atmosphere_attr()
             C_D += Part.EvaluateC_D()
         self.C_D = C_D
         return C_D

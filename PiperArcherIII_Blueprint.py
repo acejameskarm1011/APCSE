@@ -9,6 +9,9 @@ ArcherVerticalStabilizer = VerticalStabilizer(AircraftName, PiperArcherIII_Dict)
 ArcherFuselage = Fuselage(AircraftName, PiperArcherIII_Dict)
 ArcherPropeller = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 ArcherEngine = EngineTest(AircraftName, ArcherPropeller)
-ArcherAircraft = Aircraft(AircraftName, ArcherWings, ArcherHorizontalStabilizer, ArcherFuselage, ArcherVerticalStabilizer, ArcherEngine)
-ArcherAircraft.Dictionary_setattr(PiperArcherIII_Dict["Performance"])
-
+ArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
+                          Wings = ArcherWings, 
+                          HorizontalStabilizer = ArcherHorizontalStabilizer, 
+                          Fuselage = ArcherFuselage, 
+                          VerticalStabilizer = ArcherVerticalStabilizer, 
+                          Engine = ArcherEngine)
