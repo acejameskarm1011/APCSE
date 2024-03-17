@@ -5,11 +5,3 @@ class Velocity:
         self.V_infty = V_infty
         self.NeverExceedSpeed = NeverExceedSpeed
         self.Velocity = self.V_infty*np.array([1,0,0])
-
-
-
-
-
-
-
-Vel = Velocity()

@@ -16,13 +16,20 @@ PA_28_181_Fuselage_dict = dict({
 })
 
 PA_28_181_Performance_dict = dict({
+    "ServiceCeiling" : [13240., "ft"]
+})
+
+PA_28_181_Weight_dict = dict({
     "MGTOW" : [2550., "lbf"],
     "MaxFuel" : [48*6., 'lbf'],
+    "EmptyMass" : [1600, "lbf"]
+})
+
+PA_28_181_VSpeed_dict = dict({
     "GlideSpeed" : [76., "knots"],
     "BestClimbSpeed" : [76., "knots"],
     "RotationSpeed" : [66., "knots"],
-    "NeverExceedSpeed" : [182., "knots"],
-    "ServiceCeiling" : [13240., "ft"]
+    "NeverExceedSpeed" : [182., "knots"]
 })
 
 PA_28_181_Dict = dict({
@@ -31,5 +38,7 @@ PA_28_181_Dict = dict({
     "Horizontal_Stabilizer" : PA_28_181_HorizontalStabilizer_dict,
     "Vertical_Stabilizer" : PA_28_181_VerticalStabilizer_dict,
     "Fuselage" : PA_28_181_Fuselage_dict,
-    "Performance" : PA_28_181_Performance_dict
+    "Performance" : PA_28_181_Performance_dict,
+    "VSpeed" : PA_28_181_VSpeed_dict,
+    "Weight" : PA_28_181_Weight_dict
 })

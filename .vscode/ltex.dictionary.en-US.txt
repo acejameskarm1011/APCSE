@@ -1,3 +1,4 @@
 eigenfrequencies
 eigenfrequency
 eigenmode
+eigenmodes

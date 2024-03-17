@@ -30,12 +30,10 @@ class Take_Off(Control):
         """
         self.reset()
         V_y = self.aircraft.RotationSpeed
-        V_NE = self.aircraft.NeverExceedSpeed
-        S = self.aircraft.Wings.S_wing
+        S = self.aircraft.Wings.S_wing        # meters^2
         g, rho = self.g, self.rho
         def Thrust(V_infty):
-            Thrust = self.aircraft.Engine.Get_Thrust(V_infty, V_NE)
-            return Thrust
+            return self.aircraft.GetTotalThrust(V_infty)
         C_D = self.aircraft.Wings.Get_C_D()
         C_L = self.aircraft.Wings.Get_C_L()
 

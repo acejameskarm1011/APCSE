@@ -1,8 +1,5 @@
 import numpy as np
-from matplotlib import pyplot as plt
-from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
-
 
 class Aircraft(Aviation): 
     """
@@ -50,8 +47,17 @@ class Aircraft(Aviation):
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Altitude = 0
         self.Atmosphere_attr()
-    def GetTotalThrust(self):
-        Thrust = self.Engine
+        self.Velocity_hat = np.array([1,0,0])
+        self.Velocity = np.zeros(3)
+        self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
+        self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
+        self.GlideSpeed = AircraftDict["VSpeed"]["GlideSpeed"]
+        self.BestClimbSpeed = AircraftDict["VSpeed"]["BestClimbSpeed"]
+    def GetTotalThrust(self, Velocity_infty=None):
+        if Velocity_infty == None:
+            Velocity_infty = self.V_infty
+        Thrust = self.Engine.Get_Thrust(self, Velocity_infty, self.NeverExceedSpeed)
+        return Thrust
     def GetTotalC_D(self):
         C_D = 0
         for Part in self.ExtertnalComponents:
@@ -92,3 +98,16 @@ class Aircraft(Aviation):
         if unit == 's':
              self.TSFC = self.TSFC / 3600
         return self.TSFC
+    
+    def __setattr__(self, name, value):
+        if name == "Velocity":
+            if not isinstance(value, np.ndarray):
+                raise TypeError("Velocity attribute must be a NumPy array")
+            elif len(value) != 3:
+                raise ValueError("Velocity must be of size (3,)")
+            print(type(np.sqrt(value.T@value)))
+            self.V_infty = np.sqrt(value.T@value)
+            if self.V_infty != 0:
+                self.Velocity_hat = value/self.V_infty
+            self.Mach = self.V_infty/self.acousic_v
+        object.__setattr__(self, name, value)
