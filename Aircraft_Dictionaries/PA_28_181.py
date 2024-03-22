@@ -19,7 +19,7 @@ PA_28_181_Performance_dict = dict({
     "ServiceCeiling" : [13240., "ft"]
 })
 
-PA_28_181_Weight_dict = dict({
+PA_28_181_Mass_dict = dict({
     "MGTOW" : [2550., "lbf"],
     "MaxFuel" : [48*6., 'lbf'],
     "EmptyMass" : [1600, "lbf"]
@@ -40,5 +40,5 @@ PA_28_181_Dict = dict({
     "Fuselage" : PA_28_181_Fuselage_dict,
     "Performance" : PA_28_181_Performance_dict,
     "VSpeed" : PA_28_181_VSpeed_dict,
-    "Weight" : PA_28_181_Weight_dict
+    "Mass" : PA_28_181_Mass_dict
 })

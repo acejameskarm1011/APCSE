@@ -44,6 +44,7 @@ class Aircraft(Aviation):
         self.Fuselage = Components["Fuselage"]
         self.VerticalStabilizer = Components["VerticalStabilizer"]
         self.Engine = Components["Engine"]
+        self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Altitude = 0
         self.Atmosphere_attr()
