@@ -54,6 +54,9 @@ class Aircraft(Aviation):
         self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
         self.GlideSpeed = AircraftDict["VSpeed"]["GlideSpeed"]
         self.BestClimbSpeed = AircraftDict["VSpeed"]["BestClimbSpeed"]
+        self.MaxMass = self.Mass.MaxMass
+        self.FuelMass = self.Mass.FuelMass
+        self.TotalMass = self.Mass.TotalMass
     def GetTotalThrust(self, Velocity_infty=None):
         if Velocity_infty == None:
             Velocity_infty = self.V_infty
@@ -69,6 +72,37 @@ class Aircraft(Aviation):
         self.C_D = C_D
         return C_D
     
+    def HybridizeBattery(self, BatteryDensity, MassFactor = None, PowerFactor = None, eta_mass = None):
+        """
+        Function that transforms the aircraft from a conventional aircraft to a battery powered hybrid aircraft. 
+        This function will only run if the aircraft still has the same initial mass.
+
+        Parameters
+        ----------
+        BatteryDensity : float or int
+            The energy density of the battery in units of Watt hours
+
+        MassFactor : float or int
+            A value betweeen 0 and 1 where the battery mass ratio is multiplied by this value
+
+        PowerFactor : float or int
+            A value betweeen 0 and 1 where the battery power ratio is multiplied by this value
+        """
+        if MassFactor==None or PowerFactor==None or eta_mass==None:
+            return None
+        if 0 > MassFactor or 1 < MassFactor:
+            raise ValueError("MassFactor must be within 0 and 1")
+        if 0 > PowerFactor or 1 < PowerFactor:
+            raise ValueError("PowerFactor must be within 0 and 1")
+        if not hasattr(object, "BatteryMass"):
+            pass
+        BatteryDensity *= BatteryDensity*60**2 # Units in Joules
+        self.BatteryMass = MassFactor*self.FuelMass*eta_mass
+        self.BatteryEnergy = self.BatteryMass*BatteryDensity
+
+
+
+
 
     def GetC_L_max(self, Components):
         C_L = 0

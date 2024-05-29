@@ -6,8 +6,7 @@ import numpy as np
 
 class Control(Aircraft):
     """
-    This class handles and operates on the aircraft class. Using controlled phase planning, 
-    it is able to handle mission outlines inputed into the class. 
+    This class handles and operates on the aircraft class.
 
     Parameters
     ----------

@@ -6,10 +6,8 @@ np.set_printoptions(suppress=True)
 
 from PiperArcherIII_Blueprint import ArcherAircraft
 
+print(ArcherAircraft.AircraftName)
 
-print(ArcherAircraft.Mass.TotalMass)
-ArcherAircraft.Mass += 5
-print(ArcherAircraft.Mass.TotalMass)
 
 # ArcherTakeOffSim = Take_Off(ArcherAircraft)
 # solution = ArcherTakeOffSim.Ground_Roll_Sim_ODESolve()

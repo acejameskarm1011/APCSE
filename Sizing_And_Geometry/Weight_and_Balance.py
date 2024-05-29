@@ -6,12 +6,17 @@ class Mass(Aviation):
         if MaxMass >= self.MGTOW:
             self.MaxMass = self.MGTOW
         elif MaxMass < self.EmptyMass:
-            self.MaxMass = MaxMass
+            self.MaxMass = self.EmptyMass
         else:
             self.MaxMass = MaxMass
         if MaxFuelMass > self.MaxFuel:
+            self.MaxFuelMass = self.MaxFuel
+        else:
             self.MaxFuelMass = MaxFuelMass
-        self.reset()
+        self.Altitude = 0
+        self.Atmosphere_attr()  
+        self.Weight = self.g * self.TotalMass
+        self.etc = 0
     def reset(self):
         self.Altitude = 0
         self.Atmosphere_attr()
@@ -24,7 +29,7 @@ class Mass(Aviation):
             raise NotImplemented
         self.etc += MoreMass
         self.TotalMass = self.TotalMass + MoreMass
-
+        
     def __isub__(self, mass):
         if not isinstance(mass, (float, int)):
             raise NotImplemented
