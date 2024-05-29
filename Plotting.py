@@ -29,7 +29,7 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     Lift = TakeOff.Lift
     Drag = TakeOff.Drag
 
-    fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (16,10))
+    fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, Distance, "g-", linewidth=linewidth)
     axs[0,0].set_ylabel(r"Ground Roll - $d$ [ft]")
     axs[0,0].set_xlim((0,time.max()))

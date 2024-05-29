@@ -8,7 +8,7 @@ class Take_Off(Control):
     """
     def __init__(self, AircraftInstance) -> None:
         self.aircraft = AircraftInstance
-    def Ground_Roll_Sim_ODESolve(self, tmax = 120, dt = 1e-3):
+    def Ground_Roll_Sim_ODESolve(self, tmax = 20, dt = 1e-3):
         """
         This method runs the ground roll simulation of the aircraft. The class will no store data past the rotation speed, however, this method will return all paramters from 
         the entire timeframe from t=0 to t=tmax.
@@ -30,7 +30,7 @@ class Take_Off(Control):
         """
         self.reset()
         V_y = self.aircraft.RotationSpeed
-        S = self.aircraft.Wings.S_wing        # meters^2
+        S = self.aircraft.Wings.S_wing  # meters^2
         g, rho = self.g, self.rho
         def Thrust(V_infty):
             return self.aircraft.GetTotalThrust(V_infty)
@@ -85,8 +85,9 @@ class Take_Off(Control):
         self.aircraft.Atmosphere_attr()
         self.aircraft.Velocity = np.zeros(3)
         self.aircraft.Position = np.zeros(3)
-        self.aircraft.TotalMass = self.aircraft.MGTOW
-        self.aircraft.Weight = self.aircraft.g * self.aircraft.MGTOW
+        MGTOW = self.aircraft.Mass.MGTOW
+        self.aircraft.TotalMass = MGTOW
+        self.aircraft.Weight = self.aircraft.g * MGTOW
         self.aircraft.Range = 0
         self.aircraft.Endurance = 0
     

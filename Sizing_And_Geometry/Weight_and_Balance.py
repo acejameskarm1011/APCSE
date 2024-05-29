@@ -15,6 +15,7 @@ class Mass(Aviation):
             self.MaxFuelMass = MaxFuelMass
         self.Altitude = 0
         self.Atmosphere_attr()  
+        self.reset()
         self.Weight = self.g * self.TotalMass
         self.etc = 0
     def reset(self):

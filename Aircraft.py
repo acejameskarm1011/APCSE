@@ -57,10 +57,10 @@ class Aircraft(Aviation):
         self.MaxMass = self.Mass.MaxMass
         self.FuelMass = self.Mass.FuelMass
         self.TotalMass = self.Mass.TotalMass
-    def GetTotalThrust(self, Velocity_infty=None):
-        if Velocity_infty == None:
+    def GetTotalThrust(self, Velocity_infty=""):
+        if isinstance(Velocity_infty, str):
             Velocity_infty = self.V_infty
-        Thrust = self.Engine.Get_Thrust(self, Velocity_infty, self.NeverExceedSpeed)
+        Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
         return Thrust
     def GetTotalC_D(self):
         C_D = 0

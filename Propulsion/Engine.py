@@ -94,7 +94,7 @@ class EngineTest(Powerplant):
         # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
         self.BreakPower = self.MaxBreakPower
         # Initialize current break power
-        self.eta = 0.  
+        self.eta = 0.9
         # Current Model for the engine to propeller efficiency is unknown
         self.Power = self.BreakPower * self.eta
         self.MaxPower = self.Power
@@ -117,10 +117,11 @@ class EngineTest(Powerplant):
         return Thrust_Static
 
     def Get_Thrust(self, Velocity_infty, Velocity_NE):
-        V = Velocity_infty * sp.constants.knot
-        Velocity_Max = Velocity_NE*sp.constants.knot
+        V = Velocity_infty
+        Velocity_Max = Velocity_NE
         Thrust_Max = self.MaxPower/Velocity_Max
         Thrust_Static = self.Thrust_Static()
+        
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
     def Get_FuelConsumption(self):

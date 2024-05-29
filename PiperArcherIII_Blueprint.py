@@ -16,4 +16,5 @@ ArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict,
                           HorizontalStabilizer = ArcherHorizontalStabilizer, 
                           Fuselage = ArcherFuselage, 
                           VerticalStabilizer = ArcherVerticalStabilizer, 
-                          Engine = ArcherEngine)
+                          Engine = ArcherEngine,
+                          Mass = ArcherMass)
