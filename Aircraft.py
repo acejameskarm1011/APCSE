@@ -68,8 +68,8 @@ class Aircraft(Aviation):
     def GetTotalThrust(self, Velocity_infty=""):
         if isinstance(Velocity_infty, str):
             Velocity_infty = self.V_infty
-        Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
-        return Thrust
+        self.Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
+        return self.Thrust
     def FuelDraw(self, delta_t):
         mdot = self.Engine.Get_FuelConsumption()
         self.FuelMass += mdot*delta_t
