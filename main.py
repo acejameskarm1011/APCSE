@@ -6,10 +6,9 @@ np.set_printoptions(suppress=True)
 
 from PiperArcherIII_Blueprint import ArcherAircraft
 
-print(ArcherAircraft.Velocity)
-
-
+print(sp.constants.g)
+print(ArcherAircraft.TotalMass)
 ArcherTakeOffSim = Take_Off(ArcherAircraft)
 solution = ArcherTakeOffSim.Ground_Roll_Sim_ODESolve()
 TakeOff_Plot(ArcherTakeOffSim)
-
+print(ArcherAircraft.Weight)

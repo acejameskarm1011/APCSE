@@ -47,6 +47,10 @@ class Aircraft(Aviation):
         self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Altitude = 0
+        self.Position = np.zeros(3, float)
+        self.Lift = 0
+        self.Drag = 0
+        self.Thrust = 0
         self.Atmosphere_attr()
         self.Velocity_hat = np.array([1,0,0])
         self.Velocity = np.zeros(3)
@@ -57,11 +61,20 @@ class Aircraft(Aviation):
         self.MaxMass = self.Mass.MaxMass
         self.FuelMass = self.Mass.FuelMass
         self.TotalMass = self.Mass.TotalMass
+        self.Weight = self.TotalMass * self.g
+        self.Range = 0
+        self.Endurance = 0
+        self.Masses = [self.TotalMass]
     def GetTotalThrust(self, Velocity_infty=""):
         if isinstance(Velocity_infty, str):
             Velocity_infty = self.V_infty
         Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
         return Thrust
+    def FuelDraw(self, delta_t):
+        mdot = self.Engine.Get_FuelConsumption()
+        self.FuelMass += mdot*delta_t
+        self.TotalMass += mdot*delta_t
+        self.Masses.append(self.TotalMass)
     def GetTotalC_D(self):
         C_D = 0
         for Part in self.ExtertnalComponents:
@@ -80,13 +93,16 @@ class Aircraft(Aviation):
         Parameters
         ----------
         BatteryDensity : float or int
-            The energy density of the battery in units of Watt hours
+            The mass specific energy of the battery in units of Watt hours per kg
 
         MassFactor : float or int
             A value betweeen 0 and 1 where the battery mass ratio is multiplied by this value
 
         PowerFactor : float or int
             A value betweeen 0 and 1 where the battery power ratio is multiplied by this value
+
+        eta_mass : float or int
+            A value between 
         """
         if MassFactor==None or PowerFactor==None or eta_mass==None:
             return None
@@ -134,13 +150,40 @@ class Aircraft(Aviation):
              self.TSFC = self.TSFC / 3600
         return self.TSFC
     
+    ############################################################
+    # Numerical Methods Section #
+    """
+    Here is where the aircraft's numerical methods will be stored. Each method is used to evaluate the next step of the aircraft's state
+    """
+    def Forward_Euler(self, Function, u_k, delta_t):
+        u_kplus1 = u_k + Function(u_k, self.Masses[-1])*delta_t
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    def ab2(self, Function, uk, ukm1, delta_t):
+        u_km1 = ukm1
+        u_k = uk
+        f_km1 = Function(u_km1, self.Masses[-2])
+        f_k = Function(u_k, self.Masses[-1])
+        u_kplus1 = u_k + delta_t/2*(-f_km1 + 3*f_k)
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    def ab3(self, Function, uk, ukm1, ukm2, delta_t):
+        u_kminus1 = ukm1
+        u_kminus2 = ukm2
+        u_k = uk
+        f_kminus2 = Function(u_kminus2, self.Masses[-3])
+        f_kminus1 = Function(u_kminus1, self.Masses[-2])
+        f_k = Function(u_k, self.Masses[-1])
+        u_kplus1 = u_k + delta_t/12*(23*f_k-16*f_kminus1 + 5*f_k)
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    ############################################################
     def __setattr__(self, name, value):
         if name == "Velocity":
             if not isinstance(value, np.ndarray):
                 raise TypeError("Velocity attribute must be a NumPy array")
             elif len(value) != 3:
                 raise ValueError("Velocity must be of size (3,)")
-            print(type(np.sqrt(value.T@value)))
             self.V_infty = np.sqrt(value.T@value)
             if self.V_infty != 0:
                 self.Velocity_hat = value/self.V_infty
