@@ -1,6 +1,6 @@
 import numpy as np
 from Aviation import Aviation
-
+from Propulsion.Engine import ElectricEngineTest
 class Aircraft(Aviation): 
     """
     Stores data that needs to be held within every aircraft in the program. 
@@ -65,16 +65,31 @@ class Aircraft(Aviation):
         self.Range = 0
         self.Endurance = 0
         self.Masses = [self.TotalMass]
+        if isinstance(self.Engine, ElectricEngineTest):
+            BatteryDensity = 250
+            BatteryEta = 0.5
+            self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
+            self.MaxEnergy = self.BatteryEnergy
+            self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
     def GetTotalThrust(self, Velocity_infty=""):
         if isinstance(Velocity_infty, str):
             Velocity_infty = self.V_infty
         self.Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
         return self.Thrust
-    def FuelDraw(self, delta_t):
+    def FuelDraw(self, HorsePower, delta_t):
+        """
+        Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board
+        strictly fuel mass, energy, or 
+        """
+        self.Engine.BreakHorsePower = HorsePower
         mdot = self.Engine.Get_FuelConsumption()
         self.FuelMass += mdot*delta_t
         self.TotalMass += mdot*delta_t
         self.Masses.append(self.TotalMass)
+        if isinstance(self.Engine, ElectricEngineTest):
+            BatteryDrain = self.Engine.Get_EnergyDrain(HorsePower, delta_t)
+            self.BatteryEnergy += BatteryDrain
+            self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
     def GetTotalC_D(self):
         C_D = 0
         for Part in self.ExtertnalComponents:
@@ -157,7 +172,7 @@ class Aircraft(Aviation):
     """
     def Forward_Euler(self, Function, u_k, delta_t):
         u_kplus1 = u_k + Function(u_k, self.Masses[-1])*delta_t
-        self.FuelDraw(delta_t)
+        self.FuelDraw(180, delta_t)
         return u_kplus1
     def ab2(self, Function, uk, ukm1, delta_t):
         u_km1 = ukm1
@@ -165,7 +180,7 @@ class Aircraft(Aviation):
         f_km1 = Function(u_km1, self.Masses[-2])
         f_k = Function(u_k, self.Masses[-1])
         u_kplus1 = u_k + delta_t/2*(-f_km1 + 3*f_k)
-        self.FuelDraw(delta_t)
+        self.FuelDraw(180, delta_t)
         return u_kplus1
     def ab3(self, Function, uk, ukm1, ukm2, delta_t):
         u_kminus1 = ukm1
@@ -175,9 +190,10 @@ class Aircraft(Aviation):
         f_kminus1 = Function(u_kminus1, self.Masses[-2])
         f_k = Function(u_k, self.Masses[-1])
         u_kplus1 = u_k + delta_t/12*(23*f_k-16*f_kminus1 + 5*f_k)
-        self.FuelDraw(delta_t)
+        self.FuelDraw(180, delta_t)
         return u_kplus1
     ############################################################
+    
     def __setattr__(self, name, value):
         if name == "Velocity":
             if not isinstance(value, np.ndarray):

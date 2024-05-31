@@ -90,6 +90,8 @@ class EngineTest(Powerplant):
         # Propeller information is different between props, so we have a class for those properties
         self.MaxBreakHorsePower = MaxBreakHorsePower
         # Units in Horse Power
+        self.BreakHorsePower = self.MaxBreakHorsePower
+        # Power of the engine in terms of horsepower
         self.MaxBreakPower = self.MaxBreakHorsePower * self.hp_to_watt 
         # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
         self.BreakPower = self.MaxBreakPower
@@ -133,6 +135,10 @@ class EngineTest(Powerplant):
 class ElectricEngineTest(EngineTest):
     def Get_FuelConsumption(self):
         return 0
+    def Get_EnergyDrain(self, dt, eta = 0.93):
+        PowerWatt = self.Power*sp.constants.hp
+        Delta_Energy = -PowerWatt*dt/eta
+        return Delta_Energy
 
 ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 0)
 engine1 = EngineTest("test", ArcherProp)
