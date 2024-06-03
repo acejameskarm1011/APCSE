@@ -1,10 +1,10 @@
 #Control
-from Aircraft import Aircraft
+from Aviation import Aviation
 import numpy as np
 
 
 
-class Control(Aircraft):
+class Control(Aviation):
     """
     This class handles and operates on the aircraft class.
 

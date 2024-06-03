@@ -90,15 +90,12 @@ class EngineTest(Powerplant):
         # Propeller information is different between props, so we have a class for those properties
         self.MaxBreakHorsePower = MaxBreakHorsePower
         # Units in Horse Power
+        self.eta = 0.9
+        # Current Model for the engine to propeller efficiency is unknown
         self.BreakHorsePower = self.MaxBreakHorsePower
         # Power of the engine in terms of horsepower
         self.MaxBreakPower = self.MaxBreakHorsePower * self.hp_to_watt 
         # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
-        self.BreakPower = self.MaxBreakPower
-        # Initialize current break power
-        self.eta = 0.9
-        # Current Model for the engine to propeller efficiency is unknown
-        self.Power = self.BreakPower * self.eta
         self.MaxPower = self.Power
         # Current acutual power the aircraft is experiencing
         self.Altitude = 0
@@ -132,11 +129,17 @@ class EngineTest(Powerplant):
         cmax_Si = cmax * self.lbf_to_kg / self.h_to_s
         mdot = -cmax_Si
         return mdot
+    def __setattr__(self, name, value):
+        if name == "BreakHorsePower":
+            self.Power = value * self.eta * self.hp_to_watt
+        object.__setattr__(self, name, value)
+
+
 class ElectricEngineTest(EngineTest):
     def Get_FuelConsumption(self):
         return 0
     def Get_EnergyDrain(self, dt, eta = 0.93):
-        PowerWatt = self.Power*sp.constants.hp
+        PowerWatt = self.Power
         Delta_Energy = -PowerWatt*dt/eta
         return Delta_Energy
 

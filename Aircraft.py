@@ -60,37 +60,50 @@ class Aircraft(Aviation):
         self.BestClimbSpeed = AircraftDict["VSpeed"]["BestClimbSpeed"]
         self.MaxMass = self.Mass.MaxMass
         self.FuelMass = self.Mass.FuelMass
+        self.MaxFuel = self.FuelMass
+        self.FuelRatio = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.Weight = self.TotalMass * self.g
         self.Range = 0
         self.Endurance = 0
-        self.Masses = [self.TotalMass]
+        self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         if isinstance(self.Engine, ElectricEngineTest):
+            # If it is detected that the engine used is an electric one, then the aircraft class
+            # automatically switches to an electric model of evaluation
             BatteryDensity = 250
             BatteryEta = 0.5
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
+            self.FuelMass = 0
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
-    def GetTotalThrust(self, Velocity_infty=""):
-        if isinstance(Velocity_infty, str):
-            Velocity_infty = self.V_infty
-        self.Thrust = self.Engine.Get_Thrust(Velocity_infty, self.NeverExceedSpeed)
+    def GetTotalThrust(self):
+        """
+        Uses the aircraft's current velocity and inheriant maximum speed to find thrust.
+        """
+        self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.NeverExceedSpeed)
         return self.Thrust
-    def FuelDraw(self, HorsePower, delta_t):
+    def Set_Throttle(self, RPM = "MAX"):
+        """
+        Method should not be called at this time.
+        """
+        if RPM.upper() == "MAX":
+            self.Engine.BreakHorsePower = 180
+    def FuelDraw(self, delta_t):
         """
         Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board
-        strictly fuel mass, energy, or 
+        strictly fuel mass, energy, or both are drawn. 
         """
-        self.Engine.BreakHorsePower = HorsePower
         mdot = self.Engine.Get_FuelConsumption()
         self.FuelMass += mdot*delta_t
         self.TotalMass += mdot*delta_t
         self.Masses.append(self.TotalMass)
+        self.FuelRatio = self.FuelMass/self.MaxFuel
         if isinstance(self.Engine, ElectricEngineTest):
-            BatteryDrain = self.Engine.Get_EnergyDrain(HorsePower, delta_t)
+            BatteryDrain = self.Engine.Get_EnergyDrain(delta_t)
             self.BatteryEnergy += BatteryDrain
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
-    def GetTotalC_D(self):
+
+    def Get_C_D(self):
         C_D = 0
         for Part in self.ExtertnalComponents:
             Part.C_L = self.C_L
@@ -132,7 +145,15 @@ class Aircraft(Aviation):
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
 
 
-
+    def Aircraft_Forces(self):
+        C_L = self.Wings.Get_C_L()
+        C_D = self.Wings.Get_C_D()
+        S = self.Wings.S_wing
+        self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
+        self.Weight = self.TotalMass*self.g
+        self.GetTotalThrust()
+        self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
+        
 
 
     def GetC_L_max(self, Components):
@@ -172,7 +193,7 @@ class Aircraft(Aviation):
     """
     def Forward_Euler(self, Function, u_k, delta_t):
         u_kplus1 = u_k + Function(u_k, self.Masses[-1])*delta_t
-        self.FuelDraw(180, delta_t)
+        self.FuelDraw(delta_t)
         return u_kplus1
     def ab2(self, Function, uk, ukm1, delta_t):
         u_km1 = ukm1
@@ -180,7 +201,7 @@ class Aircraft(Aviation):
         f_km1 = Function(u_km1, self.Masses[-2])
         f_k = Function(u_k, self.Masses[-1])
         u_kplus1 = u_k + delta_t/2*(-f_km1 + 3*f_k)
-        self.FuelDraw(180, delta_t)
+        self.FuelDraw(delta_t)
         return u_kplus1
     def ab3(self, Function, uk, ukm1, ukm2, delta_t):
         u_kminus1 = ukm1
@@ -189,8 +210,8 @@ class Aircraft(Aviation):
         f_kminus2 = Function(u_kminus2, self.Masses[-3])
         f_kminus1 = Function(u_kminus1, self.Masses[-2])
         f_k = Function(u_k, self.Masses[-1])
-        u_kplus1 = u_k + delta_t/12*(23*f_k-16*f_kminus1 + 5*f_k)
-        self.FuelDraw(180, delta_t)
+        u_kplus1 = u_k + delta_t/12*(23*f_kminus2-16*f_kminus1 + 5*f_k)
+        self.FuelDraw(delta_t)
         return u_kplus1
     ############################################################
     
@@ -205,3 +226,8 @@ class Aircraft(Aviation):
                 self.Velocity_hat = value/self.V_infty
             self.Mach = self.V_infty/self.acousic_v
         object.__setattr__(self, name, value)
+        if name == "Altitude":
+            if isinstance(value, (float, int)):
+                self.Atmosphere_attr()
+            else: 
+                raise TypeError("Cannot accept value of type {}".format(type(value)))
