@@ -46,14 +46,14 @@ class Aircraft(Aviation):
         self.Engine = Components["Engine"]
         self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
-        self.Altitude = 0
+        self.Altitude = 0.
         self.Position = np.zeros(3, float)
-        self.Lift = 0
-        self.Drag = 0
-        self.Thrust = 0
+        self.Lift = 0.
+        self.Drag = 0.
+        self.Thrust = 0.
         self.Atmosphere_attr()
-        self.Velocity_hat = np.array([1,0,0])
-        self.Velocity = np.zeros(3)
+        self.Velocity_hat = np.array([1.,0.,0.])
+        self.Velocity = np.zeros(3, float)
         self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
         self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
         self.GlideSpeed = AircraftDict["VSpeed"]["GlideSpeed"]
@@ -64,16 +64,16 @@ class Aircraft(Aviation):
         self.FuelRatio = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.Weight = self.TotalMass * self.g
-        self.Range = 0
-        self.Endurance = 0
+        self.Range = 0.
+        self.Endurance = 0.
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
-            BatteryDensity = 250
+            BatteryDensity = 250.
             BatteryEta = 0.5
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
-            self.FuelMass = 0
+            self.FuelMass = 0.
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
     def GetTotalThrust(self):
@@ -87,7 +87,7 @@ class Aircraft(Aviation):
         Method should not be called at this time.
         """
         if RPM.upper() == "MAX":
-            self.Engine.BreakHorsePower = 180
+            self.Engine.BreakHorsePower = 180.
     def FuelDraw(self, delta_t):
         """
         Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board

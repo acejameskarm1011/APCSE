@@ -12,7 +12,7 @@ class Climb(MissionPhase):
         self.aircraft = AircraftInstance
         
         
-    def Pattern_Work_Climb_FE_Solve(self, tmax = 15, delta_t = 1e-2, Pattern_Altitude = 700):
+    def Pattern_Work_Climb_FE_Solve(self, tmax = 10*60, delta_t = 1e-2, Pattern_Altitude = 10000):
         """
         For pattern altitudes  it is usually about 700-1000 ft above ground level
         """
@@ -20,11 +20,14 @@ class Climb(MissionPhase):
         Max_z = Pattern_Altitude*self.ft_to_m
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
+        self.aircraft.V_infty = self.V_infty
         self.Get_Aircraft_Attr()
+        self.Pitch = np.arcsin((self.Thrust-self.Drag)/self.Weight)
         self.Position = self.aircraft.Position
         self.Velocity = self.V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
         def Climb_EOM(Dot, mass):
             x, y, z, v_x, v_y, v_z  = Dot
+            self.Pitch = np.arctan2(v_z, v_x)
             Position = np.array([x, y, z])
             Velocity = np.array([v_x, v_y, v_z])
             self.aircraft.Altitude = z*self.m_to_ft
@@ -33,9 +36,17 @@ class Climb(MissionPhase):
             dxdt = v_x
             dydt = v_y
             dzdt = v_z
+            
             dv_xdt = (self.Thrust*np.cos(self.Pitch)-self.Lift*np.sin(self.Pitch)-self.Drag*np.cos(self.Pitch))/mass
+            # Constrain the x component in relation to the z component
+            # Look at a d(gamma)/dt rotational equation of motion. Check Dr. Elle's disset.
+
+
             dv_ydt = 0
-            dv_zdt = (self.Lift*np.cos(self.Pitch)-self.Weight-self.Drag*np.sin(self.Pitch))/mass
+            
+            dv_zdt = (self.Lift*np.cos(self.Pitch)-self.Weight-self.Drag*np.sin(self.Pitch) + self.Thrust*np.sin(self.Pitch))/mass
+            # Leave this one as is
+
             return np.array([dxdt, dydt, dzdt, dv_xdt, dv_ydt, dv_zdt])
         
         Initial = np.block([self.Position, self.Velocity])
@@ -82,7 +93,7 @@ class Climb(MissionPhase):
 
     def Get_Aircraft_Attr(self):
         super().Get_Aircraft_Attr()
-        self.Pitch = np.arcsin((self.Thrust-self.Drag)/self.Weight)
+        # self.Pitch = np.arccos((self.Lift)/self.Weight)
         self.Altitude = self.aircraft.Altitude
 
 
@@ -92,3 +103,9 @@ class Climb(MissionPhase):
             self.Altitude_List = [self.Altitude]
         else:
             self.Altitude_List.append(self.Altitude)
+
+        if not hasattr(self, "Pitch_List"):
+            self.Pitch_List = [self.Pitch]
+        else:
+            self.Pitch_List.append(self.Pitch)
+        # include pitch

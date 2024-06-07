@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from ImportAPCSE import *
+import time
 import os
 main_dir = os.getcwd()
 image_dir = main_dir + "\\Images_From_Code"
@@ -34,13 +35,13 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     axs[0,0].set_ylabel(r"Ground Roll - $d$ [ft]")
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
-    axs[0,1].set_ylabel(r"Velocoity - $V_\infty$ [kts]")
+    axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
     axs[0,1].set_xlim((0,time.max()))
     axs[1,0].plot(time, Thrust, "r-", linewidth=linewidth)
     axs[1,0].set_ylabel(r"Thrust - $T$ [N]")
     axs[1,0].set_xlim((0,time.max()))
     axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
-    axs[1,1].set_ylabel(r"Percent [%]")
+    axs[1,1].set_ylabel(r"Percent [\\%]")
     axs[1,1].set_xlim((0,time.max()))
     axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")
@@ -53,7 +54,7 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     axs[1,0].set_ylim((0, Thrust.max()*1.2))
     axs[1,1].set_ylim((0, Percent.max()*1.2))
     fig.suptitle(title)
-    plt.savefig(image_dir + r"\\Take_Off_Performance\\" + title+".png")
+    plt.savefig(image_dir + r"\\Take_Off_Performance\\" + title.replace(" ", "_") + ".png")
     plt.show()
 
 def ClimbPlot(Climb, title = "Climb Plots"):
@@ -67,7 +68,7 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
     """
     linewidth = 3
-    V_infty = Climb.Velocity_z / sp.constants.knot
+    V_infty = np.sqrt(Climb.Velocity_x**2 + Climb.Velocity_z**2) / sp.constants.knot
     Distance = Climb.Position_x / sp.constants.foot
     time = Climb.Times
     V_NE = Climb.aircraft.NeverExceedSpeed
@@ -81,13 +82,13 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     axs[0,0].set_ylabel(r"Ground Roll - $d$ [ft]")
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
-    axs[0,1].set_ylabel(r"Velocoity - $V_\infty$ [kts]")
+    axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
     axs[0,1].set_xlim((0,time.max()))
     axs[1,0].plot(time, Altitude, "r-", linewidth=linewidth)
     axs[1,0].set_ylabel(r"Altitude - $h$ [ft]")
     axs[1,0].set_xlim((0,time.max()))
     axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
-    axs[1,1].set_ylabel(r"Percent - $W$ [N]")
+    axs[1,1].set_ylabel(r"Percent [\\%]")
     axs[1,1].set_xlim((0,time.max()))
     axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")
@@ -100,8 +101,83 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     # axs[1,0].set_ylim((0, Altitude.max()*1.2))
     axs[1,1].set_ylim((0, Percent.max()*1.2))
     fig.suptitle(title)
-    plt.savefig(image_dir + r"\\Climb_Performance\\" + title+".png")
+    plt.savefig(image_dir + r"\\Climb_Performance\\" + title.replace(" ", "_")+".png")
     plt.show()
+
+
+def Climb_Velocity_FlightAngle_Plot(Climb, title = "Aircraft Climb Velocity Characteristics"):
+    linewidth = 3
+    V_x = Climb.Velocity_x / sp.constants.knot
+    V_z = Climb.Velocity_z / sp.constants.knot
+    V_infty = np.sqrt(Climb.Velocity_x**2 + Climb.Velocity_z**2) / sp.constants.knot
+    Pitch = np.array(Climb.Pitch_List)/np.pi*180
+    time = Climb.Times
+    Altitude = Climb.Altitude_List
+    Percent = Climb.Percent_List
+
+    fig, axs = plt.subplots(2, 2, constrained_layout=True, figsize = (10,7))
+    axs[0,0].plot(time, Pitch, "y-", linewidth=linewidth)
+    axs[0,0].set_ylabel("Flight Angle $\\gamma$ [deg]")
+    axs[0,1].plot(time, V_x, "b-", linewidth=linewidth)
+    axs[0,1].set_ylabel("$V_x$ [m/s]")
+    axs[1,1].plot(time, V_z, "g-", linewidth=linewidth)
+    axs[1,1].set_ylabel("$V_z$ [m/s]")
+    axs[1,1].set_xlabel("Time [s]")
+    axs[1,0].plot(time, V_infty, "k-", linewidth=linewidth)
+    axs[1,0].set_ylabel("$V_\\infty$ [m/s]")
+    axs[1,0].set_xlabel("Time [s]")
+    fig.suptitle(title)
+    plt.savefig(image_dir + r"\\Climb_Performance\\" + title.replace(" ", "_")+".png")
+    plt.show()
+
+
+def Performance_Climb_Plot(aircraft, title = "Climb Performance"):
+    V_NE = aircraft.NeverExceedSpeed
+    V_infty = np.linspace(0,V_NE, 2000)
+    aircraft.V_infty = V_infty
+    aircraft.Aircraft_Forces()
+    Lift = aircraft.Lift
+    Drag = aircraft.Drag
+    Thrust = aircraft.Thrust
+    Weight = aircraft.Weight
+    V = V_infty * aircraft.mps_to_knots
+
+    Data1 = Lift/Weight
+    Data2 = (Thrust-Drag)/Weight
+
+    fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize = (8,6))
+    axs[0].plot(V, Data1)
+    axs[0].set_xlabel("Velocity - $V_\\infty$ [kts]")
+    axs[0].set_ylabel("Ratio")
+    axs[0].set_title("Plot of $\\frac{L}{W}$")
+    axs[1].plot(V, Data2)
+    axs[1].set_xlabel("Velocity - $V_\\infty$ [kts]")
+    axs[1].set_title("Plot of $\\frac{T-D}{W}$")
+    Altitude = str(aircraft.Altitude)
+
+    Vel1 = V.copy()
+    Vel2 = V.copy()
+    Vel1[Data1 > 1] = 0
+    Vel2[Data2 < 0] = 0
+    
+    BestClimbVel1 = Vel1.max()
+    BestClimbVel2 = Vel2.max()
+    print("The best velocity for maximum lift is {}".format(BestClimbVel1))
+    print("The best velocity for minimum drag is {}".format(BestClimbVel2))
+    
+    title = " ".join([title, "at", Altitude[:-3]+","+Altitude[-3:], "ft"])
+    fig.suptitle(title)
+    plt.savefig(image_dir + r"\\Climb_Performance\\" + title.replace(" ", "_") +".png")
+    plt.show()
+    plt.pause(3)
+    plt.close()
+
+    aircraft.V_infty = 0.
+
+
+
+
+
 
 
 def Regular_Plot(x, y, xlabel, ylabel, title, color = 'r'):
