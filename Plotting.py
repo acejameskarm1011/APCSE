@@ -68,7 +68,8 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
     """
     linewidth = 3
-    V_infty = np.sqrt(Climb.Velocity_x**2 + Climb.Velocity_z**2) / sp.constants.knot
+    V_infty = Climb.Velocity_List
+    Pitch = Climb.Pitch_List
     Distance = Climb.Position_x / sp.constants.foot
     time = Climb.Times
     V_NE = Climb.aircraft.NeverExceedSpeed
@@ -78,8 +79,8 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     Drag = Climb.Drag_List
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
-    axs[0,0].plot(time, Distance, "g-", linewidth=linewidth)
-    axs[0,0].set_ylabel(r"Ground Roll - $d$ [ft]")
+    axs[0,0].plot(time, Pitch*180/np.pi, "g-", linewidth=linewidth)
+    axs[0,0].set_ylabel(r"Pitch - $\gamma$ [deg]")
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
     axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
@@ -88,7 +89,7 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     axs[1,0].set_ylabel(r"Altitude - $h$ [ft]")
     axs[1,0].set_xlim((0,time.max()))
     axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
-    axs[1,1].set_ylabel(r"Percent [\\%]")
+    axs[1,1].set_ylabel(r"Percent [\%]")
     axs[1,1].set_xlim((0,time.max()))
     axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")

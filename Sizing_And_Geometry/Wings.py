@@ -63,7 +63,7 @@ class Wings(Aircraft):
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
         C_L_0 = .7463
-        C_L_0 = .45
+        # C_L_0 = .6
         C_L = C_L_0 + 2*np.pi*(self.alpha)
         self.C_L = C_L
         return C_L
