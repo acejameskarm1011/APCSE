@@ -22,7 +22,11 @@ class Wings(Aircraft):
         self.AR = self.b_wing**2/self.S_wing
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
         self.K = 1/(np.pi*self.e_0*self.AR)
-        self.alpha = 3/180*np.pi
+        self.alpha = 3
+        self.tau = 0
+        self.C_l_alpha = 0.11031
+        self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
+        self.C_L_0 = .6
     def Get_C_D(self):
         """
         Method to retrieve the coefficient of lift from the Wings
@@ -62,11 +66,9 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
-        C_L_0 = .7463
-        # C_L_0 = .6
-        C_L = C_L_0 + 2*np.pi*(self.alpha)
+        C_L = self.C_L_0 + self.C_L_alpha*self.alpha
         self.C_L = C_L
         return C_L
     def Set_C_L(self, C_L):
-        C_L_0 = .7463
-        self.alpha = (C_L - C_L_0)/(2*np.pi)
+        self.C_L = C_L
+        self.alpha = (C_L - self.C_L_0)/(self.C_L_alpha)

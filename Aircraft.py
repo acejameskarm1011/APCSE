@@ -82,12 +82,14 @@ class Aircraft(Aviation):
         """
         self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.NeverExceedSpeed)
         return self.Thrust
-    def Set_Throttle(self, RPM = "MAX"):
+    def Set_Throttle(self, RPM):
         """
-        Method should not be called at this time.
+        Currently used to set the throttle for a desired thrust. 
         """
-        if RPM.upper() == "MAX":
-            self.Engine.BreakHorsePower = 180.
+        self.Engine.Set_Power(self, self.Thrust, self.V_infty, RPM, self.Velocity_NE, tol = 5, P_min = 0)
+        
+
+
     def FuelDraw(self, delta_t):
         """
         Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board
@@ -143,6 +145,14 @@ class Aircraft(Aviation):
         BatteryDensity *= BatteryDensity*60**2 # Units in Joules
         self.BatteryMass = MassFactor*self.FuelMass*eta_mass
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
+
+    def Set_Lift(self, Lift):
+        S = self.Wings.S_wing
+        C_L = Lift/(1/2*self.rho*self.V_infty**2*S)
+        self.aircraft.Wings.Set_C_L(self, C_L)
+        C_D = self.Wings.Get_C_D()
+        self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
+        self.Thrust = self.Drag
 
 
     def Aircraft_Forces(self):
@@ -229,5 +239,6 @@ class Aircraft(Aviation):
         if name == "Altitude":
             if isinstance(value, (float, int)):
                 self.Atmosphere_attr()
+                self.Engine.Altitude = value
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))

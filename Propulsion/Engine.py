@@ -101,6 +101,12 @@ class EngineTest(Powerplant):
         self.Altitude = 0
         self.Atmosphere_attr()
         # Engine requires the atmospheric information
+        self.RPM = 2700
+        DcDP = (79-72)/(152-135)
+        self.c_BHP = DcDP*(180-152) + 79
+
+        Number = 5000
+        self.PArr = np.linspace(0, self.MaxPower, Number)
     def Thrust_Static(self):
         """
         Using the engine's current propeller, power setting, and altitude this method returns the static thrust. This method requires no inputs.
@@ -123,11 +129,56 @@ class EngineTest(Powerplant):
         
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
+    
+    def Set_Power(self, Thrust, V_des, RPM, Velocity_NE, tol = 5, P_min = 0):
+        """
+        Using Thrust, Velocity, and the chosen RPM, we can evaluate what the power output of the engine is in Break Horse Power
+        and set those parameters within the class.
+
+        Parameters
+        ----------
+        Thrust : float or int
+            Desired thrust for the state that the aircraft is in. Used in cases where required thrust is known based on the EOM.
+
+        V_des : float or int
+            Similar to thrust; based on the desired state of the aircraft, we use the aircraft's current velocity
+
+        RPM : float or int
+            This is used to update the aircraft's RPM setting, which is important for determining the fuel drain
+
+        Velocity_NE : float or int
+            Maximum velocity possible for the aircraft
+
+        Returns
+        -------
+        None
+        """
+        Velocity_Max = Velocity_NE
+        Thrust_Max = self.MaxPower/Velocity_Max
+        nu = V_des/Velocity_NE
+        A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
+        PArr = np.arange(P_min, self.MaxPower + tol*2, tol)
+        # PArr = self.PArr
+        Left = (Thrust + (2*nu**2-3*nu)*PArr/Velocity_Max)/(nu**2-2*nu+1)
+        Right = 0.85*PArr**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
+        TrueDiff = Left-Right
+        Diff = np.abs(TrueDiff)
+        min_1 = Diff.min()
+        Diffm1 = Diff.tolist()
+        Diffm1.remove(min_1)
+        Diffm1 = np.array(Diffm1)
+        min_2 = Diffm1.min()
+        val_1 = TrueDiff[Diff == min_1][0]
+        val_2 = TrueDiff[Diff == min_2][0]
+        x_percent = (0-val_1)/(val_2-val_1)
+        P_1 = PArr[Diff == min_1][0]
+        P_2 = PArr[Diff == min_2][0]
+        P_est = P_1 + (P_2-P_1)*x_percent
+        self.BreakHorsePower = P_est / (self.eta * self.hp_to_watt)
+
+
     def Get_FuelConsumption(self):
-        DcDP = (79-72)/(152-135)
-        cmax = DcDP*(180-152) + 79
-        cmax_Si = cmax * self.lbf_to_kg / self.h_to_s
-        mdot = -cmax_Si
+        mdot = - self.c_BHP * self.lbf_to_kg / self.h_to_s
         return mdot
     def __setattr__(self, name, value):
         if name == "BreakHorsePower":

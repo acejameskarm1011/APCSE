@@ -68,7 +68,7 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
     """
     linewidth = 3
-    V_infty = Climb.Velocity_List
+    V_infty = Climb.Velocity_List / sp.constants.knot
     Pitch = Climb.Pitch_List
     Distance = Climb.Position_x / sp.constants.foot
     time = Climb.Times
@@ -77,6 +77,8 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     Percent = Climb.Percent_List
     Lift = Climb.Lift_List
     Drag = Climb.Drag_List
+
+    Thrust = Climb.Thrust_List
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, Pitch*180/np.pi, "g-", linewidth=linewidth)

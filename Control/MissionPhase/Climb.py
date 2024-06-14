@@ -12,7 +12,7 @@ class Climb(MissionPhase):
         self.aircraft = AircraftInstance
         
         
-    def Pattern_Work_Climb_Solve(self, tmax = 15*60, delta_t = 1e-2, Pattern_Altitude = 20000):
+    def Pattern_Work_Climb_Solve(self, tmax = 60, delta_t = 1e-2, Pattern_Altitude = 700):
         """
         For pattern altitudes  it is usually about 700-1000 ft above ground level
         """
@@ -36,7 +36,7 @@ class Climb(MissionPhase):
             dzdt = V_infty*np.sin(Pitch)
             
             dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
-            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty)
+            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) - .6*Pitch
 
             return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
         
@@ -76,10 +76,9 @@ class Climb(MissionPhase):
         self.Altitude_List = np.array(self.Altitude_List)[z <= Max_z]
         solution = np.block([solution, tArr.reshape(len(tArr),1)])
         print("Time elapsed during climb: {} min".format(self.Times[-1]/60))
-        if not np.any(np.abs(z*self.m_to_ft) > Max_z):
-            # print(z*self.m_to_ft)
-            pass
-            # raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the aircraft can reach pattern altitude.")
+        if not np.any(z > Max_z):
+            print(z*self.m_to_ft)
+            raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the aircraft can reach pattern altitude.")
         self.aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
     def Pattern_Work_Climb_Solve_OLD(self, tmax = 30*60, delta_t = 1e-2, Pattern_Altitude = 10000):
