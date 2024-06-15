@@ -96,14 +96,40 @@ class EngineTest(Powerplant):
         # Power of the engine in terms of horsepower
         self.MaxBreakPower = self.MaxBreakHorsePower * self.hp_to_watt 
         # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
+        self.Power = self.MaxBreakPower * self.eta
         self.MaxPower = self.Power
+        self.PowerRating = self.BreakHorsePower/self.MaxBreakHorsePower
+        self.MaxPower_SL = self.MaxPower
         # Current acutual power the aircraft is experiencing
         self.Altitude = 0
-        self.Atmosphere_attr()
+        
         # Engine requires the atmospheric information
-        self.RPM = 2700
-        DcDP = (79-72)/(152-135)
-        self.c_BHP = DcDP*(180-152) + 79
+        self.rho_SL = self.rho
+        self.Temperature_SL = self.Temperature
+        
+        # Setting Sea Level Parameters
+        self.MaxRPM = 2700
+        self.RPM = self.MaxRPM
+
+        
+
+
+        bore = 5.125 * sp.constants.inch
+        stroke = 4.375 * sp.constants.inch
+        N_cylinders = 4
+        Volume = np.pi/4*N_cylinders*(bore**2*stroke) # Total Volume
+        compression_ratio = 8.5 # Useable volume to nonuseable is 8.5:1
+        self.V_displacement = Volume * compression_ratio/(compression_ratio+1)
+        self.Mixture = "RICH"
+        
+        self.Fuel_Density = 6*self.lbf_to_kg/sp.constants.gallon
+        self.Chamber_Fuel_Density = self.Fuel_Density/(1+self.AirFuel_ratio)
+        self.Fuel_Consumption = self.Chamber_Fuel_Density*self.RPM/60*self.V_displacement
+        print(self.Fuel_Consumption)
+        exit()
+
+        self.c_BHP = (8.2/6)/55 # lbf/hour: This metric uses the fact that the PA28-181 burns 8.2 gallons/hour at 55% power, and we will use
+        # this value as an approximate linear estimate for the consumption of fuel, based on the engine's current BHP
 
         Number = 5000
         self.PArr = np.linspace(0, self.MaxPower, Number)
@@ -158,7 +184,6 @@ class EngineTest(Powerplant):
         nu = V_des/Velocity_NE
         A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
         PArr = np.arange(P_min, self.MaxPower + tol*2, tol)
-        # PArr = self.PArr
         Left = (Thrust + (2*nu**2-3*nu)*PArr/Velocity_Max)/(nu**2-2*nu+1)
         Right = 0.85*PArr**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
         TrueDiff = Left-Right
@@ -177,13 +202,34 @@ class EngineTest(Powerplant):
         self.BreakHorsePower = P_est / (self.eta * self.hp_to_watt)
 
 
+
     def Get_FuelConsumption(self):
-        mdot = - self.c_BHP * self.lbf_to_kg / self.h_to_s
+        c_BHP = self.c_BHP
+        mdot = - c_BHP * self.lbf_to_kg / self.h_to_s
         return mdot
     def __setattr__(self, name, value):
-        if name == "BreakHorsePower":
-            self.Power = value * self.eta * self.hp_to_watt
         object.__setattr__(self, name, value)
+        if name == "Altitude":
+            self.Atmosphere_attr()
+            if hasattr(self, "rho_SL"):
+                sigma = self.rho/self.rho_SL
+            else:
+                sigma = 1
+            self.MaxPower = self.MaxPower_SL*(1.132*sigma-0.132)
+        if name == "Mixture":
+            if value.upper() == "RICH":
+                self.AirFuel_ratio = 12 # Air to fuel ratio is 12:1
+            if value.upper() == "LEAN":
+                self.AirFuel_ratio = 16 # Air to fuel ratio is 12:1
+
+
+
+
+
+
+
+
+
 
 
 class ElectricEngineTest(EngineTest):

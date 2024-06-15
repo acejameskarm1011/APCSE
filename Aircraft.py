@@ -86,7 +86,7 @@ class Aircraft(Aviation):
         """
         Currently used to set the throttle for a desired thrust. 
         """
-        self.Engine.Set_Power(self, self.Thrust, self.V_infty, RPM, self.Velocity_NE, tol = 5, P_min = 0)
+        self.Engine.Set_Power(self.Thrust, self.V_infty, RPM, self.NeverExceedSpeed)
         
 
 
@@ -156,6 +156,7 @@ class Aircraft(Aviation):
 
 
     def Aircraft_Forces(self):
+        self.Engine.Altitude = self.Altitude
         C_L = self.Wings.Get_C_L()
         C_D = self.Wings.Get_C_D()
         S = self.Wings.S_wing

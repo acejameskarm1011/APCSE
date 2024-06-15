@@ -178,6 +178,11 @@ def Performance_Climb_Plot(aircraft, title = "Climb Performance"):
     aircraft.V_infty = 0.
 
 
+def Fuel_Consumption_Plot():
+    Power = [55, 65, 75]
+    C_hour = [8.2, 9.5, 13.5]
+
+
 
 
 

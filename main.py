@@ -9,11 +9,12 @@ from PiperArcherIII_Blueprint import ArcherAircraft
 from PiperArcherIII_Blueprint import ElectricArcherAircraft
 
 
-Thrust = ArcherAircraft.Engine.Get_Thrust(100, 180)
+ArcherAircraft.V_infty = 100*sp.constants.knot
+Thrust = ArcherAircraft.Drag
 P1 = ArcherAircraft.Engine.Power
-
+print(P1)
 t1  = time()
-ArcherAircraft.Engine.Set_Power(Thrust, 100, 2200, 180)
+ArcherAircraft.Set_Throttle(2200)
 t2 = time()
 P2 = ArcherAircraft.Engine.Power
 print("Time elapsed: {} seconds".format(t2-t1))
