@@ -72,7 +72,7 @@ class Propeller():
 
 
 
-class EngineTest(Powerplant):
+class PistonEngine(Powerplant):
     """
     This class is not completeled. Current goal is to use this as the basis for aquiring the trust, power and fuel drain from the aircraft.
 
@@ -84,13 +84,17 @@ class EngineTest(Powerplant):
         Rated power of the engine in terms of [hp]
     """
     def __init__(self, Name, AircraftPropeller, MaxBreakHorsePower = 180) -> None:
-        self.Name = Name
+
+        # Below is tick to check if any methods are being called on too many times
+        self.tick = 0
+
+        self.Name = Name + ": Piston Engine"
         # Since this is a test class, we will use the general "Name" to keep track of what the class is
         self.Propeller = AircraftPropeller
         # Propeller information is different between props, so we have a class for those properties
         self.MaxBreakHorsePower = MaxBreakHorsePower
         # Units in Horse Power
-        self.eta = 0.9
+        self.eta = 0.92
         # Current Model for the engine to propeller efficiency is unknown
         self.BreakHorsePower = self.MaxBreakHorsePower
         # Power of the engine in terms of horsepower
@@ -101,16 +105,17 @@ class EngineTest(Powerplant):
         self.PowerRating = self.BreakHorsePower/self.MaxBreakHorsePower
         self.MaxPower_SL = self.MaxPower
         # Current acutual power the aircraft is experiencing
-        self.Altitude = 0
-        
-        # Engine requires the atmospheric information
-        self.rho_SL = self.rho
-        self.Temperature_SL = self.Temperature
-        
-        # Setting Sea Level Parameters
+
         self.MaxRPM = 2700
         self.RPM = self.MaxRPM
 
+
+        self.Altitude = 0
+        # Engine requires the atmospheric information
+        self.rho_SL = self.rho
+        self.Temperature_SL = self.Temperature
+        # Setting Sea Level Parameters
+        
         
 
 
@@ -119,18 +124,10 @@ class EngineTest(Powerplant):
         N_cylinders = 4
         Volume = np.pi/4*N_cylinders*(bore**2*stroke) # Total Volume
         compression_ratio = 8.5 # Useable volume to nonuseable is 8.5:1
-        self.V_displacement = Volume * compression_ratio/(compression_ratio+1)
-        self.Mixture = "RICH"
-        
-        self.Fuel_Density = 6*self.lbf_to_kg/sp.constants.gallon
-        self.Chamber_Fuel_Density = self.Fuel_Density/(1+self.AirFuel_ratio)
-        self.Fuel_Consumption = self.Chamber_Fuel_Density*self.RPM/60*self.V_displacement
-        print(self.Fuel_Consumption)
-        exit()
-
-        self.c_BHP = (8.2/6)/55 # lbf/hour: This metric uses the fact that the PA28-181 burns 8.2 gallons/hour at 55% power, and we will use
-        # this value as an approximate linear estimate for the consumption of fuel, based on the engine's current BHP
-
+        self.V_displacement = Volume * (compression_ratio-1)/(compression_ratio)
+        self.Mixture = "lean"
+        self.Fuel_Density = 6*self.lbf_to_kg/sp.constants.gallon  # kg/m^3
+                
         Number = 5000
         self.PArr = np.linspace(0, self.MaxPower, Number)
     def Thrust_Static(self):
@@ -148,15 +145,17 @@ class EngineTest(Powerplant):
         return Thrust_Static
 
     def Get_Thrust(self, Velocity_infty, Velocity_NE):
+        """
+        Utilizing a quadradic interpolation of the 
+        """
         V = Velocity_infty
         Velocity_Max = Velocity_NE
-        Thrust_Max = self.MaxPower/Velocity_Max
+        Thrust_Max = self.Power/Velocity_Max
         Thrust_Static = self.Thrust_Static()
-        
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
     
-    def Set_Power(self, Thrust, V_des, RPM, Velocity_NE, tol = 5, P_min = 0):
+    def Get_Power(self, Thrust, V_des, Velocity_NE, tol = 5, P_min = 0):
         """
         Using Thrust, Velocity, and the chosen RPM, we can evaluate what the power output of the engine is in Break Horse Power
         and set those parameters within the class.
@@ -180,10 +179,11 @@ class EngineTest(Powerplant):
         None
         """
         Velocity_Max = Velocity_NE
-        Thrust_Max = self.MaxPower/Velocity_Max
+        Thrust_Max = self.Power/Velocity_Max
         nu = V_des/Velocity_NE
         A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
-        PArr = np.arange(P_min, self.MaxPower + tol*2, tol)
+        # PArr = np.arange(P_min, self.Power + tol*2, tol)
+        PArr = self.PArr
         Left = (Thrust + (2*nu**2-3*nu)*PArr/Velocity_Max)/(nu**2-2*nu+1)
         Right = 0.85*PArr**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
         TrueDiff = Left-Right
@@ -199,16 +199,24 @@ class EngineTest(Powerplant):
         P_1 = PArr[Diff == min_1][0]
         P_2 = PArr[Diff == min_2][0]
         P_est = P_1 + (P_2-P_1)*x_percent
-        self.BreakHorsePower = P_est / (self.eta * self.hp_to_watt)
+        self.RPM = self.MaxRPM*(P_est/self.MaxPower)
+
+        print("P_est", P_est)
 
 
 
     def Get_FuelConsumption(self):
-        c_BHP = self.c_BHP
-        mdot = - c_BHP * self.lbf_to_kg / self.h_to_s
+        self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # kg/m^3
+        self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60  # kg/s
+        mdot = - self.Fuel_Consumption
         return mdot
+    
+
+
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
+        if name == "RPM":
+            self.Power = self.MaxPower*(self.RPM/self.MaxRPM)
         if name == "Altitude":
             self.Atmosphere_attr()
             if hasattr(self, "rho_SL"):
@@ -216,11 +224,14 @@ class EngineTest(Powerplant):
             else:
                 sigma = 1
             self.MaxPower = self.MaxPower_SL*(1.132*sigma-0.132)
+            self.Power = self.MaxPower*(self.RPM/self.MaxRPM)
         if name == "Mixture":
             if value.upper() == "RICH":
                 self.AirFuel_ratio = 12 # Air to fuel ratio is 12:1
             if value.upper() == "LEAN":
-                self.AirFuel_ratio = 16 # Air to fuel ratio is 12:1
+                self.AirFuel_ratio = 16 # Air to fuel ratio is 16:1
+                if self.Power/self.MaxPower > 0.75:
+                    self.Mixture = "RICH"
 
 
 
@@ -231,58 +242,13 @@ class EngineTest(Powerplant):
 
 
 
-
-class ElectricEngineTest(EngineTest):
+class ElectricEngineTest(PistonEngine):
+    def __init__(self, Name, AircraftPropeller, MaxBreakHorsePower=180) -> None:
+        super().__init__(Name, AircraftPropeller, MaxBreakHorsePower)
+        self.Name = Name + ": Electric Engine"
     def Get_FuelConsumption(self):
         return 0
     def Get_EnergyDrain(self, dt, eta = 0.93):
         PowerWatt = self.Power
         Delta_Energy = -PowerWatt*dt/eta
         return Delta_Energy
-
-ArcherProp = Propeller("Sensenich", "76EM8S14-0-62", 76, 0)
-engine1 = EngineTest("test", ArcherProp)
-
-
-
-import matplotlib.pyplot as plt
-import numpy as np
-import scienceplots
-textsize = 18
-plt.rcParams.update({'font.size': textsize})
-plt.style.use(["science", "grid"])
-fig = plt.figure(figsize=(10,7))
-ax = fig.add_subplot(111)
-
-
-Velocity_Array = np.linspace(0,180, 1000)
-def Thurst_General(Velocity):
-    Velocity = Velocity * sp.constants.knot
-    Power = 180 * sp.constants.hp
-    Velocity[Velocity == 0] = Velocity[np.where(Velocity == 0)[0]+1]
-    return Power / Velocity
-
-ThrustIdeal = Thurst_General(Velocity_Array)
-
-
-Title = "Plots of Ideal Thrust vs. Acutal Thrust"
-
-ax.set_title(Title[1:])
-ax.set_xlabel(r"Velocity $V_\infty$ [kts]")
-ax.set_ylabel(r"Thrust $T$ [N]")
-ax.plot(Velocity_Array, ThrustIdeal, "g-", label = r"$T = \frac{P}{V}$", lw = 3)
-Altitude = [0,2000,4000,6000,8000]
-for h in Altitude:
-    engine1.Altitude = h
-    ThrustReal = engine1.Get_Thrust(Velocity_Array, Velocity_Array.max())
-    ax.plot(Velocity_Array, ThrustReal, ls = "--", label = f"Actual Thrust at h = {engine1.Altitude}", lw = 3)
-ax.set_ylim((-1, 0.5*10**4))
-ax.set_xlim(left = 0)
-
-ax.text(150, 3500, f"$P = {engine1.MaxBreakHorsePower}$ hp\n Altitude = {engine1.Altitude} ft",
-            ha="center", va="center", rotation=0, size=textsize,
-            bbox=dict(boxstyle="square,pad=.3",
-                      fc="white", ec="black", lw=1))
-Title = Title.replace(" ", "_") + ".png"
-plt.legend()
-plt.close()

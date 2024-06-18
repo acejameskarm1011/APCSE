@@ -8,17 +8,17 @@ np.set_printoptions(suppress=True)
 from PiperArcherIII_Blueprint import ArcherAircraft
 from PiperArcherIII_Blueprint import ElectricArcherAircraft
 
-
-ArcherAircraft.V_infty = 100*sp.constants.knot
+ArcherAircraft.Altitude = 5000
+ArcherAircraft.V_infty = 110*sp.constants.knot
+ArcherAircraft.Aircraft_Forces()
 Thrust = ArcherAircraft.Drag
-P1 = ArcherAircraft.Engine.Power
-print(P1)
-t1  = time()
-ArcherAircraft.Set_Throttle(2200)
-t2 = time()
-P2 = ArcherAircraft.Engine.Power
-print("Time elapsed: {} seconds".format(t2-t1))
-print("Error in Power: {}".format(P2-P1))
+ArcherAircraft.Thrust = Thrust
+print(Thrust)
+ArcherAircraft.Get_Power()
+print(ArcherAircraft.Engine.Power/ArcherAircraft.Engine.MaxPower_SL)
+
+
+
 exit()
 
 

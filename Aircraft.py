@@ -86,7 +86,10 @@ class Aircraft(Aviation):
         """
         Currently used to set the throttle for a desired thrust. 
         """
-        self.Engine.Set_Power(self.Thrust, self.V_infty, RPM, self.NeverExceedSpeed)
+        self.Engine.RPM = RPM
+        # self.Engine.Set_Power(self.Thrust, self.V_infty, RPM, self.NeverExceedSpeed)
+    def Get_Power(self):
+        self.Engine.Get_Power(self.Thrust, self.V_infty, self.NeverExceedSpeed)
         
 
 
@@ -95,7 +98,7 @@ class Aircraft(Aviation):
         Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board
         strictly fuel mass, energy, or both are drawn. 
         """
-        mdot = self.Engine.Get_FuelConsumption()
+        mdot = self.Engine.Get_FuelConsumption() # units are in kg/s
         self.FuelMass += mdot*delta_t
         self.TotalMass += mdot*delta_t
         self.Masses.append(self.TotalMass)
@@ -156,7 +159,6 @@ class Aircraft(Aviation):
 
 
     def Aircraft_Forces(self):
-        self.Engine.Altitude = self.Altitude
         C_L = self.Wings.Get_C_L()
         C_D = self.Wings.Get_C_D()
         S = self.Wings.S_wing
@@ -165,7 +167,8 @@ class Aircraft(Aviation):
         self.GetTotalThrust()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         
-
+    def FULL_THROTTLE(self):
+        self.Engine.RPM = 2700
 
     def GetC_L_max(self, Components):
         C_L = 0
