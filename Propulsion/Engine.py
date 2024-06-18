@@ -141,7 +141,9 @@ class PistonEngine(Powerplant):
         """
         self.Atmosphere_attr()
         A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
+        # Get the disk area of the propeller, and get the efficiency of the area that accounts for blockage effects
         Thrust_Static = 0.85*self.Power**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
+        # Using Disk Momentum theory, we get the thrust for a stationary aircraft
         return Thrust_Static
 
     def Get_Thrust(self, Velocity_infty, Velocity_NE):
@@ -199,9 +201,12 @@ class PistonEngine(Powerplant):
         P_1 = PArr[Diff == min_1][0]
         P_2 = PArr[Diff == min_2][0]
         P_est = P_1 + (P_2-P_1)*x_percent
-        self.RPM = self.MaxRPM*(P_est/self.MaxPower)
+        self.RPM = self.MaxRPM*(P_est/self.MaxPower)**(1/4)
 
-        print("P_est", P_est)
+        # Use an assumption for how power scales with RPM
+        # (P/P_max) = (RPM/RPM_max)^4 
+        # Note: There is no real world basis for this to be correct whatsoever. The engine model for the air inside the chamber
+        # still has much further to go to be of an adequate fidelity
 
 
 

@@ -1,5 +1,9 @@
 from Aircraft import Aircraft
 import numpy as np
+
+# from Aerodynamic_Classes.C_D import * 
+
+
 class Wings(Aircraft):
     """
     This class stores all necessary methods for storing the necessary geometry and data of the wings for an aircraft.
@@ -22,11 +26,18 @@ class Wings(Aircraft):
         self.AR = self.b_wing**2/self.S_wing
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
         self.K = 1/(np.pi*self.e_0*self.AR)
+
+
+        ################
         self.alpha = 3
         self.tau = 0
         self.C_l_alpha = 0.11031
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
         self.C_L_0 = .6
+        ###########
+
+
+
     def Get_C_D(self):
         """
         Method to retrieve the coefficient of lift from the Wings
@@ -45,6 +56,8 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
+
+
 
         C_D_0 = 0.0296
         C_D = C_D_0 + self.K*self.Get_C_L()**2
@@ -72,3 +85,8 @@ class Wings(Aircraft):
     def Set_C_L(self, C_L):
         self.C_L = C_L
         self.alpha = (C_L - self.C_L_0)/(self.C_L_alpha)
+    
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        if name == "Altitude":
+            self.Atmosphere_attr()

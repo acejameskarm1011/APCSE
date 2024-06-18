@@ -1,8 +1,12 @@
 #PA28
 PA_28_181_wings_dict = dict({
     'S_wing' : [171.8, "ft2"],
-    'b_wing' : [35.5,'ft'],
+    'b_wing' : [35.5, "ft"],
 })
+
+
+
+
 
 PA_28_181_HorizontalStabilizer_dict = dict({
     'b_h' : [12 + 10.48/12,'ft']

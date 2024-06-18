@@ -70,8 +70,8 @@ class Aircraft(Aviation):
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
-            BatteryDensity = 250.
-            BatteryEta = 0.5
+            BatteryDensity = 250. # Wh/kg
+            BatteryEta = 0.5 # A source should be used to bakc this up
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
             self.FuelMass = 0.
             self.MaxEnergy = self.BatteryEnergy
@@ -87,7 +87,7 @@ class Aircraft(Aviation):
         Currently used to set the throttle for a desired thrust. 
         """
         self.Engine.RPM = RPM
-        # self.Engine.Set_Power(self.Thrust, self.V_infty, RPM, self.NeverExceedSpeed)
+
     def Get_Power(self):
         self.Engine.Get_Power(self.Thrust, self.V_infty, self.NeverExceedSpeed)
         
@@ -152,10 +152,11 @@ class Aircraft(Aviation):
     def Set_Lift(self, Lift):
         S = self.Wings.S_wing
         C_L = Lift/(1/2*self.rho*self.V_infty**2*S)
-        self.aircraft.Wings.Set_C_L(self, C_L)
+        self.Wings.Set_C_L(C_L)
         C_D = self.Wings.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         self.Thrust = self.Drag
+        self.Get_Power()
 
 
     def Aircraft_Forces(self):
@@ -244,5 +245,6 @@ class Aircraft(Aviation):
             if isinstance(value, (float, int)):
                 self.Atmosphere_attr()
                 self.Engine.Altitude = value
+                self.Wings.Altitude = value
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))

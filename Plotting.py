@@ -20,11 +20,13 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
 
     Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
     """
+    if isinstance(TakeOff.Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
     linewidth = 3
     V_infty = TakeOff.Velocity_x / sp.constants.knot
     Distance = TakeOff.Position_x / sp.constants.foot
     time = TakeOff.Times
-    V_NE = TakeOff.aircraft.NeverExceedSpeed
+    V_NE = TakeOff.Aircraft.NeverExceedSpeed
     Thrust = TakeOff.Thrust_List
     Percent = TakeOff.Percent_List
     Lift = TakeOff.Lift_List
@@ -67,12 +69,14 @@ def ClimbPlot(Climb, title = "Climb Plots"):
 
     Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
     """
+    if isinstance(Climb.Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
     linewidth = 3
     V_infty = Climb.Velocity_List / sp.constants.knot
     Pitch = Climb.Pitch_List
     Distance = Climb.Position_x / sp.constants.foot
     time = Climb.Times
-    V_NE = Climb.aircraft.NeverExceedSpeed
+    V_NE = Climb.Aircraft.NeverExceedSpeed
     Altitude = Climb.Altitude_List
     Percent = Climb.Percent_List
     Lift = Climb.Lift_List
@@ -109,6 +113,8 @@ def ClimbPlot(Climb, title = "Climb Plots"):
 
 
 def Climb_Velocity_FlightAngle_Plot(Climb, title = "Aircraft Climb Velocity Characteristics"):
+    if isinstance(Climb.Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
     linewidth = 3
     V_x = Climb.Velocity_x / sp.constants.knot
     V_z = Climb.Velocity_z / sp.constants.knot
@@ -134,16 +140,18 @@ def Climb_Velocity_FlightAngle_Plot(Climb, title = "Aircraft Climb Velocity Char
     plt.show()
 
 
-def Performance_Climb_Plot(aircraft, title = "Climb Performance"):
-    V_NE = aircraft.NeverExceedSpeed
+def Performance_Climb_Plot(Aircraft, title = "Climb Performance"):
+    if isinstance(Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
+    V_NE = Aircraft.NeverExceedSpeed
     V_infty = np.linspace(0,V_NE, 2000)
-    aircraft.V_infty = V_infty
-    aircraft.Aircraft_Forces()
-    Lift = aircraft.Lift
-    Drag = aircraft.Drag
-    Thrust = aircraft.Thrust
-    Weight = aircraft.Weight
-    V = V_infty * aircraft.mps_to_knots
+    Aircraft.V_infty = V_infty
+    Aircraft.Aircraft_Forces()
+    Lift = Aircraft.Lift
+    Drag = Aircraft.Drag
+    Thrust = Aircraft.Thrust
+    Weight = Aircraft.Weight
+    V = V_infty * Aircraft.mps_to_knots
 
     Data1 = Lift/Weight
     Data2 = (Thrust-Drag)/Weight
@@ -156,7 +164,7 @@ def Performance_Climb_Plot(aircraft, title = "Climb Performance"):
     axs[1].plot(V, Data2)
     axs[1].set_xlabel("Velocity - $V_\\infty$ [kts]")
     axs[1].set_title("Plot of $\\frac{T-D}{W}$")
-    Altitude = str(aircraft.Altitude)
+    Altitude = str(Aircraft.Altitude)
 
     Vel1 = V.copy()
     Vel2 = V.copy()
@@ -175,15 +183,60 @@ def Performance_Climb_Plot(aircraft, title = "Climb Performance"):
     plt.pause(3)
     plt.close()
 
-    aircraft.V_infty = 0.
-
-
-def Fuel_Consumption_Plot():
-    Power = [55, 65, 75]
-    C_hour = [8.2, 9.5, 13.5]
+    Aircraft.V_infty = 0.
 
 
 
+def CruisePlot(Cruise, title = "Cruise Plots"):
+    """
+    Using the Cruise class, we can use the data stored within it in order to plot how each of the paramters are changing over time.
+
+    Parameters
+    ----------
+    Cruise : Instance of the Cruise class
+
+    Notes: Images with be stored in the Take_Off_Performance directory in Images_From_Code
+    """
+    if isinstance(Cruise.Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
+    linewidth = 3
+    V_infty = Cruise.Velocity_List / sp.constants.knot
+    Distance = Cruise.Position_x / sp.constants.nautical_mile
+    RPM = Cruise.RPM_List
+    time = Cruise.Times
+    Thrust = Cruise.Thrust_List
+    Percent = Cruise.Percent_List
+    Lift = Cruise.Lift_List
+    Drag = Cruise.Drag_List
+
+    Thrust = Cruise.Thrust_List
+
+    fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
+    axs[0,0].plot(time, RPM, "g-", linewidth=linewidth)
+    axs[0,0].set_ylabel(r"RPM [rev/min]")
+    axs[0,0].set_xlim((0,time.max()))
+    axs[0,1].plot(time, V_infty, linewidth=linewidth)
+    axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
+    axs[0,1].set_xlim((0,time.max()))
+    axs[1,0].plot(time, Thrust, "r-", linewidth=linewidth)
+    axs[1,0].set_ylabel(r"Thrust - $T$ [N]")
+    axs[1,0].set_xlim((0,time.max()))
+    axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
+    axs[1,1].set_ylabel(r"Percent [\%]")
+    axs[1,1].set_xlim((0,time.max()))
+    axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
+    axs[2,0].set_ylabel(r"Lift - $L$ [N]")
+    axs[2,0].set_xlim((0,time.max()))
+    axs[2,1].plot(time, Drag, "r--", linewidth=linewidth)
+    axs[2,1].set_ylabel(r"Drag - $D$ [N]")
+    axs[2,1].set_xlim((0,time.max()))
+    axs[2,1].set_xlabel(r"Time - $t$ [s]")
+    axs[2,0].set_xlabel(r"Time - $t$ [s]")
+    # axs[1,0].set_ylim((0, Altitude.max()*1.2))
+    axs[1,1].set_ylim((0, Percent.max()*1.2))
+    fig.suptitle(title)
+    plt.savefig(image_dir + r"\\Cruise_Performance\\" + title.replace(" ", "_")+".png")
+    plt.show()
 
 
 
@@ -205,11 +258,11 @@ def Regular_Plot(x, y, xlabel, ylabel, title, color = 'r'):
 '''
 def MyCurrentPlot(control, title):
     fig, ax = plt.subplots(nrows=6, ncols=1)
-    if isinstance(control.aircraft, AircraftConventional):
+    if isinstance(control.Aircraft, AircraftConventional):
         title = "Conventional " + title
         power = control.EnergyMassArr
         label5x = "Fuel Mass (kg)"
-    if isinstance(control.aircraft, AircraftElectric):
+    if isinstance(control.Aircraft, AircraftElectric):
         title = "Electric " + title
         power = control.percentArr
         label5x = "Battery Percent (%)"
@@ -255,11 +308,11 @@ def MyCurrentPlot(control, title):
 def MyCurrentPlot(control, title):
     fig = plt.figure(constrained_layout=True)
     gs = GridSpec(3, 2, figure=fig)
-    if isinstance(control.aircraft, AircraftConventional):
+    if isinstance(control.Aircraft, AircraftConventional):
         title = "Conventional " + title
         power = control.EnergyMassArr * 2.20462/6
         label5x = "Fuel Mass (gal)"
-    elif isinstance(control.aircraft, AircraftElectric):
+    elif isinstance(control.Aircraft, AircraftElectric):
         title = "Electric " + title
         power = control.percentArr
         label5x = "Battery Percent (%)"
