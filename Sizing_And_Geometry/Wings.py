@@ -90,3 +90,5 @@ class Wings(Aircraft):
         object.__setattr__(self, name, value)
         if name == "Altitude":
             self.Atmosphere_attr()
+
+    

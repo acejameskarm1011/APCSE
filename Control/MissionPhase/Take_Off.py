@@ -28,8 +28,9 @@ class Take_Off(MissionPhase):
         
         Notes: The restricted ground roll is stored inside the instance of the Take_Off class
         """
+        self.Aircraft.Set_Throttle(2700)
         self.reset()
-        V_r = self.Aircraft.RotationSpeed
+        V_r = self.Aircraft.RotationSpeed*1.05
         self.Get_Aircraft_Attr()
 
         mu_f = 0.04
@@ -69,7 +70,7 @@ class Take_Off(MissionPhase):
         self.Drag_List = self.Drag_List[vx <= V_r]
         self.Weight_List = self.Weight_List[vx <= V_r]
         self.Percent_List = self.Percent_List[vx <= V_r]
-        
+
         Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
         if not np.any(np.abs(self.Velocity_x*self.mps_to_knots) > V_r):
             print(vx*self.mps_to_knots)

@@ -1,6 +1,8 @@
 import numpy as np
 from Aviation import Aviation
 from Propulsion.Engine import ElectricEngineTest
+import scipy as sp
+
 class Aircraft(Aviation): 
     """
     Stores data that needs to be held within every aircraft in the program. 
@@ -149,13 +151,14 @@ class Aircraft(Aviation):
         self.BatteryMass = MassFactor*self.FuelMass*eta_mass
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
 
-    def Set_Lift(self, Lift):
+    def Set_Forces(self):
+        self.Lift = self.Weight*np.cos(self.Pitch)
         S = self.Wings.S_wing
-        C_L = Lift/(1/2*self.rho*self.V_infty**2*S)
+        C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
         self.Wings.Set_C_L(C_L)
         C_D = self.Wings.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
-        self.Thrust = self.Drag
+        self.Thrust = self.Drag + self.Weight*np.sin(self.Pitch)
         self.Get_Power()
 
 
@@ -248,3 +251,29 @@ class Aircraft(Aviation):
                 self.Wings.Altitude = value
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
+        if name == "Position":
+            if isinstance(value, (np.ndarray, list)):
+                Alt = value[2] * self.m_to_ft
+                self.Altitude = Alt
+            else:
+                raise TypeError("Cannot accept value of type {}".format(type(value)))
+            
+
+
+
+
+    def __repr__(self):
+        return "Aircraft({}, {},\n\tWings = {},\n\tHorizontalStabilizer = {},\n\tFuselage = {},\n\tVerticalStabilizer = {},\n\tEngine = {},\n\tMass = {})".format(self.AircraftName, self.AircraftDict, self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer, self.Engine, self.Mass)
+
+    def __str__(self):
+        if not isinstance(self.Engine, ElectricEngineTest):
+            Battery = "0"
+        else:
+            Battery = self.BatteryRatio
+        Forces_vals = np.round(np.array([self.Lift, self.Thrust, self.Drag, self.Weight], float))
+        Forces = "\n\tLift: {} [N], \n\tThrust: {} [N], \n\tDrag: {} [N], \n\tWeight: {} [N]\n".format(*Forces_vals)
+        Engine_Status = np.round(np.array([self.Engine.RPM, self.Engine.Power/sp.constants.hp, self.FuelRatio*100, Battery*100], float))
+        Engine = "\n\tRPM: {} [rev/min], \n\tPower: {} [hp], \n\tFuel: {} [%], \n\tBattery: {}".format(*Engine_Status)
+        Last = "With an altitude of {} [ft], true airspeed of {} [kts], and with engine parameters being: {}\n\n".format(self.Altitude, self.V_infty/sp.constants.knot, Engine)
+        return "\n\n{} is flying with forces: {}".format(self.AircraftName, Forces) + Last
+    

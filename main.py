@@ -2,12 +2,14 @@ import os
 from ImportAPCSE import *
 import numpy as np
 from time import *
-from Plotting import TakeOff_Plot, ClimbPlot, Performance_Climb_Plot, CruisePlot
 np.set_printoptions(suppress=True)
 
 from PiperArcherIII_Blueprint import ArcherAircraft
 from PiperArcherIII_Blueprint import ElectricArcherAircraft
 
+
+print(ArcherAircraft)
+exit()
 ArcherTakeOffSim = Take_Off(ArcherAircraft)
 ArcherTakeOffSim.Ground_Roll_Sim_ODESolve()
 
@@ -17,7 +19,7 @@ ArcherClimbSim.Pattern_Work_Climb_Solve()
 ArcherCruiseSim = Cruise(ArcherAircraft)
 ArcherCruiseSim.Downwind_Solve_1()
 
-CruisePlot(ArcherCruiseSim)
+
 
 exit()
 

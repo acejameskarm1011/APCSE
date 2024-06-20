@@ -212,14 +212,14 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     Thrust = Cruise.Thrust_List
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
-    axs[0,0].plot(time, RPM, "g-", linewidth=linewidth)
+    axs[0,0].plot(time, np.round(np.array(RPM), 2), "g-", linewidth=linewidth)
     axs[0,0].set_ylabel(r"RPM [rev/min]")
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
     axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
     axs[0,1].set_xlim((0,time.max()))
-    axs[1,0].plot(time, Thrust, "r-", linewidth=linewidth)
-    axs[1,0].set_ylabel(r"Thrust - $T$ [N]")
+    axs[1,0].plot(time, Distance, "r-", linewidth=linewidth)
+    axs[1,0].set_ylabel(r"Distance - $d$ [nmi]")
     axs[1,0].set_xlim((0,time.max()))
     axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
     axs[1,1].set_ylabel(r"Percent [\%]")

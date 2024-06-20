@@ -6,7 +6,7 @@ class Cruise(MissionPhase):
     def __init__(self, AircraftInstance) -> None:
         self.Aircraft = AircraftInstance
     
-    def Downwind_Solve_1(self, tmax = 60, delta_t = 1e-2):
+    def Downwind_Solve_1(self, tmax = 60, delta_t = 1):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
         V_des = 90 # knots
@@ -15,13 +15,15 @@ class Cruise(MissionPhase):
         V_infty = V_des*self.knots_to_mps
         self.Aircraft.Velocity = V_infty*np.array([1,0,0])
         self.Aircraft.V_infty = V_infty
-        Lift = self.Aircraft.Weight
-        self.Aircraft.Set_Lift(Lift)
+        self.Aircraft.Pitch = 0
+
+        self.Aircraft.Set_Forces()
         self.Get_Aircraft_Attr()
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
         def Cruise_EOM(DOT, mass):
             x, y, z, v_x, v_y, v_z = DOT
+            self.Aircraft.Set_Forces()
             self.Get_Aircraft_Attr()
             return np.array([v_x, v_y, v_z, 0, 0, 0])
         Initial = np.block([self.Position, self.Velocity])
@@ -44,8 +46,3 @@ class Cruise(MissionPhase):
             self.RPM_List = [self.RPM]
         else:
             self.RPM_List.append(self.RPM)
-
-# What do I want with cruise? 
-# Ground Roll
-# RPM
-# Fuel Percent
