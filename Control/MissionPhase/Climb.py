@@ -26,19 +26,7 @@ class Climb(MissionPhase):
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
         def Climb_EOM(Dot, mass):
-            x, y, z, V_infty, Pitch  = Dot
-            Position = np.array([x, y, z])
-            self.Aircraft.Altitude = z*self.m_to_ft
-            self.Aircraft.V_infty = V_infty
-            self.Get_Aircraft_Attr()
-            dxdt = V_infty*np.cos(Pitch)
-            dydt = 0
-            dzdt = V_infty*np.sin(Pitch)
-            
-            dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
-            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) - .6*Pitch
-
-            return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
+            return self.Pitch_EOM(Dot, mass)
         
         Initial = np.block([self.Position, self.V_infty, self.Pitch])
 
@@ -66,6 +54,26 @@ class Climb(MissionPhase):
             raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
+
+    def Pitch_EOM(self, Dot, mass):
+
+        x, y, z, V_infty, Pitch = Dot
+        self.Aircraft.Altitude = z*self.m_to_ft
+        self.Aircraft.V_infty = V_infty
+        self.Get_Aircraft_Attr()
+        dxdt = V_infty*np.cos(Pitch)
+        dydt = 0
+        dzdt = V_infty*np.sin(Pitch)
+        dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) - .6*Pitch
+        return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
+
+
+
+
+
+
+
     def Get_Aircraft_Attr(self):
         super().Get_Aircraft_Attr()
         # self.Pitch = np.arccos((self.Lift)/self.Weight)
@@ -86,11 +94,6 @@ class Climb(MissionPhase):
         else:
             self.Pitch_List.append(self.Pitch)
         # include pitch
-
-
-
-
-
 
 
 

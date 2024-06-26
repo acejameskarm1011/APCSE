@@ -1,34 +1,12 @@
-#Engine
 import os
-# engine_dir = os.getcwd()
-# main_dir = engine_dir[:-20]
-# print(engine_dir[:-20])
-# main_dir = "C:\\APCSE"
-# os.chdir(main_dir)
 from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
-# os.chdir(engine_dir)
 import scipy as sp
 import numpy as np
 
-
-
 class Powerplant(Aviation):
-    hp_to_watt = sp.constants.hp
-    def __init__(self) -> None:
-        pass
+    hp_to_watt = 745.7
 
-class TurboFan(Powerplant):
-    pass
-
-class TurboJet(Powerplant):
-    pass
-
-class PropEngine(Powerplant):
-    pass
-
-class TurboProp(PropEngine):
-    pass
 class Propeller():
     """
     Stores the attributes of the propeller
@@ -107,17 +85,14 @@ class PistonEngine(Powerplant):
         # Current acutual power the aircraft is experiencing
 
         self.MaxRPM = 2700
-        self.RPM = self.MaxRPM
+        self.Throttle = 1
 
 
         self.Altitude = 0
         # Engine requires the atmospheric information
-        self.rho_SL = self.rho
         self.Temperature_SL = self.Temperature
         # Setting Sea Level Parameters
-        
-        
-
+        self.RPM = self.MaxRPM
 
         bore = 5.125 * sp.constants.inch
         stroke = 4.375 * sp.constants.inch
@@ -157,7 +132,7 @@ class PistonEngine(Powerplant):
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
     
-    def Get_Power(self, Thrust, V_des, Velocity_NE, tol = 5, P_min = 0):
+    def Set_Thrust(self, Thrust, V_des, Velocity_NE, tol = 5, P_min = 0):
         """
         Using Thrust, Velocity, and the chosen RPM, we can evaluate what the power output of the engine is in Break Horse Power
         and set those parameters within the class.
@@ -208,10 +183,29 @@ class PistonEngine(Powerplant):
         # Note: There is no real world basis for this to be correct whatsoever. The engine model for the air inside the chamber
         # still has much further to go to be of an adequate fidelity
 
+    def Get_Power(self):
+        """
+        This is the function that should be called when the power should be 
 
+        Returns
+        -------
+        self.Power : float
+            Current power output of the propeller [W]
+        """
+        sigma = self.rho/self.rho_SL
+        R_m = np.sin(self.Throttle*np.pi/2)
+        if np.isclose(1.0, self.Throttle):
+            self.Power = self.MaxPower*sigma
+        else:
+            self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m)
+        return self.Power
 
     def Get_FuelConsumption(self):
-        self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # kg/m^3
+        """
+        The fuel consumption is derived from the air and fuel density ratio, volume of the chambers [compression ratio corrected], and the RPM.
+        The output is in terms of kg/s so that other methods can determine the exact mass draw for a time step.
+        """
+        self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # m^3
         self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60  # kg/s
         mdot = - self.Fuel_Consumption
         return mdot
@@ -219,23 +213,35 @@ class PistonEngine(Powerplant):
 
 
     def __setattr__(self, name, value):
+        # It is helpful to define the attributes first since that allows us to use it's specific name rather than the term "value"
         object.__setattr__(self, name, value)
+        #################
+        # TYP the RPM will always be defined first as the POH usually dictates the RPM
         if name == "RPM":
-            self.Power = self.MaxPower*(self.RPM/self.MaxRPM)
+            self.Throttle = self.RPM/self.MaxRPM
+            self.Get_Power() 
+            # RPM affects power, so if the RPM changes, then so must the power
+        
+        ######################
+        # Altitude parameters impact engine performance
         if name == "Altitude":
             self.Atmosphere_attr()
-            if hasattr(self, "rho_SL"):
-                sigma = self.rho/self.rho_SL
-            else:
-                sigma = 1
-            self.MaxPower = self.MaxPower_SL*(1.132*sigma-0.132)
-            self.Power = self.MaxPower*(self.RPM/self.MaxRPM)
+            if not hasattr(self, "rho_SL"):
+                # This part will define the sea level condition for the simulation
+                self.rho_SL = self.rho
+            self.Get_Power()
+            # The power setting will also need to be adjusted to account for the changes in density
+
+        #####################
+        # The engine mixture will change how much the air to fuel ratio is
         if name == "Mixture":
             if value.upper() == "RICH":
                 self.AirFuel_ratio = 12 # Air to fuel ratio is 12:1
             if value.upper() == "LEAN":
                 self.AirFuel_ratio = 16 # Air to fuel ratio is 16:1
                 if self.Power/self.MaxPower > 0.75:
+                    # For high power settings, a lower air to fuel ratio is required
+                    # i.e. more fuel to air
                     self.Mixture = "RICH"
 
 

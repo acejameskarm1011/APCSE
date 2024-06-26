@@ -27,11 +27,6 @@ class Aircraft(Aviation):
     Engine : Instance of the Engine class
         Engine and propeller combination for the aircraft
 
-
-    Returns
-    -------
-    None
-
     Notes
     ----
     This class builds up all of the shared data for all components.      
@@ -80,25 +75,49 @@ class Aircraft(Aviation):
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
     def GetTotalThrust(self):
         """
-        Uses the aircraft's current velocity and inheriant maximum speed to find thrust.
+        Using the current engine on the aircraft, the total thrust output is computed in units of Netwons. The engine power output is directly
+        related to the current throttle setting and atmospheric conditions. With a selected power, the thrust  
         """
         self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.NeverExceedSpeed)
         return self.Thrust
-    def Set_Throttle(self, RPM):
+    def Set_RPM(self, RPM):
         """
-        Currently used to set the throttle for a desired thrust. 
+        From within the aircraft class, we set RPM of the engine to be of a specified value.
+
+        Parameters
+        ----------
+        RPM : int/float
+            Revolutions per minute of the engine's driveshaft. For engines with a 1:1 gear ratio, that means the RPM also corresponds to 
+            the propellers RPM.
         """
         self.Engine.RPM = RPM
 
-    def Get_Power(self):
-        self.Engine.Get_Power(self.Thrust, self.V_infty, self.NeverExceedSpeed)
+    def Set_Thrust(self):
+        """
+        For system of analysis where thrust is a known value, this method shall be called when the aircraft's thrust is updated. 
+        Further reading on this method is found in the Engine class method: "Set_Thrust()"
+
+        Returns
+        -------
+        None
+        """
+        self.Engine.Set_Thrust(self.Thrust, self.V_infty, self.NeverExceedSpeed)
         
 
 
     def FuelDraw(self, delta_t):
         """
-        Is used to evaluate the fuel bruned in either weight or in battery charge. Depending on the type of engine on board
+        Is used to evaluate the fuel bruned in either fuel mass [kg] or in battery charge [J]. Depending on the type of engine on board
         strictly fuel mass, energy, or both are drawn. 
+
+        Parameters
+        ----------
+        delta_t : int/float
+            The time step variable that determines how much mass or energy is being lost at a given state
+        
+        Returns
+        ------
+        None
         """
         mdot = self.Engine.Get_FuelConsumption() # units are in kg/s
         self.FuelMass += mdot*delta_t
@@ -111,6 +130,15 @@ class Aircraft(Aviation):
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
 
     def Get_C_D(self):
+        """
+        This method uses the aircraft's current state and evaluates the C_D for each of the exterior components. This class is still under construction
+        until each external component is more developed with their own models.
+
+        Returns
+        ------
+        C_D : float
+            The coefficient of drag [no units]
+        """
         C_D = 0
         for Part in self.ExtertnalComponents:
             Part.C_L = self.C_L
@@ -159,7 +187,7 @@ class Aircraft(Aviation):
         C_D = self.Wings.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         self.Thrust = self.Drag + self.Weight*np.sin(self.Pitch)
-        self.Get_Power()
+        self.Set_Thrust()
 
 
     def Aircraft_Forces(self):
@@ -233,7 +261,7 @@ class Aircraft(Aviation):
         return u_kplus1
     ############################################################
     
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value):
         if name == "Velocity":
             if not isinstance(value, np.ndarray):
                 raise TypeError("Velocity attribute must be a NumPy array")
