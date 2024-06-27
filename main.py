@@ -4,27 +4,15 @@ import numpy as np
 from time import *
 np.set_printoptions(suppress=True)
 
-from PiperArcherIII_Blueprint import ArcherAircraft
-from PiperArcherIII_Blueprint import ElectricArcherAircraft
+from Plotting.Plotting import Descent_Plot
+from Plotting.Plotting import CruisePlot
+from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
+
+# ArcherAircraft.Position = np.array([0,0,213.36])
+# ArcherAircraft.Pitch = 0
+# ArcherAircraft.V_infty = 90*sp.constants.knot
 
 
-class testclass:
-    def __init__(self, parameter):
-        self.parameter = parameter
-    def __setattr__(self, name: str, value):
-        object.__setattr__(self, name, value)
-        print("Welp, you can't change this one")
-    # def __getattribute__(self, name: str):
-    #     print("Hello, you cant touch me")
-
-
-t = testclass(1)
-t.parameter += 1
-print("Hello World")
-
-
-
-exit()
 
 ArcherTakeOffSim = Take_Off(ArcherAircraft)
 ArcherTakeOffSim.Ground_Roll_Sim_ODESolve()
@@ -35,6 +23,13 @@ ArcherClimbSim.Pattern_Work_Climb_Solve()
 ArcherCruiseSim = Cruise(ArcherAircraft)
 ArcherCruiseSim.Downwind_Solve_1()
 
+CruisePlot(ArcherCruiseSim)
+
+exit()
+
+ArcherDescentSim = Descent(ArcherAircraft)
+ArcherDescentSim.NoFlaps_Approach(tmax=10)
+Descent_Plot(ArcherDescentSim)
 
 
 exit()

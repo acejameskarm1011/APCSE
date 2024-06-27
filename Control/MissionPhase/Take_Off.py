@@ -28,7 +28,7 @@ class Take_Off(MissionPhase):
         
         Notes: The restricted ground roll is stored inside the instance of the Take_Off class
         """
-        self.Aircraft.Set_Throttle(2700)
+        self.Aircraft.Set_RPM(2700)
         self.reset()
         V_r = self.Aircraft.RotationSpeed*1.05
         self.Get_Aircraft_Attr()
@@ -37,8 +37,8 @@ class Take_Off(MissionPhase):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
 
-        def TakeOff_ODE(Dot, mass):
-            x, y, z, v_x, v_y, v_z  = Dot
+        def TakeOff_ODE(State, mass):
+            x, y, z, v_x, v_y, v_z = State
             Position = np.array([x, y, z])
             Velocity = np.array([v_x, v_y, v_z])
             self.Aircraft.Velocity = Velocity

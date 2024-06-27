@@ -189,6 +189,15 @@ class Aircraft(Aviation):
         self.Thrust = self.Drag + self.Weight*np.sin(self.Pitch)
         self.Set_Thrust()
 
+    def Set_Lift(self):
+        self.Lift = self.Weight*np.cos(self.Pitch)
+        S = self.Wings.S_wing
+        C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
+        self.Wings.Set_C_L(C_L)
+        C_D = self.Wings.Get_C_D()
+        self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
+        self.GetTotalThrust()
+
 
     def Aircraft_Forces(self):
         C_L = self.Wings.Get_C_L()

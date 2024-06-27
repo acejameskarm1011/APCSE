@@ -7,6 +7,12 @@ image_dir = main_dir + "\\Images_From_Code"
 import scipy as sp
 from matplotlib.gridspec import GridSpec
 import scienceplots
+from Plotting.Descent_Plot import Descent_Plot
+
+
+
+
+
 plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
@@ -208,12 +214,14 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     Percent = Cruise.Percent_List
     Lift = Cruise.Lift_List
     Drag = Cruise.Drag_List
+    RPM = Cruise.RPM_List
 
     Thrust = Cruise.Thrust_List
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, np.round(np.array(RPM), 2), "g-", linewidth=linewidth)
     axs[0,0].set_ylabel(r"RPM [rev/min]")
+    axs[0,0].set_ylim(0, Cruise.MaxRPM)
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
     axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")

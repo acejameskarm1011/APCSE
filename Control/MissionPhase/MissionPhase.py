@@ -5,6 +5,7 @@ class MissionPhase(Control):
     weather = "Good"
     def __init__(self, AircraftInstance) -> None:
         self.Aircraft = AircraftInstance
+        self.MaxRPM = self.Aircraft.Engine.MaxRPM
 
     def Get_Aircraft_Attr(self):
         """
@@ -98,6 +99,18 @@ class MissionPhase(Control):
             self.Percent_List = [self.Percent]
         else:
             self.Percent_List.append(self.Percent)
+
+    def __setattr__(self, name, value) -> None:
+        if name == "RPM":
+            max = self.MaxRPM
+            min = 250
+            if value > max:
+                value = max
+            elif value < min:
+                value = min
+        object.__setattr__(self, name, value)
+        if name == "RPM":
+            self.Aircraft.Set_RPM(self.RPM)
 
 
 class subphase(MissionPhase):

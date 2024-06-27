@@ -65,6 +65,7 @@ class PistonEngine(Powerplant):
 
         # Below is tick to check if any methods are being called on too many times
         self.tick = 0
+        self.RPM_tick = 0
 
         self.Name = Name + ": Piston Engine"
         # Since this is a test class, we will use the general "Name" to keep track of what the class is
@@ -193,7 +194,7 @@ class PistonEngine(Powerplant):
             Current power output of the propeller [W]
         """
         sigma = self.rho/self.rho_SL
-        R_m = np.sin(self.Throttle*np.pi/2)
+        R_m = np.sin(self.Throttle**3*np.pi/2)
         if np.isclose(1.0, self.Throttle):
             self.Power = self.MaxPower*sigma
         else:
@@ -214,6 +215,13 @@ class PistonEngine(Powerplant):
 
     def __setattr__(self, name, value):
         # It is helpful to define the attributes first since that allows us to use it's specific name rather than the term "value"
+        if name == "RPM":
+            max = self.MaxRPM
+            min = 250
+            if value > max:
+                value = max
+            elif value < min:
+                value = min
         object.__setattr__(self, name, value)
         #################
         # TYP the RPM will always be defined first as the POH usually dictates the RPM

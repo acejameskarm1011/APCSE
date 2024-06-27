@@ -30,6 +30,7 @@ class Wings(Aircraft):
 
         ################
         self.alpha = 3
+        # self.alpha = 0
         self.tau = 0
         self.C_l_alpha = 0.11031
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
@@ -59,7 +60,7 @@ class Wings(Aircraft):
 
 
 
-        C_D_0 = 0.0296
+        C_D_0 = 0.0296*1.4
         C_D = C_D_0 + self.K*self.Get_C_L()**2
         self.C_D = C_D
         return C_D
@@ -85,7 +86,7 @@ class Wings(Aircraft):
     def Set_C_L(self, C_L):
         self.C_L = C_L
         self.alpha = (C_L - self.C_L_0)/(self.C_L_alpha)
-    
+        
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
         if name == "Altitude":

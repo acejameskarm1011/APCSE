@@ -7,11 +7,7 @@ class Climb(MissionPhase):
     The purpose of the Climb class is to store the important parameters that define the climb phase for an Aircraft.
      - V_y is the relative velocity required best rate of climb flight. Example, the PA28-181 requires a Vy of 76 knots.
      - The power setting will be the same as with take-off, FULL POWER
-    """
-    def __init__(self, AircraftInstance) -> None:
-        self.Aircraft = AircraftInstance
-        
-        
+    """ 
     def Pattern_Work_Climb_Solve(self, tmax = 60, delta_t = 1e-2, Pattern_Altitude = 700):
         """
         For pattern altitudes  it is usually about 700-1000 ft above ground level
@@ -25,8 +21,8 @@ class Climb(MissionPhase):
         self.Pitch = np.arccos(self.Aircraft.Velocity[0]/self.V_infty)
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
-        def Climb_EOM(Dot, mass):
-            return self.Pitch_EOM(Dot, mass)
+        def Climb_EOM(State, mass):
+            return self.Pitch_EOM(State, mass)
         
         Initial = np.block([self.Position, self.V_infty, self.Pitch])
 
@@ -55,9 +51,9 @@ class Climb(MissionPhase):
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
 
-    def Pitch_EOM(self, Dot, mass):
+    def Pitch_EOM(self, State, mass):
 
-        x, y, z, V_infty, Pitch = Dot
+        x, y, z, V_infty, Pitch = State
         self.Aircraft.Altitude = z*self.m_to_ft
         self.Aircraft.V_infty = V_infty
         self.Get_Aircraft_Attr()
@@ -76,12 +72,12 @@ class Climb(MissionPhase):
 
     def Get_Aircraft_Attr(self):
         super().Get_Aircraft_Attr()
-        # self.Pitch = np.arccos((self.Lift)/self.Weight)
         self.Altitude = self.Aircraft.Altitude
 
     def List_to_Array(self):
         super().List_to_Array()
         self.Altitude_List = np.array(self.Altitude_List)
+
 
     def Save_Data(self):
         super().Save_Data()
@@ -89,11 +85,6 @@ class Climb(MissionPhase):
             self.Altitude_List = [self.Altitude]
         else:
             self.Altitude_List.append(self.Altitude)
-        if not hasattr(self, "Pitch_List"):
-            self.Pitch_List = [self.Pitch]
-        else:
-            self.Pitch_List.append(self.Pitch)
-        # include pitch
 
 
 
@@ -120,8 +111,8 @@ class Climb(MissionPhase):
         self.Pitch = np.arcsin((self.Thrust-self.Drag)/self.Weight)
         self.Position = self.Aircraft.Position
         self.Velocity = self.V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
-        def Climb_EOM(Dot, mass):
-            x, y, z, v_x, v_y, v_z  = Dot
+        def Climb_EOM(State, mass):
+            x, y, z, v_x, v_y, v_z  = State
             self.Pitch = np.arctan2(v_z, v_x)
             Position = np.array([x, y, z])
             Velocity = np.array([v_x, v_y, v_z])
