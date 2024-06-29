@@ -23,10 +23,6 @@ ArcherClimbSim.Pattern_Work_Climb_Solve()
 ArcherCruiseSim = Cruise(ArcherAircraft)
 ArcherCruiseSim.Downwind_Solve_1()
 
-CruisePlot(ArcherCruiseSim)
-
-exit()
-
 ArcherDescentSim = Descent(ArcherAircraft)
 ArcherDescentSim.NoFlaps_Approach(tmax=10)
 Descent_Plot(ArcherDescentSim)

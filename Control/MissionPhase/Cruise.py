@@ -47,23 +47,7 @@ class Cruise(MissionPhase):
         """
         
         V_des = self.V_des
-        # print(self.Aircraft.Engine.RPM)
-        # exit()
         if abs(V_des-V_infty) <= .5:
             return (V_des-V_infty)/V_des*self.MaxRPM
         else:
             return copysign(1/27, V_des-V_infty)*self.MaxRPM
-
-
-
-
-    # def Get_Aircraft_Attr(self):
-    #     super().Get_Aircraft_Attr()
-    #     self.RPM = self.Aircraft.Engine.RPM
-
-    # def Save_Data(self):
-    #     super().Save_Data()
-    #     if not hasattr(self, "RPM_List"):
-    #         self.RPM_List = [self.RPM]
-    #     else:
-    #         self.RPM_List.append(self.RPM)

@@ -20,6 +20,9 @@ class Descent(Climb):
         that determines the what the engine's power setting should be based on the aircraft's state. 
 
         * EOM - RPM is now added to the EOM, but this does have limitations that shall be controlled for: 0 < RPM < 2700
+
+        Currently this method holds the pitch angle constant at 3 deg, and it utilized a closed loop controller to constrain engine RPM withssssssss
+        velocity
         """
         print("Beginning the descent phase")
         self.delta_t = delta_t
@@ -30,13 +33,14 @@ class Descent(Climb):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
         self.V_infty = self.Aircraft.V_infty
+        self.Aircraft.Set_Forces()
         self.Get_Aircraft_Attr()
-        self.Pitch = self.Aircraft.Pitch
+        self.Pitch = -3/180*np.pi
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
         def Descent_EOM(State, mass):
             return self.Pitch_EOM(State, mass)
-        Initial = np.block([self.Position, self.V_infty, self.Pitch, self.RPM])
+        Initial = np.block([self.Position, self.V_infty, self.RPM])
         Solution = self.Adam_Bashforth_Solve(Initial, Descent_EOM, tmax, delta_t)
         print("Descent is phase completed, now loading data")
         z = Solution[:,2]
@@ -44,8 +48,9 @@ class Descent(Climb):
         self.Position_y = Solution[:,1][z >= Ground_Altitude]
         self.Position_z = Solution[:,2][z >= Ground_Altitude]
         self.Velocity_List = Solution[:,3][z >= Ground_Altitude]
-        self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
-        self.RPM_List = Solution[:,5][z >= Ground_Altitude]
+        # self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
+        self.Pitch_list = []
+        self.RPM_List = Solution[:,4][z >= Ground_Altitude]
         self.Times = tArr[z >= Ground_Altitude]
 
         self.List_to_Array()
@@ -75,10 +80,13 @@ class Descent(Climb):
         """
 
     def Pitch_EOM(self, State, mass):
-        x, y, z, V_infty, Pitch, RPM = State
+        x, y, z, V_infty, RPM = State
         self.RPM = RPM
-        State = [x, y, z, V_infty, Pitch]
-        return np.array([*super().Pitch_EOM(State, mass), self.delta_RPM(V_infty)])
+        self.Aircraft.V_infty = V_infty
+        self.Aircraft.Set_Forces()
+        dPosition_dt = V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
+        dv_dt = self.Thrust-self.Drag-self.Weight*np.sin(self.Pitch)
+        return np.array([*dPosition_dt, dv_dt, self.delta_RPM(V_infty)])
     
     def delta_RPM(self, V_infty):
         """
@@ -87,19 +95,7 @@ class Descent(Climb):
         Within the error distance, it slows how much the throttle needs to adjust. 
         """
         V_des = self.V_des
-        if abs(V_des-V_infty) <= .3:
+        if abs(V_des-V_infty) <= .5:
             return (V_des-V_infty)/V_des*self.MaxRPM
         else:
             return copysign(1/27, V_des-V_infty)*self.MaxRPM
-        
-
-    # def List_to_Array(self):
-    #     super().List_to_Array()
-    #     self.RPM_List = np.array(self.RPM_List)
-
-    # def Save_Data(self):
-    #     super().Save_Data()
-    #     if not hasattr(self, "RPM_List"):
-    #         self.RPM_List = [self.RPM]
-    #     else:
-    #         self.RPM_List.append(self.RPM)
