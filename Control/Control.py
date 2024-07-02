@@ -43,7 +43,8 @@ class Control(Aviation):
 
     def Gather_Aerodynamics(self):
         """
-        Gather's the Aerodynamic Data into arrays for the entire mission. To obtain the data, run this function and call the attributes:
+        Gather's the aircraft's Aerodynamic-Data into arrays for the entire mission.
+        To obtain the data, run this function and call the attributes:
 
         * Control . . . Lift_Arr
         * Control . . . Thrust_Arr
@@ -61,17 +62,28 @@ class Control(Aviation):
             self.__setattr__(Aero + "_Arr", np.block(input))
         
     def Gather_EnginePars(self):
+        """
+        Gather's the aircraft's Engine-Data into arrays for the entire mission.
+        To obtain the data, run this function and call the attributes:
+
+        * Control . . . RPM_Arr [rev/min]
+        * Control . . . Percent_Arr [%]
+
+        """
+        Para_List = ["Percent", "RPM"]
+
         pass
     def Gather_States(self):
         """
-        Gather's the aircraft State Data into arrays for the entire mission. To obtain the data, run this function and call the attributes:
+        Gather's the aircraft's State-Data into arrays for the entire mission.
+        To obtain the data, run this function and call the attributes:
 
-        * Control . . . Time_Arr
-        * Control . . . Position_x_Arr
-        * Control . . . Position_y_Arr
-        * Control . . . Position_z_Arr
-        * Control . . . Velocity_Arr
-        * Control . . . Pitch_Arr
+        * Control . . . Time_Arr [s]
+        * Control . . . Position_x_Arr [m]
+        * Control . . . Position_y_Arr [m]
+        * Control . . . Position_z_Arr [m]
+        * Control . . . Velocity_Arr [m/s]
+        * Control . . . Pitch_Arr [rad]
 
         """
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
@@ -81,9 +93,6 @@ class Control(Aviation):
             input = []
             for Phase in Phase_List:
                 name = State + "_List"
-                if State == "Velocity":
-                    if isinstance(Phase, (Take_Off, Landing)):
-                        name = State + "_x"
                 if State[:-2] == "Position":
                     name = State
                 if State == "Pitch":

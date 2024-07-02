@@ -8,7 +8,7 @@ class Cruise(MissionPhase):
     def Downwind_Solve_1(self, tmax = 60, delta_t = 1e-2):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
-        self.V_des = 90*self.knots_to_mps # knots
+        self.V_des = 90*self.knots_to_mps
         self.RPM = 2200
         self.Altitude = self.Aircraft.Altitude
         self.Atmosphere_attr()
@@ -22,15 +22,10 @@ class Cruise(MissionPhase):
         self.Get_Aircraft_Attr() 
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
-        def Cruise_EOM(State, mass):
-            x, y, z, v_x, v_y, v_z, RPM = State
-            self.Aircraft.V_infty = v_x
-            self.RPM = RPM
-            self.Aircraft.Set_Lift()
-            self.Get_Aircraft_Attr()
-            return np.array([v_x, v_y, v_z, (self.Thrust-self.Drag)/mass, 0, 0, self.delta_RPM(v_x)])
+
+        
         Initial = np.block([self.Position, self.Velocity, self.RPM])
-        Solution = self.Adam_Bashforth_Solve(Initial, Cruise_EOM, tmax, delta_t)
+        Solution = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, tmax, delta_t)
         
         self.Position_x = Solution[:,0]
         self.Position_y = Solution[:,1]
@@ -39,6 +34,15 @@ class Cruise(MissionPhase):
         self.RPM_List = Solution[:,6]
         self.Time_List = tArr
         self.List_to_Array()
+
+
+    def Cruise_EOM(self, State, mass):
+        x, y, z, V_infty, RPM = State
+        self.Aircraft.V_infty = V_infty
+        self.RPM = RPM
+        self.Aircraft.Set_Lift()
+        self.Get_Aircraft_Attr()
+        return np.array([V_infty, 0, 0, (self.Thrust-self.Drag)/mass, self.delta_RPM(V_infty)])
 
     def delta_RPM(self, V_infty):
         """

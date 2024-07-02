@@ -60,7 +60,7 @@ class Wings(Aircraft):
 
 
 
-        C_D_0 = 0.0296*1.4 + self.C_D_flaps
+        C_D_0 = 0.06 + self.C_D_flaps
         C_D = C_D_0 + self.K*self.Get_C_L()**2
         self.C_D = C_D
 

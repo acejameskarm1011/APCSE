@@ -28,53 +28,36 @@ class Take_Off(MissionPhase):
         
         Notes: The restricted ground roll is stored inside the instance of the Take_Off class
         """
-        self.Aircraft.Set_RPM(2700)
+        self.RPM = 2700
+        self.Aircraft.Set_RPM(self.RPM)
         self.reset()
         V_r = self.Aircraft.RotationSpeed*1.05
         self.Get_Aircraft_Attr()
         self.Pitch = 0
 
-        mu_f = 0.04
+        self.mu_f = 0.04
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
 
-        def TakeOff_ODE(State, mass):
-            x, y, z, v_x, v_y, v_z = State
-            Position = np.array([x, y, z])
-            Velocity = np.array([v_x, v_y, v_z])
-            self.Aircraft.Velocity = Velocity
-            self.Get_Aircraft_Attr()
-            dxdt = v_x
-            dydt = v_y
-            dzdt = v_z
-            dv_xdt = 1/mass*(self.Thrust-self.Drag-(mass*self.g-self.Lift)*mu_f)
-            dv_ydt = 0
-            dv_zdt = 0
-            return np.array([dxdt, dydt, dzdt, dv_xdt, dv_ydt, dv_zdt])
-        
-
-
-        Initial = np.zeros(6, float)
-        Solution = self.Adam_Bashforth_Solve(Initial, TakeOff_ODE, tmax, delta_t)
-        vx = Solution[:,3]
-        self.Velocity_x = Solution[:,3][vx <= V_r]
-        self.Velocity_y = Solution[:,4][vx <= V_r]
-        self.Velocity_z = Solution[:,5][vx <= V_r]
-        self.Position_x = Solution[:,0][vx <= V_r]
-        self.Position_y = Solution[:,1][vx <= V_r]
-        self.Position_z = Solution[:,2][vx <= V_r]
-        self.Time_List = tArr[vx <= V_r]
+        Initial = np.zeros(4, float)
+        Solution = self.Adam_Bashforth_Solve(Initial, self.TakeOff_ODE, tmax, delta_t)
+        V_infty = Solution[:,3]
+        self.Position_x = Solution[:,0][V_infty <= V_r]
+        self.Position_y = Solution[:,1][V_infty <= V_r]
+        self.Position_z = Solution[:,2][V_infty <= V_r]
+        self.Velocity_x = Solution[:,3][V_infty <= V_r]
+        self.Time_List = tArr[V_infty <= V_r]
 
         self.List_to_Array()
-        self.Lift_List = self.Lift_List[vx <= V_r]
-        self.Thrust_List = self.Thrust_List[vx <= V_r]
-        self.Drag_List = self.Drag_List[vx <= V_r]
-        self.Weight_List = self.Weight_List[vx <= V_r]
-        self.Percent_List = self.Percent_List[vx <= V_r]
+        self.Lift_List = self.Lift_List[V_infty <= V_r]
+        self.Thrust_List = self.Thrust_List[V_infty <= V_r]
+        self.Drag_List = self.Drag_List[V_infty <= V_r]
+        self.Weight_List = self.Weight_List[V_infty <= V_r]
+        self.Percent_List = self.Percent_List[V_infty <= V_r]
 
         Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
         if not np.any(np.abs(self.Velocity_x*self.mps_to_knots) > V_r):
-            print(vx*self.mps_to_knots)
+            print(V_infty*self.mps_to_knots)
             raise Exception("Simulation did not run long enough in order for rotation speed. Ajust and increase the time length so that the Aircraft can reach rotation speed.")
         self.Aircraft.Velocity = np.array([self.Velocity_x[-1], self.Velocity_y[-1], self.Velocity_z[-1]])
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
@@ -82,6 +65,16 @@ class Take_Off(MissionPhase):
         print("Ground Rolls is: {} with a dt of {}".format(self.Position_x[-1]*self.m_to_ft, delta_t))
         return Solution
 
+    def TakeOff_ODE(self, State, mass):
+                x, y, z, V_infty, v_y, v_z = State
+                Position = np.array([x, y, z])
+                self.Aircraft.V_infty = V_infty
+                self.Get_Aircraft_Attr()
+                dxdt = V_infty
+                dydt = 0
+                dzdt = 0
+                dv_dt = 1/mass*(self.Thrust-self.Drag-(mass*self.g-self.Lift)*self.mu_f)
+                return np.array([dxdt, dydt, dzdt, dv_dt])
     
     def reset(self, ground_level = 0):
         """

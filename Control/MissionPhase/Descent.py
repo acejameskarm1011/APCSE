@@ -41,10 +41,9 @@ class Descent(Climb):
         self.Aircraft.Pitch = self.Pitch
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
-        def Descent_EOM(State, mass):
-            return self.Pitch_EOM(State, mass)
+ 
         Initial = np.block([self.Position, self.V_infty, self.Pitch, self.RPM])
-        Solution = self.Adam_Bashforth_Solve(Initial, Descent_EOM, tmax, delta_t)
+        Solution = self.Adam_Bashforth_Solve(Initial, self.Pitch_EOM, tmax, delta_t)
 
 
 
@@ -90,8 +89,7 @@ class Descent(Climb):
         self.Aircraft.Altitude = z*self.m_to_ft
         self.Aircraft.V_infty = V_infty
         self.Aircraft.Pitch = Pitch
-        if abs(V_infty) < 0:
-            raise ValueError("This velocity of {} is not possible".format(V_infty))
+
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr()
         dPosition_dt = V_infty*np.array([np.cos(Pitch), 0, np.sin(Pitch)])

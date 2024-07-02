@@ -11,6 +11,15 @@ class Climb(MissionPhase):
     def Pattern_Work_Climb_Solve(self, tmax = 60, delta_t = 1e-2, Pattern_Altitude = 700):
         """
         For pattern altitudes  it is usually about 700-1000 ft above ground level
+
+        Paramters
+        ---------
+        tmax : int/float
+            Maximum time run of simulation in [s]
+        delta_t : int/float
+            Time step that will determine the step length in the time array
+        Pattern_Altitude : int/float [ft]
+            Desired altitude to fly to
         """
         print("Climb Phase Starting")
         self.V_infty = self.Aircraft.V_infty
@@ -21,13 +30,12 @@ class Climb(MissionPhase):
         self.Pitch = np.arccos(self.Aircraft.Velocity[0]/self.V_infty)
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
-        def Climb_EOM(State, mass):
-            return self.Pitch_EOM(State, mass)
-        
+
         Initial = np.block([self.Position, self.V_infty, self.Pitch])
 
-        Solution = self.Adam_Bashforth_Solve(Initial, Climb_EOM, tmax, delta_t)
-        print("Climb phase completed, now loading data")
+        Solution = self.Adam_Bashforth_Solve(Initial, self.Pitch_EOM, tmax, delta_t)
+        print("Climb phase completed")
+
         z = Solution[:,2]
         self.Position_x = Solution[:,0][z <= Max_z]
         self.Position_y = Solution[:,1][z <= Max_z]
@@ -52,11 +60,12 @@ class Climb(MissionPhase):
 
 
     def Pitch_EOM(self, State, mass):
-
         x, y, z, V_infty, Pitch = State
-        self.Aircraft.Altitude = z*self.m_to_ft
+
+        self.Aircraft.Position = np.array([x, y, z])
         self.Aircraft.V_infty = V_infty
         self.Get_Aircraft_Attr()
+
         dxdt = V_infty*np.cos(Pitch)
         dydt = 0
         dzdt = V_infty*np.sin(Pitch)
