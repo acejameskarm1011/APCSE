@@ -9,7 +9,7 @@ class Cruise(MissionPhase):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
         self.V_des = 90*self.knots_to_mps # knots
-        self.RPM = 2000
+        self.RPM = 2200
         self.Altitude = self.Aircraft.Altitude
         self.Atmosphere_attr()
         V_infty = self.V_des

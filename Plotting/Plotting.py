@@ -232,7 +232,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     axs[1,1].plot(time, Percent, "y--", linewidth=linewidth)
     axs[1,1].set_ylabel(r"Percent [\%]")
     axs[1,1].set_xlim((0,time.max()))
-    axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
+    axs[2,0].plot(time[1:], Lift[1:], "g", linewidth=linewidth)
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")
     axs[2,0].set_xlim((0,time.max()))
     axs[2,1].plot(time, Drag, "r--", linewidth=linewidth)

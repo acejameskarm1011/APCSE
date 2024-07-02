@@ -8,9 +8,32 @@ from Plotting.Plotting import Descent_Plot
 from Plotting.Plotting import CruisePlot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 
-# ArcherAircraft.Position = np.array([0,0,213.36])
-# ArcherAircraft.Pitch = 0
-# ArcherAircraft.V_infty = 90*sp.constants.knot
+
+
+
+
+
+
+from PiperArcherIII_Blueprint import ArcherEngine
+
+n = 1000
+
+# RPM = np.linspace(0,2700, n)
+# Power = []
+# for rpm in RPM: 
+#     ArcherEngine.RPM = rpm
+#     Power.append(ArcherEngine.Power)
+# Power = np.array(Power)/sp.constants.hp
+# print(Power.max())
+# print(ArcherEngine.MaxPower/sp.constants.hp)
+# plt.plot(RPM, Power)
+# plt.xlabel("RPM")
+# plt.ylabel("Power [hp]")
+# plt.show()
+# plt.close()
+# exit()
+
+
 
 
 
@@ -24,7 +47,7 @@ ArcherCruiseSim = Cruise(ArcherAircraft)
 ArcherCruiseSim.Downwind_Solve_1()
 
 ArcherDescentSim = Descent(ArcherAircraft)
-ArcherDescentSim.NoFlaps_Approach(tmax=10)
+ArcherDescentSim.Approach_Descent()
 Descent_Plot(ArcherDescentSim)
 
 

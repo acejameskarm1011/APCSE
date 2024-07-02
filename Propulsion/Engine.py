@@ -115,6 +115,8 @@ class PistonEngine(Powerplant):
         Thrust_Static : float
             The current thrust of the engine when the velocity is zero.
         """
+        if self.rho < 0:
+            raise ValueError("An invalid value of {} was found for the air density".format(self.rho))
         self.Atmosphere_attr()
         A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
         # Get the disk area of the propeller, and get the efficiency of the area that accounts for blockage effects
@@ -127,6 +129,9 @@ class PistonEngine(Powerplant):
         Utilizing a quadradic interpolation of the 
         """
         V = Velocity_infty
+        if Velocity_infty > Velocity_NE:
+            raise ValueError("Velocity cannot be this high: {}".format(Velocity_infty*self.mps_to_knots))
+            Velocity_infty = Velocity_NE
         Velocity_Max = Velocity_NE
         Thrust_Max = self.Power/Velocity_Max
         Thrust_Static = self.Thrust_Static()
@@ -194,11 +199,11 @@ class PistonEngine(Powerplant):
             Current power output of the propeller [W]
         """
         sigma = self.rho/self.rho_SL
-        R_m = np.sin(self.Throttle**3*np.pi/2)
+        R_m = np.sin(self.Throttle*np.pi/2)
         if np.isclose(1.0, self.Throttle):
             self.Power = self.MaxPower*sigma
         else:
-            self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m)
+            self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097))
         return self.Power
 
     def Get_FuelConsumption(self):

@@ -194,7 +194,11 @@ class Aircraft(Aviation):
         S = self.Wings.S_wing
         C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
         self.Wings.Set_C_L(C_L)
+        C_L = self.Wings.Get_C_L()
+        
+        self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
         C_D = self.Wings.Get_C_D()
+        # print("Angle of Attack: {}".format(self.Wings.alpha))
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         self.GetTotalThrust()
 

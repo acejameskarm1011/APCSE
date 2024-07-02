@@ -26,9 +26,10 @@ class Wings(Aircraft):
         self.AR = self.b_wing**2/self.S_wing
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
         self.K = 1/(np.pi*self.e_0*self.AR)
-
+        self.Flaps(0)
 
         ################
+        self.alpha_crit = 12
         self.alpha = 3
         # self.alpha = 0
         self.tau = 0
@@ -60,7 +61,7 @@ class Wings(Aircraft):
 
 
 
-        C_D_0 = 0.0296*1.4
+        C_D_0 = 0.0296*1.4 + self.C_D_flaps
         C_D = C_D_0 + self.K*self.Get_C_L()**2
         self.C_D = C_D
         return C_D
@@ -80,13 +81,33 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
-        C_L = self.C_L_0 + self.C_L_alpha*self.alpha
+        C_L = self.C_L_0 + self.C_L_alpha*self.alpha + self.C_L_flaps
         self.C_L = C_L
         return C_L
+    
+
+
     def Set_C_L(self, C_L):
+        """
+        This method sets the aircraft's current angle of attack based on a desired coefficient of lift. Using the linear approximation for
+        for how C_L scales with AOA, we solve for the AOA. However, if the found AOA is larger than the critical AOA, then the AOA will be forced
+        to stay at or below the critical value. 
+
+        Parameters
+        ---------
+
+        """
         self.C_L = C_L
-        self.alpha = (C_L - self.C_L_0)/(self.C_L_alpha)
-        
+        self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
+        if self.alpha > self.alpha_crit:
+            self.alpha = self.alpha_crit
+
+    def Flaps(self, deg):
+        factor = deg / 40
+        self.C_L_flaps = 0.05 * factor
+        self.C_D_flaps = 0.02 * factor
+
+
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
         if name == "Altitude":

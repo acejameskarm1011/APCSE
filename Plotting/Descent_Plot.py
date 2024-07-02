@@ -46,7 +46,7 @@ def Descent_Plot(Descent, title = "Descent Plots"):
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")
     axs[2,0].set_xlim((0,time.max()))
     axs[2,1].plot(time, Thrust, "r--", linewidth=linewidth)
-    axs[2,1].set_ylabel(r"Thrust - $D$ [N]")
+    axs[2,1].set_ylabel(r"Thrust - $T$ [N]")
     axs[2,1].set_xlim((0,time.max()))
     axs[2,1].set_xlabel(r"Time - $t$ [s]")
     axs[2,0].set_xlabel(r"Time - $t$ [s]")

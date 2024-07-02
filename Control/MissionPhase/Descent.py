@@ -11,10 +11,10 @@ class Descent(Climb):
         Velocity = self.V_infty*np.array([np.cos(gamma),0,np.sin(gamma)])
         self.Aircraft.Velocity = Velocity
         self.Aircraft.Pitch = gamma
-        self.Aircraft.Set_Forces()
+        self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr()
 
-    def NoFlaps_Approach(self, tmax = 60, delta_t = 1e-2):
+    def Approach_Descent(self, tmax = 2*60, delta_t = 1e-2):
         """
         This method of evaluating the aircraft's descent uses the same EOM as Climb's "Pattern_Work_Climb_Solve()" except there's a controller 
         that determines the what the engine's power setting should be based on the aircraft's state. 
@@ -28,20 +28,26 @@ class Descent(Climb):
         self.delta_t = delta_t
         Ground_Altitude = 0
         self.V_des = 70 * self.knots_to_mps
-        self.RPM = 1000
-        self.MaxRPM = self.Aircraft.Engine.MaxRPM
+        self.RPM = 500
+
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
+
         self.V_infty = self.Aircraft.V_infty
-        self.Aircraft.Set_Forces()
+        self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr()
         self.Pitch = -3/180*np.pi
+        self.Aircraft.Wings.Flaps(40)
+        self.Aircraft.Pitch = self.Pitch
         self.Position = self.Aircraft.Position
-        self.Velocity = self.Aircraft.Velocity
+        self.Velocity = self.Aircraft.V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
         def Descent_EOM(State, mass):
             return self.Pitch_EOM(State, mass)
-        Initial = np.block([self.Position, self.V_infty, self.RPM])
+        Initial = np.block([self.Position, self.V_infty, self.Pitch, self.RPM])
         Solution = self.Adam_Bashforth_Solve(Initial, Descent_EOM, tmax, delta_t)
+
+
+
         print("Descent is phase completed, now loading data")
         z = Solution[:,2]
         self.Position_x = Solution[:,0][z >= Ground_Altitude]
@@ -49,8 +55,8 @@ class Descent(Climb):
         self.Position_z = Solution[:,2][z >= Ground_Altitude]
         self.Velocity_List = Solution[:,3][z >= Ground_Altitude]
         # self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
-        self.Pitch_list = []
-        self.RPM_List = Solution[:,4][z >= Ground_Altitude]
+        self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
+        self.RPM_List = Solution[:,5][z >= Ground_Altitude]
         self.Times = tArr[z >= Ground_Altitude]
 
         self.List_to_Array()
@@ -60,11 +66,12 @@ class Descent(Climb):
         self.Weight_List = self.Weight_List[z >= Ground_Altitude]
         self.Percent_List = self.Percent_List[z >= Ground_Altitude]
         self.Altitude_List = self.Altitude_List[z >= Ground_Altitude]
+        self.Pitch_List = 3/180*np.pi*np.ones(len(self.Altitude_List))
         Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
         print("Time elapsed during descent: {} min".format(self.Times[-1]/60))
-        # if not np.any(z < Ground_Altitude):
-        #     print(z*self.m_to_ft)
-        #     raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
+        if not np.any(z < Ground_Altitude):
+            print(z*self.m_to_ft)
+            raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
         """
@@ -80,13 +87,22 @@ class Descent(Climb):
         """
 
     def Pitch_EOM(self, State, mass):
-        x, y, z, V_infty, RPM = State
+        x, y, z, V_infty, Pitch, RPM = State
         self.RPM = RPM
+        self.Aircraft.Altitude = z*self.m_to_ft
         self.Aircraft.V_infty = V_infty
-        self.Aircraft.Set_Forces()
-        dPosition_dt = V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
-        dv_dt = self.Thrust-self.Drag-self.Weight*np.sin(self.Pitch)
-        return np.array([*dPosition_dt, dv_dt, self.delta_RPM(V_infty)])
+        self.Aircraft.Pitch = Pitch
+        if abs(V_infty) < 0:
+            raise ValueError("This velocity of {} is not possible".format(V_infty))
+        self.Aircraft.Set_Lift()
+        self.Get_Aircraft_Attr()
+        dPosition_dt = V_infty*np.array([np.cos(Pitch), 0, np.sin(Pitch)])
+        dgamma_dt = (self.Lift - self.Weight*np.cos(Pitch))/mass
+        dv_dt = (self.Thrust - self.Drag - self.Weight*np.sin(Pitch))/mass
+        dRPM_dt = self.delta_RPM(V_infty)
+        if not np.isclose(self.RPM, RPM):
+            dRPM_dt = -dRPM_dt*.5
+        return np.array([*dPosition_dt, dv_dt, dgamma_dt, dRPM_dt])
     
     def delta_RPM(self, V_infty):
         """
@@ -95,7 +111,8 @@ class Descent(Climb):
         Within the error distance, it slows how much the throttle needs to adjust. 
         """
         V_des = self.V_des
-        if abs(V_des-V_infty) <= .5:
+        if abs(V_des-V_infty) <= 5:
             return (V_des-V_infty)/V_des*self.MaxRPM
         else:
-            return copysign(1/27, V_des-V_infty)*self.MaxRPM
+            return copysign(1/40, V_des-V_infty)*self.MaxRPM
+        
