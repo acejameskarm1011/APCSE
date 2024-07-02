@@ -32,6 +32,7 @@ class Take_Off(MissionPhase):
         self.reset()
         V_r = self.Aircraft.RotationSpeed*1.05
         self.Get_Aircraft_Attr()
+        self.Pitch = 0
 
         mu_f = 0.04
         tArr = np.arange(0, tmax, delta_t)
@@ -62,7 +63,7 @@ class Take_Off(MissionPhase):
         self.Position_x = Solution[:,0][vx <= V_r]
         self.Position_y = Solution[:,1][vx <= V_r]
         self.Position_z = Solution[:,2][vx <= V_r]
-        self.Times = tArr[vx <= V_r]
+        self.Time_List = tArr[vx <= V_r]
 
         self.List_to_Array()
         self.Lift_List = self.Lift_List[vx <= V_r]
@@ -77,7 +78,7 @@ class Take_Off(MissionPhase):
             raise Exception("Simulation did not run long enough in order for rotation speed. Ajust and increase the time length so that the Aircraft can reach rotation speed.")
         self.Aircraft.Velocity = np.array([self.Velocity_x[-1], self.Velocity_y[-1], self.Velocity_z[-1]])
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
-        self.Aircraft.Endurance = self.Times[-1]
+        self.Aircraft.Endurance = self.Time_List[-1]
         print("Ground Rolls is: {} with a dt of {}".format(self.Position_x[-1]*self.m_to_ft, delta_t))
         return Solution
 

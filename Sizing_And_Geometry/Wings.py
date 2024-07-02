@@ -1,6 +1,5 @@
 from Aircraft import Aircraft
 import numpy as np
-
 # from Aerodynamic_Classes.C_D import * 
 
 
@@ -30,12 +29,12 @@ class Wings(Aircraft):
 
         ################
         self.alpha_crit = 12
-        self.alpha = 3
+        self.alpha = 3 # Make sure it stays at 3 deg for Landing ground roll
         # self.alpha = 0
         self.tau = 0
-        self.C_l_alpha = 0.11031
+        self.C_l_alpha = 0.11031 # Found online 
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
-        self.C_L_0 = .6
+        self.C_L_0 = 0.34 # C_l_0 for the NACA 65(2)-415
         ###########
 
 
@@ -64,6 +63,9 @@ class Wings(Aircraft):
         C_D_0 = 0.0296*1.4 + self.C_D_flaps
         C_D = C_D_0 + self.K*self.Get_C_L()**2
         self.C_D = C_D
+
+        # Total Drag should around 0.86 at sea level and at 90 knots / 1.135 Mach
+
         return C_D
     def Get_C_L(self):
         """
@@ -100,12 +102,13 @@ class Wings(Aircraft):
         self.C_L = C_L
         self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
         if self.alpha > self.alpha_crit:
-            self.alpha = self.alpha_crit
+            print(self.alpha)
+        #     self.alpha = self.alpha_crit
 
     def Flaps(self, deg):
         factor = deg / 40
         self.C_L_flaps = 0.05 * factor
-        self.C_D_flaps = 0.02 * factor
+        self.C_D_flaps = 0.1 * factor
 
 
     def __setattr__(self, name, value):

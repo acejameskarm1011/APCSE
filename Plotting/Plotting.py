@@ -245,6 +245,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     fig.suptitle(title)
     plt.savefig(image_dir + r"\\Cruise_Performance\\" + title.replace(" ", "_")+".png")
     plt.show()
+    
 
 
 

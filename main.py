@@ -8,50 +8,17 @@ np.set_printoptions(suppress=True)
 from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 
-
-
-
-
-
-
 from PiperArcherIII_Blueprint import ArcherEngine
 
-n = 1000
 
-# RPM = np.linspace(0,2700, n)
-# Power = []
-# for rpm in RPM: 
-#     ArcherEngine.RPM = rpm
-#     Power.append(ArcherEngine.Power)
-# Power = np.array(Power)/sp.constants.hp
-# print(Power.max())
-# print(ArcherEngine.MaxPower/sp.constants.hp)
-# plt.plot(RPM, Power)
-# plt.xlabel("RPM")
-# plt.ylabel("Power [hp]")
-# plt.show()
-# plt.close()
-# exit()
+ControlArcher = Control(ArcherAircraft)
+ControlArcher.Pattern_Cycle()
+
+if hasattr(ControlArcher, "Velocity_Arr"):
+    print(ControlArcher.Velocity_Arr)
 
 
 
-
-
-ArcherTakeOffSim = Take_Off(ArcherAircraft)
-ArcherTakeOffSim.Ground_Roll_Sim_ODESolve()
-
-ArcherClimbSim = Climb(ArcherAircraft)
-ArcherClimbSim.Pattern_Work_Climb_Solve()
-
-ArcherCruiseSim = Cruise(ArcherAircraft)
-ArcherCruiseSim.Downwind_Solve_1()
-
-ArcherDescentSim = Descent(ArcherAircraft)
-ArcherDescentSim.Approach_Descent()
-
-ArcherLandingSim = Landing(ArcherAircraft)
-ArcherLandingSim.Ground_Roll()
-TakeOff_Plot(ArcherLandingSim)
 
 
 exit()

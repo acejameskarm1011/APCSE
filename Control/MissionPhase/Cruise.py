@@ -15,7 +15,8 @@ class Cruise(MissionPhase):
         V_infty = self.V_des
         self.Aircraft.Velocity = V_infty*np.array([1,0,0])
         self.Aircraft.V_infty = V_infty
-        self.Aircraft.Pitch = 0
+        self.Pitch = 0
+        self.Aircraft.Pitch = self.Pitch
 
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr() 
@@ -36,7 +37,7 @@ class Cruise(MissionPhase):
         self.Position_z = Solution[:,2]
         self.Velocity_List = Solution[:,3]
         self.RPM_List = Solution[:,6]
-        self.Times = tArr
+        self.Time_List = tArr
         self.List_to_Array()
 
     def delta_RPM(self, V_infty):

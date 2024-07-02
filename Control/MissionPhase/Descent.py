@@ -28,7 +28,7 @@ class Descent(Climb):
         self.delta_t = delta_t
         Ground_Altitude = 0
         self.V_des = 70 * self.knots_to_mps
-        self.RPM = 500
+        self.RPM = 1500
 
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
@@ -54,10 +54,9 @@ class Descent(Climb):
         self.Position_y = Solution[:,1][z >= Ground_Altitude]
         self.Position_z = Solution[:,2][z >= Ground_Altitude]
         self.Velocity_List = Solution[:,3][z >= Ground_Altitude]
-        # self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
         self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
         self.RPM_List = Solution[:,5][z >= Ground_Altitude]
-        self.Times = tArr[z >= Ground_Altitude]
+        self.Time_List = tArr[z >= Ground_Altitude]
 
         self.List_to_Array()
         self.Lift_List = self.Lift_List[z >= Ground_Altitude]
@@ -66,9 +65,8 @@ class Descent(Climb):
         self.Weight_List = self.Weight_List[z >= Ground_Altitude]
         self.Percent_List = self.Percent_List[z >= Ground_Altitude]
         self.Altitude_List = self.Altitude_List[z >= Ground_Altitude]
-        self.Pitch_List = 3/180*np.pi*np.ones(len(self.Altitude_List))
         Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
-        print("Time elapsed during descent: {} min".format(self.Times[-1]/60))
+        print("Time elapsed during descent: {} min".format(self.Time_List[-1]/60))
         if not np.any(z < Ground_Altitude):
             print(z*self.m_to_ft)
             raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
@@ -102,6 +100,7 @@ class Descent(Climb):
         dRPM_dt = self.delta_RPM(V_infty)
         if not np.isclose(self.RPM, RPM):
             dRPM_dt = -dRPM_dt
+        dRPM_dt = 0
         return np.array([*dPosition_dt, dv_dt, dgamma_dt, dRPM_dt])
     
     def delta_RPM(self, V_infty):
