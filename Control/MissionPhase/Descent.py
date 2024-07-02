@@ -14,7 +14,7 @@ class Descent(Climb):
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr()
 
-    def Approach_Descent(self, tmax = 2*60, delta_t = 1e-2):
+    def Approach_Descent(self, tmax = 1.9*60, delta_t = 1e-2):
         """
         This method of evaluating the aircraft's descent uses the same EOM as Climb's "Pattern_Work_Climb_Solve()" except there's a controller 
         that determines the what the engine's power setting should be based on the aircraft's state. 
@@ -101,7 +101,7 @@ class Descent(Climb):
         dv_dt = (self.Thrust - self.Drag - self.Weight*np.sin(Pitch))/mass
         dRPM_dt = self.delta_RPM(V_infty)
         if not np.isclose(self.RPM, RPM):
-            dRPM_dt = -dRPM_dt*.5
+            dRPM_dt = -dRPM_dt
         return np.array([*dPosition_dt, dv_dt, dgamma_dt, dRPM_dt])
     
     def delta_RPM(self, V_infty):
@@ -111,7 +111,7 @@ class Descent(Climb):
         Within the error distance, it slows how much the throttle needs to adjust. 
         """
         V_des = self.V_des
-        if abs(V_des-V_infty) <= 5:
+        if abs(V_des-V_infty) <= 1.4:
             return (V_des-V_infty)/V_des*self.MaxRPM
         else:
             return copysign(1/40, V_des-V_infty)*self.MaxRPM

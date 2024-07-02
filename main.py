@@ -4,8 +4,8 @@ import numpy as np
 from time import *
 np.set_printoptions(suppress=True)
 
-from Plotting.Plotting import Descent_Plot
-from Plotting.Plotting import CruisePlot
+
+from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 
 
@@ -48,7 +48,10 @@ ArcherCruiseSim.Downwind_Solve_1()
 
 ArcherDescentSim = Descent(ArcherAircraft)
 ArcherDescentSim.Approach_Descent()
-Descent_Plot(ArcherDescentSim)
+
+ArcherLandingSim = Landing(ArcherAircraft)
+ArcherLandingSim.Ground_Roll()
+TakeOff_Plot(ArcherLandingSim)
 
 
 exit()

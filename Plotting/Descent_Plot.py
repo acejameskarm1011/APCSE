@@ -42,7 +42,7 @@ def Descent_Plot(Descent, title = "Descent Plots"):
     axs[1,1].plot(time, RPM, "y--", linewidth=linewidth)
     axs[1,1].set_ylabel(r"RPM [rev/min]")
     axs[1,1].set_xlim((0,time.max()))
-    axs[2,0].plot(time, Lift, "g", linewidth=linewidth)
+    axs[2,0].plot(time[1:], Lift[1:], "g", linewidth=linewidth)
     axs[2,0].set_ylabel(r"Lift - $L$ [N]")
     axs[2,0].set_xlim((0,time.max()))
     axs[2,1].plot(time, Thrust, "r--", linewidth=linewidth)
