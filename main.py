@@ -5,7 +5,7 @@ from time import *
 np.set_printoptions(suppress=True)
 
 
-from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot
+from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot, Pattern_Plot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 
 from PiperArcherIII_Blueprint import ArcherEngine
@@ -13,9 +13,14 @@ from PiperArcherIII_Blueprint import ArcherEngine
 
 ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
+V = ControlArcher.Velocity_Arr
+T = ControlArcher.Time_Arr
 
-if hasattr(ControlArcher, "Velocity_Arr"):
-    print(ControlArcher.Velocity_Arr)
+
+Pattern_Plot(ControlArcher)
+
+
+
 
 
 

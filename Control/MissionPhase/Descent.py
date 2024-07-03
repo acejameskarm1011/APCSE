@@ -113,3 +113,5 @@ class Descent(Climb):
         else:
             return copysign(1/40, V_des-V_infty)*self.MaxRPM
         
+    def __repr__(self) -> str:
+          return "Descent"

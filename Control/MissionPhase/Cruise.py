@@ -21,19 +21,18 @@ class Cruise(MissionPhase):
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr() 
         self.Position = self.Aircraft.Position
-        self.Velocity = self.Aircraft.Velocity
-
         
-        Initial = np.block([self.Position, self.Velocity, self.RPM])
+        Initial = np.block([self.Position, V_infty, self.RPM])
         Solution = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, tmax, delta_t)
         
         self.Position_x = Solution[:,0]
         self.Position_y = Solution[:,1]
         self.Position_z = Solution[:,2]
         self.Velocity_List = Solution[:,3]
-        self.RPM_List = Solution[:,6]
+        self.RPM_List = Solution[:,4]
         self.Time_List = tArr
         self.List_to_Array()
+        self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
 
     def Cruise_EOM(self, State, mass):
@@ -56,3 +55,5 @@ class Cruise(MissionPhase):
             return (V_des-V_infty)/V_des*self.MaxRPM
         else:
             return copysign(1/27, V_des-V_infty)*self.MaxRPM
+    def __repr__(self) -> str:
+          return "Cruise"

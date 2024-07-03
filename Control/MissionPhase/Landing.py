@@ -35,7 +35,7 @@ class Landing(Take_Off):
         self.Pitch = 0
 
         self.Position = self.Aircraft.Position
-        self.Velocity = self.Aircraft.V_infty*np.array([1,0,0])
+        self.V_infty = self.Aircraft.V_infty
 
         self.Get_Aircraft_Attr()
 
@@ -44,14 +44,14 @@ class Landing(Take_Off):
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)       
 
-        Initial = np.block([self.Position, self.Velocity])
-        Solution = self.Adam_Bashforth_Solve(Initial, self.Landing_ODE(), tmax, delta_t)
+        Initial = np.block([self.Position, self.V_infty])
+        Solution = self.Adam_Bashforth_Solve(Initial, self.Landing_ODE, tmax, delta_t)
+
         V_infty = Solution[:,3]
         self.Position_x = Solution[:,0][V_infty >= 0]
         self.Position_y = Solution[:,1][V_infty >= 0]
         self.Position_z = Solution[:,2][V_infty >= 0]
         self.Velocity_List = Solution[:,3][V_infty >= 0]
-
         self.Time_List = tArr[V_infty >= 0]
 
         self.List_to_Array()
@@ -62,13 +62,16 @@ class Landing(Take_Off):
         self.Percent_List = self.Percent_List[V_infty >= 0]
 
         Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
-        if not np.any(self.Velocity < 0):
-            raise Exception("Simulation did not run long enough to stop. Ajust and increase the time length so that the Aircraft can reach 0 speed.")
-        self.Aircraft.Velocity = np.array([self.Velocity_x[-1], self.Velocity_y[-1], self.Velocity_z[-1]])
+
+        # if not np.any(self.V_infty < 0):
+        #     raise Exception("Simulation did not run long enough to stop. Ajust and increase the time length so that the Aircraft can reach 0 speed.")
+        
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
-        self.Aircraft.Endurance = self.Time_List[-1]
         print("Ground Rolls is: {} with a dt of {}".format((self.Position_x[-1]-self.Position[0])*self.m_to_ft, delta_t))
         return Solution
 
     def Landing_ODE(self, State, mass):
-        return self.Take_Off_ODE(State, mass)
+        return self.TakeOff_ODE(State, mass)
+    
+    def __repr__(self) -> str:
+          return "Landing"

@@ -276,3 +276,22 @@ class ElectricEngineTest(PistonEngine):
         PowerWatt = self.Power
         Delta_Energy = -PowerWatt*dt/eta
         return Delta_Energy
+    
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        if name == "RPM":
+            max = self.MaxRPM
+            min = 250
+            if value > max:
+                value = max
+            elif value < min:
+                value = min
+        object.__setattr__(self, name, value)
+        # TYP the RPM will always be defined first as the POH usually dictates the RPM
+        if name == "RPM":
+            self.Throttle = self.RPM/self.MaxRPM
+            self.Get_Power() 
+            # RPM affects power, so if the RPM changes, then so must the power
+    
+    def Get_Power(self):
+        self.Power = self.MaxPower*self.Throttle

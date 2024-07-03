@@ -49,7 +49,7 @@ class Aircraft(Aviation):
         self.Drag = 0.
         self.Thrust = 0.
         self.Atmosphere_attr()
-        self.Velocity_hat = np.array([1.,0.,0.])
+        self.Velocity_hat = np.array([1., 0., 0.])
         self.Velocity = np.zeros(3, float)
         self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
         self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
@@ -61,8 +61,7 @@ class Aircraft(Aviation):
         self.FuelRatio = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.Weight = self.TotalMass * self.g
-        self.Range = 0.
-        self.Endurance = 0.
+
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
@@ -80,6 +79,7 @@ class Aircraft(Aviation):
         """
         self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.NeverExceedSpeed)
         return self.Thrust
+    
     def Set_RPM(self, RPM):
         """
         From within the aircraft class, we set RPM of the engine to be of a specified value.
@@ -179,16 +179,6 @@ class Aircraft(Aviation):
         self.BatteryMass = MassFactor*self.FuelMass*eta_mass
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
 
-    def Set_Forces(self):
-        self.Lift = self.Weight*np.cos(self.Pitch)
-        S = self.Wings.S_wing
-        C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
-        self.Wings.Set_C_L(C_L)
-        C_D = self.Wings.Get_C_D()
-        self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
-        self.Thrust = self.Drag + self.Weight*np.sin(self.Pitch)
-        self.Set_Thrust()
-
     def Set_Lift(self):
         self.Lift = self.Weight*np.cos(self.Pitch)
         S = self.Wings.S_wing
@@ -211,9 +201,6 @@ class Aircraft(Aviation):
         self.Weight = self.TotalMass*self.g
         self.GetTotalThrust()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
-        
-    def FULL_THROTTLE(self):
-        self.Engine.RPM = 2700
 
     def GetC_L_max(self, Components):
         C_L = 0

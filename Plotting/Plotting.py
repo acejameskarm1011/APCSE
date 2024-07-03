@@ -10,12 +10,94 @@ import scienceplots
 from Plotting.Descent_Plot import Descent_Plot
 
 
-
-
-
 plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
+
+def Pattern_Plot(Control, title = "Pattern Work Plot"):
+    """
+    Using the Control Class, we plot the state of the aircraft through a loop through the pattern
+    """
+    if isinstance(Control.Aircraft.Engine, ElectricEngineTest):
+        title = "Electric " + title
+    linewidth = 3
+    time = Control.Time_Arr
+    Distance = Control.Position_x_Arr / sp.constants.nautical_mile
+    Altitude = Control.Position_z_Arr / sp.constants.foot
+    V_infty = Control.Velocity_Arr / sp.constants.knot
+    Pitch = Control.Pitch_Arr / np.pi*180
+    Lift = Control.Lift_Arr
+    Thrust = Control.Thrust_Arr
+    Weight = Control.Weight_Arr
+    Drag = Control.Drag_Arr
+    RPM = Control.RPM_Arr
+    Percent = Control.Percent_Arr
+
+    # Alt v Dist + 
+    # V_infty v time + 
+    # Pitch v time +
+    # Lift v time + 
+    # Thrust v time + 
+    # Lift/Weight v time
+    # Drag v time + 
+    # RPM v time
+    # Percent v time
+
+
+    fig, axes = plt.subplots(3, 3, constrained_layout=True, figsize = (14,8))
+    axes[0,0].plot(Distance, Altitude, "g-", linewidth=linewidth)
+    axes[0,0].set_ylabel(r"Altitude - $h$ [ft]")
+    axes[0,0].set_xlabel(r"Distance - $d$ [nmi]")
+    axes[0,0].set_xlim((0,Distance.max()))
+
+
+    axes[0,1].plot(time, V_infty, linewidth=linewidth)
+    axes[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")
+    axes[0,1].set_xlim((0,time.max()))
+
+    axes[0,2].plot(time, Pitch, linewidth=linewidth)
+    axes[0,2].set_ylabel(r"Pitch - $\gamma$ [deg]")
+    axes[0,2].set_xlim((0,time.max()))
+
+    axes[1,0].plot(time, Lift, "g", linewidth=linewidth)
+    axes[1,0].set_ylabel(r"Lift - $L$ [N]")
+    axes[1,0].set_xlim((0,time.max()))
+
+    axes[1,1].plot(time, Thrust, "r-", linewidth=linewidth)
+    axes[1,1].set_ylabel(r"Thrust - $T$ [N]")
+    axes[1,1].set_xlim((0,time.max()))
+
+    axes[1,2].plot(time, Lift/Weight, "g", linewidth=linewidth)
+    axes[1,2].set_ylabel(r"$L/D$ [N/a]")
+    axes[1,2].set_xlim((0,time.max()))
+
+    axes[2,0].plot(time, Drag, "r--", linewidth=linewidth)
+    axes[2,0].set_ylabel(r"Drag - $D$ [N]")
+    axes[2,0].set_xlim((0,time.max()))
+
+
+    axes[2,1].plot(time, RPM, "y--", linewidth=linewidth)
+    axes[2,1].set_ylabel(r"RPM [rev/min]")
+    axes[2,1].set_xlim((0,time.max()))
+
+    axes[2,2].plot(time, Percent, "y--", linewidth=linewidth)
+    axes[2,2].set_ylabel(r"Percent [\\%]")
+    axes[2,2].set_xlim((0,time.max()))
+    
+    
+    axes[2,2].set_xlabel(r"Time - $t$ [s]")
+    axes[2,1].set_xlabel(r"Time - $t$ [s]")
+    axes[2,0].set_xlabel(r"Time - $t$ [s]")
+
+    # axes[1,0].set_ylim((0, Thrust.max()*1.2))
+    # axes[1,1].set_ylim((0, Percent.max()*1.2))
+    fig.suptitle(title)
+    plt.savefig(image_dir + title.replace(" ", "_") + ".png")
+    plt.show()
+    
+
+
+
 def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     """
     Using the TakeOff class, we can use the data stored within it in order to plot how each of the paramters are changing over time.
@@ -29,9 +111,9 @@ def TakeOff_Plot(TakeOff, title = "Take-Off Plots"):
     if isinstance(TakeOff.Aircraft.Engine, ElectricEngineTest):
         title = "Electric " + title
     linewidth = 3
-    V_infty = TakeOff.Velocity_x / sp.constants.knot
+    V_infty = TakeOff.Velocity_List / sp.constants.knot
     Distance = TakeOff.Position_x / sp.constants.foot
-    time = TakeOff.Times
+    time = TakeOff.Time_List
     V_NE = TakeOff.Aircraft.NeverExceedSpeed
     Thrust = TakeOff.Thrust_List
     Percent = TakeOff.Percent_List
@@ -81,7 +163,7 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     V_infty = Climb.Velocity_List / sp.constants.knot
     Pitch = Climb.Pitch_List
     Distance = Climb.Position_x / sp.constants.foot
-    time = Climb.Times
+    time = Climb.Time
     V_NE = Climb.Aircraft.NeverExceedSpeed
     Altitude = Climb.Altitude_List
     Percent = Climb.Percent_List
@@ -126,7 +208,7 @@ def Climb_Velocity_FlightAngle_Plot(Climb, title = "Aircraft Climb Velocity Char
     V_z = Climb.Velocity_z / sp.constants.knot
     V_infty = np.sqrt(Climb.Velocity_x**2 + Climb.Velocity_z**2) / sp.constants.knot
     Pitch = np.array(Climb.Pitch_List)/np.pi*180
-    time = Climb.Times
+    time = Climb.Time
     Altitude = Climb.Altitude_List
     Percent = Climb.Percent_List
 
@@ -209,7 +291,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     V_infty = Cruise.Velocity_List / sp.constants.knot
     Distance = Cruise.Position_x / sp.constants.nautical_mile
     RPM = Cruise.RPM_List
-    time = Cruise.Times
+    time = Cruise.Time
     Thrust = Cruise.Thrust_List
     Percent = Cruise.Percent_List
     Lift = Cruise.Lift_List
@@ -245,7 +327,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     fig.suptitle(title)
     plt.savefig(image_dir + r"\\Cruise_Performance\\" + title.replace(" ", "_")+".png")
     plt.show()
-    
+
 
 
 
