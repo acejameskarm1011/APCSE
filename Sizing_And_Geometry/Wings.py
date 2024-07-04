@@ -116,4 +116,6 @@ class Wings(Aircraft):
         if name == "Altitude":
             self.Atmosphere_attr()
 
+    def __repr__(self) -> str:
+          return "Wings: {}".format(self.Name)
     

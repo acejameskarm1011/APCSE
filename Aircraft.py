@@ -285,8 +285,6 @@ class Aircraft(Aviation):
                 self.Altitude = Alt
             else:
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
-            
-
 
 
 
@@ -304,4 +302,5 @@ class Aircraft(Aviation):
         Engine = "\n\tRPM: {} [rev/min], \n\tPower: {} [hp], \n\tFuel: {} [%], \n\tBattery: {}".format(*Engine_Status)
         Last = "With an altitude of {} [ft], true airspeed of {} [kts], and with engine parameters being: {}\n\n".format(self.Altitude, self.V_infty/sp.constants.knot, Engine)
         return "\n\n{} is flying with forces: {}".format(self.AircraftName, Forces) + Last
-    
+    def __repr__(self) -> str:
+          return "Aircraft: {}".format(self.AircraftName)

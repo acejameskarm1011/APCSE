@@ -21,17 +21,17 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     if isinstance(Control.Aircraft.Engine, ElectricEngineTest):
         title = "Electric " + title
     linewidth = 3
-    time = Control.Time_Arr
+    time = Control.Time_Arr / 60 # min
     Distance = Control.Position_x_Arr / sp.constants.nautical_mile
     Altitude = Control.Position_z_Arr / sp.constants.foot
     V_infty = Control.Velocity_Arr / sp.constants.knot
     Pitch = Control.Pitch_Arr / np.pi*180
-    Lift = Control.Lift_Arr
-    Thrust = Control.Thrust_Arr
-    Weight = Control.Weight_Arr
-    Drag = Control.Drag_Arr
-    RPM = Control.RPM_Arr
-    Percent = Control.Percent_Arr
+    Lift = Control.Lift_Arr # N
+    Thrust = Control.Thrust_Arr # N
+    Weight = Control.Weight_Arr # N
+    Drag = Control.Drag_Arr # N
+    RPM = Control.RPM_Arr # rev/min
+    Percent = Control.Percent_Arr 
 
     # Alt v Dist + 
     # V_infty v time + 
@@ -58,6 +58,7 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     axes[0,2].plot(time, Pitch, linewidth=linewidth)
     axes[0,2].set_ylabel(r"Pitch - $\gamma$ [deg]")
     axes[0,2].set_xlim((0,time.max()))
+    axes[0,2].set_ylim(top = 10)
 
     axes[1,0].plot(time, Lift, "g", linewidth=linewidth)
     axes[1,0].set_ylabel(r"Lift - $L$ [N]")
@@ -68,7 +69,7 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     axes[1,1].set_xlim((0,time.max()))
 
     axes[1,2].plot(time, Lift/Weight, "g", linewidth=linewidth)
-    axes[1,2].set_ylabel(r"$L/D$ [N/a]")
+    axes[1,2].set_ylabel(r"$L/W$ [N/a]")
     axes[1,2].set_xlim((0,time.max()))
 
     axes[2,0].plot(time, Drag, "r--", linewidth=linewidth)
@@ -81,18 +82,23 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     axes[2,1].set_xlim((0,time.max()))
 
     axes[2,2].plot(time, Percent, "y--", linewidth=linewidth)
-    axes[2,2].set_ylabel(r"Percent [\\%]")
+    axes[2,2].set_ylabel("Percent [\\%]")
     axes[2,2].set_xlim((0,time.max()))
     
     
-    axes[2,2].set_xlabel(r"Time - $t$ [s]")
-    axes[2,1].set_xlabel(r"Time - $t$ [s]")
-    axes[2,0].set_xlabel(r"Time - $t$ [s]")
+    axes[0,2].set_xlabel(r"Time - $t$ [min]")
+    axes[0,1].set_xlabel(r"Time - $t$ [min]")
+    axes[1,2].set_xlabel(r"Time - $t$ [min]")
+    axes[1,1].set_xlabel(r"Time - $t$ [min]")
+    axes[1,0].set_xlabel(r"Time - $t$ [min]")
+    axes[2,2].set_xlabel(r"Time - $t$ [min]")
+    axes[2,1].set_xlabel(r"Time - $t$ [min]")
+    axes[2,0].set_xlabel(r"Time - $t$ [min]")
 
     # axes[1,0].set_ylim((0, Thrust.max()*1.2))
     # axes[1,1].set_ylim((0, Percent.max()*1.2))
     fig.suptitle(title)
-    plt.savefig(image_dir + title.replace(" ", "_") + ".png")
+    plt.savefig(image_dir + "\\Pattern_Performance\\" + title.replace(" ", "_") + ".png")
     plt.show()
     
 

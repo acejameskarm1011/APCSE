@@ -30,18 +30,23 @@ class Control(Aviation):
         """
         This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
         """
+        self.Phase_Change = []
         self.Take_Off.Ground_Roll_Sim_ODESolve()
-        self.Climb.Pattern_Work_Climb_Solve(tmax=80)
+        self.Climb.Pattern_Work_Climb_Solve(tmax=200)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
+        self.Phase_Change.append(self.Take_Off.Time_List[-1])
 
         self.Cruise.Downwind_Solve_1()
         self.Cruise.Time_List += self.Climb.Time_List[-1]
+        self.Phase_Change.append(self.Climb.Time_List[-1])
 
-        self.Descent.Approach_Descent()
+        self.Descent.Approach_Descent(tmax=2.*60)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
-        
+        self.Phase_Change.append(self.Cruise.Time_List[-1])
+
         self.Landing.Ground_Roll()
         self.Landing.Time_List += self.Descent.Time_List[-1]
+        self.Phase_Change.append(self.Descent.Time_List[-1])
 
 
 
@@ -135,4 +140,5 @@ class Control(Aviation):
                     input.append(getattr(Phase, Para + "_List"))
                     # input.append(self.key)
             self.__setattr__(Para + "_Arr", np.block(input)[:-1])
-    
+    def __repr__(self) -> str:
+          return "Control"

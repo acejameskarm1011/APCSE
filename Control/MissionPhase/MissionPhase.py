@@ -46,6 +46,8 @@ class MissionPhase(Control):
         Solution : np.ndarray
             The entire solution for the set of equations
         """
+        tArr = np.arange(0, tmax + delta_t, delta_t)
+
         k = int(tmax/delta_t)
         Solution = np.zeros((k+1, len(Initial)), float)
         u_0 = Initial
@@ -57,13 +59,24 @@ class MissionPhase(Control):
         u_2 = self.Aircraft.ab2(func, u_1, u_0, delta_t)
         self.Save_Data()
         Solution[0:3,:] = [u_0, u_1, u_2]
+        
+        
         for i in range(2,k):
+            if not self.Condition():
+                Solution = Solution[:i+1, :]
+                tArr = tArr[:i+1]
+                break
             u_km2 = Solution[i-2, :]
             u_km1 = Solution[i-1, :]
             u_k = Solution[i, :]
             Solution[i+1,:] = self.Aircraft.ab3(func, u_k, u_km1, u_km2, delta_t)
             self.Save_Data()
-        return Solution
+        return Solution, tArr
+    def Condition(self):
+        raise Exception("A condition must be implemented for the class: {}".format(self))
+        exit()
+        return True    
+
     def List_to_Array(self):
         self.Lift_List = np.array(self.Lift_List)
         self.Thrust_List = np.array(self.Thrust_List)
@@ -111,7 +124,13 @@ class MissionPhase(Control):
         object.__setattr__(self, name, value)
         if name == "RPM":
             self.Aircraft.Set_RPM(self.RPM)
+        if name == "V_infty":
+            self.Aircraft.V_infty = value
+        if name == "Altitude":
+            self.Aircraft.Altitude = value
 
+    def __repr__(self) -> str:
+          return "MissionPhase"
 
 class subphase(MissionPhase):
     pass

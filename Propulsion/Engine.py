@@ -295,3 +295,5 @@ class ElectricEngineTest(PistonEngine):
     
     def Get_Power(self):
         self.Power = self.MaxPower*self.Throttle
+    def __repr__(self) -> str:
+          return "ElectricEngineTest: {}".format(self.Name)

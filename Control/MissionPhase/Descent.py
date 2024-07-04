@@ -27,6 +27,7 @@ class Descent(Climb):
         print("Beginning the descent phase")
         self.delta_t = delta_t
         Ground_Altitude = 0
+        self.z_min = Ground_Altitude
         self.V_des = 70 * self.knots_to_mps
         self.RPM = 1500
 
@@ -43,48 +44,37 @@ class Descent(Climb):
         self.Velocity = self.Aircraft.V_infty*np.array([np.cos(self.Pitch), 0, np.sin(self.Pitch)])
  
         Initial = np.block([self.Position, self.V_infty, self.Pitch, self.RPM])
-        Solution = self.Adam_Bashforth_Solve(Initial, self.Pitch_EOM, tmax, delta_t)
+        Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Pitch_EOM, tmax, delta_t)
 
 
 
         print("Descent is phase completed, now loading data")
         z = Solution[:,2]
-        self.Position_x = Solution[:,0][z >= Ground_Altitude]
-        self.Position_y = Solution[:,1][z >= Ground_Altitude]
-        self.Position_z = Solution[:,2][z >= Ground_Altitude]
-        self.Velocity_List = Solution[:,3][z >= Ground_Altitude]
-        self.Pitch_List = Solution[:,4][z >= Ground_Altitude]
-        self.RPM_List = Solution[:,5][z >= Ground_Altitude]
-        self.Time_List = tArr[z >= Ground_Altitude]
+        self.Position_x = Solution[:,0]
+        self.Position_y = Solution[:,1]
+        self.Position_z = Solution[:,2]
+        self.Velocity_List = Solution[:,3]
+        self.Pitch_List = Solution[:,4]
+        self.RPM_List = Solution[:,5]
+        self.Time_List = tArr
 
         self.List_to_Array()
-        self.Lift_List = self.Lift_List[z >= Ground_Altitude]
-        self.Thrust_List = self.Thrust_List[z >= Ground_Altitude]
-        self.Drag_List = self.Drag_List[z >= Ground_Altitude]
-        self.Weight_List = self.Weight_List[z >= Ground_Altitude]
-        self.Percent_List = self.Percent_List[z >= Ground_Altitude]
-        self.Altitude_List = self.Altitude_List[z >= Ground_Altitude]
-        Solution = np.block([Solution, tArr.reshape(len(tArr),1)])
+        self.Lift_List = self.Lift_List
+        self.Thrust_List = self.Thrust_List
+        self.Drag_List = self.Drag_List
+        self.Weight_List = self.Weight_List
+        self.Percent_List = self.Percent_List
+        self.Altitude_List = self.Altitude_List
+        
         print("Time elapsed during descent: {} min".format(self.Time_List[-1]/60))
         if not np.any(z < Ground_Altitude):
             print(z*self.m_to_ft)
             raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
-        """
-        Comment
-        -------
-        Future plans for tomorrow hope to see how and when the engine setting should change. Should I update it within the Pitch_EOM function?
-        Certainly not, as that will cause complications when the engine is at a different setting than what was expected. Should I add the engine
-        RPM to the equations of motion? Maybe...
-
-        It isn't a state variable, so I don't see why it would fit, but I do think that it could be valuable to investigate and see if that is a valid
-        choice to make here. It would help with the saving of that information. Now the only thing left is to see where I could fit the whole solution.
-        More abstraction, less abstration, and where and why? All of these questions, I will tackle in the morning, or maybe right after taking a shower
-        """
-
     def Pitch_EOM(self, State, mass):
         x, y, z, V_infty, Pitch, RPM = State
+        self.z = z
         self.RPM = RPM
         self.Aircraft.Altitude = z*self.m_to_ft
         self.Aircraft.V_infty = V_infty
@@ -101,6 +91,10 @@ class Descent(Climb):
         dRPM_dt = 0
         return np.array([*dPosition_dt, dv_dt, dgamma_dt, dRPM_dt])
     
+    def Condition(self):
+        Bool = self.z >= self.z_min
+        return Bool
+
     def delta_RPM(self, V_infty):
         """
         This method will evaluate what the change in the RPM should be based on how fast the aircraft is going currently. 
