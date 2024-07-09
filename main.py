@@ -11,7 +11,7 @@ from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 from PiperArcherIII_Blueprint import ArcherEngine
 
 
-ControlArcher = Control(ElectricArcherAircraft)
+ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr
 T = ControlArcher.Time_Arr

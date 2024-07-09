@@ -21,7 +21,7 @@ def Dict2SI(ACDict):
                         SubDictionary[subkey] = SubDictionary[subkey][0]*180/np.pi
                     elif UnitType == 'lbf':
                         SubDictionary[subkey] = SubDictionary[subkey][0] * 0.45359237
-                    elif UnitType == "m" or UnitType == "m2" or UnitType == "N" or UnitType == "rad" or UnitType == "kg" or UnitType == "W":
+                    elif UnitType == "m" or UnitType == "m2" or UnitType == "N" or UnitType == "rad" or UnitType == "kg" or UnitType == "W" or "None":
                         SubDictionary[subkey] = SubDictionary[subkey][0]
                     elif UnitType == "kts" or UnitType == "knots":
                         SubDictionary[subkey] = SubDictionary[subkey][0]*0.514444

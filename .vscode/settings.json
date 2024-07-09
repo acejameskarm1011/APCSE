@@ -5,7 +5,8 @@
         "./Embraer_Classes",
         "./Performance_Objects",
         "./Performance_Classes",
-        "./Propulsion"
+        "./Propulsion",
+        "./Drag_Model/AE-298"
     ],
     "C_Cpp.errorSquiggles": "disabled"
 }

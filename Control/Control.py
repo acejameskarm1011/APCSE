@@ -32,7 +32,7 @@ class Control(Aviation):
         """
         self.Phase_Change = []
         self.Take_Off.Ground_Roll_Sim_ODESolve()
-        self.Climb.Pattern_Work_Climb_Solve(tmax=200)
+        self.Climb.Pattern_Work_Climb_Solve(tmax=10.*60)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         self.Phase_Change.append(self.Take_Off.Time_List[-1])
 
@@ -40,7 +40,7 @@ class Control(Aviation):
         self.Cruise.Time_List += self.Climb.Time_List[-1]
         self.Phase_Change.append(self.Climb.Time_List[-1])
 
-        self.Descent.Approach_Descent(tmax=2.*60)
+        self.Descent.Approach_Descent(tmax=10.*60)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
         self.Phase_Change.append(self.Cruise.Time_List[-1])
 

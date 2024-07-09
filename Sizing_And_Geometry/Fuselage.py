@@ -1,4 +1,5 @@
 from Aircraft import Aircraft
+import numpy as np
 class Fuselage(Aircraft):
     """
     This class stores all necessary methods for storing the necessary geometry and data of the fuselage for an aircraft.
@@ -19,5 +20,6 @@ class Fuselage(Aircraft):
         self.Name = self.AircraftName + self.PartName
         self.C_D = 10**(-5)
         self.Dictionary_setattr(AircraftDict[self.PartName])
+        self.S_fus_b = (self.d_fus_b**2)*(np.pi/4)
     def EvaluateC_D(self):
         return self.C_D

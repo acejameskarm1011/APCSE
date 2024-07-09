@@ -1,6 +1,8 @@
+import sys
+sys.path.append("./Drag_Model/AE-298")
 from Aircraft import Aircraft
 import numpy as np
-# from Aerodynamic_Classes.C_D import * 
+
 
 
 class Wings(Aircraft):
@@ -23,6 +25,7 @@ class Wings(Aircraft):
         self.Name = self.AircraftName + self.PartName
         self.Dictionary_setattr(AircraftDict[self.PartName])
         self.AR = self.b_wing**2/self.S_wing
+        self.taper = self.c_tip/self.c_root
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
         self.K = 1/(np.pi*self.e_0*self.AR)
         self.Flaps(0)
@@ -37,6 +40,12 @@ class Wings(Aircraft):
         self.C_L_0 = 0.34 # C_l_0 for the NACA 65(2)-415
         ###########
 
+        self.Ground_Effect = 1
+        self.Phase = ""
+
+    def Get_C_D0(self):
+        return None
+        CDo_wing_calc(re, mach, sweep, tc_avg, sref, swet, maxtcloc, Weight, vinf, rho, tcmax, ctip, croot, Wsref, Span)
 
 
     def Get_C_D(self):
@@ -60,13 +69,21 @@ class Wings(Aircraft):
 
 
 
-        C_D_0 = 0.06 + self.C_D_flaps
-        C_D = C_D_0 + self.K*self.Get_C_L()**2
+        C_D_0 = 0.08 + self.C_D_flaps
+        C_Di = self.Get_C_Di()
+        C_D = C_D_0 + C_Di
         self.C_D = C_D
 
-        # Total Drag should around 0.86 at sea level and at 90 knots / 1.135 Mach
+        if self.Phase == "Cruie":
+            print("C_D_0: {}\nC_Di: {}\nC_D: ".format(C_D_0, C_Di))
+            exit()
 
+        # Total Drag should around 0.86 at sea level and at 90 knots / 1.135 Mach
         return C_D
+    
+    def Get_C_Di(self):
+        return self.K*self.Get_C_L()**2 * self.Ground_Effect
+
     def Get_C_L(self):
         """
         Method to retrieve the coefficient of lift from the Wings
@@ -114,6 +131,8 @@ class Wings(Aircraft):
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
         if name == "Altitude":
+            if value < self.b_wing:
+                self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
             self.Atmosphere_attr()
 
     def __repr__(self) -> str:

@@ -77,5 +77,33 @@ class Aviation:
         """
         for key in Dictionary:
             setattr(self, key, Dictionary[key])
-test = Aviation()
-test.Atmosphere_attr()
+
+
+    ############################################################
+    # Numerical Methods Section #
+    """
+    Here is where the aircraft's numerical methods will be stored. Each method is used to evaluate the next step of the aircraft's state
+    """
+    def Forward_Euler(self, Function, u_k, delta_t):
+        u_kplus1 = u_k + Function(u_k, self.Masses[-1])*delta_t
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    def ab2(self, Function, uk, ukm1, delta_t):
+        u_km1 = ukm1
+        u_k = uk
+        f_km1 = Function(u_km1, self.Masses[-2])
+        f_k = Function(u_k, self.Masses[-1])
+        u_kplus1 = u_k + delta_t/2*(-f_km1 + 3*f_k)
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    def ab3(self, Function, uk, ukm1, ukm2, delta_t):
+        u_kminus1 = ukm1
+        u_kminus2 = ukm2
+        u_k = uk
+        f_kminus2 = Function(u_kminus2, self.Masses[-3])
+        f_kminus1 = Function(u_kminus1, self.Masses[-2])
+        f_k = Function(u_k, self.Masses[-1])
+        u_kplus1 = u_k + delta_t/12*(23*f_kminus2-16*f_kminus1 + 5*f_k)
+        self.FuelDraw(delta_t)
+        return u_kplus1
+    ############################################################

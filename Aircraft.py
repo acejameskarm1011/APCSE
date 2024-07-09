@@ -1,7 +1,9 @@
 import numpy as np
 from Aviation import Aviation
 from Propulsion.Engine import ElectricEngineTest
+from Aerodynamic_Classes.Coefficients import Coefficients
 import scipy as sp
+
 
 class Aircraft(Aviation): 
     """
@@ -43,6 +45,7 @@ class Aircraft(Aviation):
         self.Engine = Components["Engine"]
         self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
+        self.Coefficients = Coefficients(self.ExtertnalComponents)
         self.Altitude = 0.
         self.Position = np.zeros(3, float)
         self.Lift = 0.
@@ -232,35 +235,8 @@ class Aircraft(Aviation):
              self.TSFC = self.TSFC / 3600
         return self.TSFC
     
-    ############################################################
-    # Numerical Methods Section #
-    """
-    Here is where the aircraft's numerical methods will be stored. Each method is used to evaluate the next step of the aircraft's state
-    """
-    def Forward_Euler(self, Function, u_k, delta_t):
-        u_kplus1 = u_k + Function(u_k, self.Masses[-1])*delta_t
-        self.FuelDraw(delta_t)
-        return u_kplus1
-    def ab2(self, Function, uk, ukm1, delta_t):
-        u_km1 = ukm1
-        u_k = uk
-        f_km1 = Function(u_km1, self.Masses[-2])
-        f_k = Function(u_k, self.Masses[-1])
-        u_kplus1 = u_k + delta_t/2*(-f_km1 + 3*f_k)
-        self.FuelDraw(delta_t)
-        return u_kplus1
-    def ab3(self, Function, uk, ukm1, ukm2, delta_t):
-        u_kminus1 = ukm1
-        u_kminus2 = ukm2
-        u_k = uk
-        f_kminus2 = Function(u_kminus2, self.Masses[-3])
-        f_kminus1 = Function(u_kminus1, self.Masses[-2])
-        f_k = Function(u_k, self.Masses[-1])
-        u_kplus1 = u_k + delta_t/12*(23*f_kminus2-16*f_kminus1 + 5*f_k)
-        self.FuelDraw(delta_t)
-        return u_kplus1
-    ############################################################
-    
+
+
     def __setattr__(self, name: str, value):
         if name == "Velocity":
             if not isinstance(value, np.ndarray):
@@ -277,14 +253,18 @@ class Aircraft(Aviation):
                 self.Atmosphere_attr()
                 self.Engine.Altitude = value
                 self.Wings.Altitude = value
+                self.Mach = self.V_infty/self.acousic_v
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
+            
         if name == "Position":
             if isinstance(value, (np.ndarray, list)):
                 Alt = value[2] * self.m_to_ft
                 self.Altitude = Alt
             else:
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
+
+
 
 
 
@@ -302,5 +282,5 @@ class Aircraft(Aviation):
         Engine = "\n\tRPM: {} [rev/min], \n\tPower: {} [hp], \n\tFuel: {} [%], \n\tBattery: {}".format(*Engine_Status)
         Last = "With an altitude of {} [ft], true airspeed of {} [kts], and with engine parameters being: {}\n\n".format(self.Altitude, self.V_infty/sp.constants.knot, Engine)
         return "\n\n{} is flying with forces: {}".format(self.AircraftName, Forces) + Last
-    def __repr__(self) -> str:
-          return "Aircraft: {}".format(self.AircraftName)
+    # def __repr__(self) -> str:
+    #       return "Aircraft: {}".format(self.AircraftName)

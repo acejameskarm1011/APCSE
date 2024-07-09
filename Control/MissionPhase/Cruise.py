@@ -8,6 +8,7 @@ class Cruise(MissionPhase):
     def Downwind_Solve_1(self, tmax = 60, delta_t = 1e-2):
 
         self.V_des = 90*self.knots_to_mps
+        self.RPM = self.Aircraft.Engine.RPM
         self.RPM = 2200
         self.Altitude = self.Aircraft.Altitude
         self.Atmosphere_attr()
@@ -15,9 +16,14 @@ class Cruise(MissionPhase):
         self.Pitch = 0
         self.Aircraft.Pitch = self.Pitch
 
+
+        self.Aircraft.Wings.Phase = "Cruise"
+        
+
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr() 
         self.Position = self.Aircraft.Position
+
         
         Initial = np.block([self.Position, V_infty, self.RPM])
         Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, tmax, delta_t)
@@ -40,7 +46,7 @@ class Cruise(MissionPhase):
         self.RPM = RPM
         self.Aircraft.Set_Lift()
         self.Get_Aircraft_Attr()
-        return np.array([V_infty, 0, 0, (self.Thrust-self.Drag)/mass, self.delta_RPM(V_infty)])
+        return np.array([V_infty, 0, 0, (self.Thrust-self.Drag)/mass, 0])
 
     def Condition(self):
         Bool = True
