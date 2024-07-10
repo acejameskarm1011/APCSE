@@ -58,7 +58,7 @@ class Aviation:
         -----
         Make sure the class with this function being called within has a value for self.Altitude.
         """
-        self.acousic_v, self.g, self.Pressure, self.Temperature, self.rho, self.mu = AtmosphereFunctionSI(self.Altitude, ['a','g','P','T', 'rho','mu'])               
+        self.acousic_v, self.g, self.Pressure, self.Temperature, self.rho, self.mu = AtmosphereFunctionSI(self.Altitude, ['a','g','P','T','rho','mu'])               
 
     def Dictionary_setattr(self, Dictionary):
         """

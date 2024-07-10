@@ -11,6 +11,22 @@ from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 from PiperArcherIII_Blueprint import ArcherEngine
 
 
+n = 1000
+ArcherAircraft.Lift = ArcherAircraft.Weight
+V_arr = np.linspace(0, 180, n)*sp.constants.knot
+alt = np.arange(0, 12000, 6)
+
+for h in alt:
+    for v in V_arr:
+        
+    plt.plot()
+
+
+
+
+
+
+exit()
 ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr

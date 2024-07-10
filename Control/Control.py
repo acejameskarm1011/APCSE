@@ -31,7 +31,7 @@ class Control(Aviation):
         This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
         """
         self.Phase_Change = []
-        self.Take_Off.Ground_Roll_Sim_ODESolve()
+        self.Take_Off.Ground_Roll_Sim_ODESolve(tmax=2)
         self.Climb.Pattern_Work_Climb_Solve(tmax=10.*60)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         self.Phase_Change.append(self.Take_Off.Time_List[-1])

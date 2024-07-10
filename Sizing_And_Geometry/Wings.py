@@ -30,21 +30,21 @@ class Wings(Aircraft):
         self.K = 1/(np.pi*self.e_0*self.AR)
         self.Flaps(0)
 
+        self.C_L_0 = self.C_l_0
+
         ################
         self.alpha_crit = 12
         self.alpha = 3 # Make sure it stays at 3 deg for Landing ground roll
         # self.alpha = 0
         self.tau = 0
-        self.C_l_alpha = 0.11031 # Found online 
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
-        self.C_L_0 = 0.34 # C_l_0 for the NACA 65(2)-415
         ###########
 
         self.Ground_Effect = 1
         self.Phase = ""
 
     def Get_C_D0(self):
-        return None
+        raise Exception("This function shouldn't be called anymore!")
         CDo_wing_calc(re, mach, sweep, tc_avg, sref, swet, maxtcloc, Weight, vinf, rho, tcmax, ctip, croot, Wsref, Span)
 
 
@@ -66,6 +66,7 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
+        raise Exception("This function shouldn't be called anymore!")
 
 
 
@@ -82,6 +83,7 @@ class Wings(Aircraft):
         return C_D
     
     def Get_C_Di(self):
+        raise Exception("This function shouldn't be called anymore!")
         return self.K*self.Get_C_L()**2 * self.Ground_Effect
 
     def Get_C_L(self):
@@ -100,7 +102,7 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
-        C_L = self.C_L_0 + self.C_L_alpha*self.alpha + self.C_L_flaps
+        C_L = self.C_L_0 + self.C_l_alpha*self.alpha + self.C_L_flaps
         self.C_L = C_L
         return C_L
     
@@ -117,7 +119,7 @@ class Wings(Aircraft):
 
         """
         self.C_L = C_L
-        self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
+        self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_l_alpha)
         if self.alpha > self.alpha_crit:
             print(self.alpha)
         #     self.alpha = self.alpha_crit
@@ -126,6 +128,7 @@ class Wings(Aircraft):
         factor = deg / 40
         self.C_L_flaps = 0.05 * factor
         self.C_D_flaps = 0.1 * factor
+
 
 
     def __setattr__(self, name, value):

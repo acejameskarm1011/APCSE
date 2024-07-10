@@ -15,13 +15,11 @@ def Dict2SI(ACDict):
                         SubDictionary[subkey] = SubDictionary[subkey][0] * 0.3048
                         if UnitType[-1] == '2':
                             SubDictionary[subkey] *= 0.3048
-                    elif UnitType == 'deg':
-                        SubDictionary[subkey] = SubDictionary[subkey][0]/180*np.pi
                     elif UnitType == 'invdeg':
                         SubDictionary[subkey] = SubDictionary[subkey][0]*180/np.pi
                     elif UnitType == 'lbf':
                         SubDictionary[subkey] = SubDictionary[subkey][0] * 0.45359237
-                    elif UnitType == "m" or UnitType == "m2" or UnitType == "N" or UnitType == "rad" or UnitType == "kg" or UnitType == "W" or "None":
+                    elif UnitType == "deg" or UnitType == "m" or UnitType == "m2" or UnitType == "N" or UnitType == "rad" or UnitType == "kg" or UnitType == "W" or UnitType=="None":
                         SubDictionary[subkey] = SubDictionary[subkey][0]
                     elif UnitType == "kts" or UnitType == "knots":
                         SubDictionary[subkey] = SubDictionary[subkey][0]*0.514444

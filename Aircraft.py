@@ -44,6 +44,7 @@ class Aircraft(Aviation):
         self.VerticalStabilizer = Components["VerticalStabilizer"]
         self.Engine = Components["Engine"]
         self.Mass = Components["Mass"]
+        self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Coefficients = Coefficients(self.ExtertnalComponents)
         self.Altitude = 0.
@@ -142,13 +143,7 @@ class Aircraft(Aviation):
         C_D : float
             The coefficient of drag [no units]
         """
-        C_D = 0
-        for Part in self.ExtertnalComponents:
-            Part.C_L = self.C_L
-            Part.Mach = self.Mach
-            Part.Atmosphere_attr()
-            C_D += Part.EvaluateC_D()
-        self.C_D = C_D
+        C_D = self.Coefficients.Get_C_D()
         return C_D
     
     def HybridizeBattery(self, BatteryDensity, MassFactor = None, PowerFactor = None, eta_mass = None):
@@ -190,7 +185,7 @@ class Aircraft(Aviation):
         # C_L = self.Wings.Get_C_L()
         # self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
 
-        C_D = self.Wings.Get_C_D()
+        C_D = self.Get_C_D()
         # print("Angle of Attack: {}".format(self.Wings.alpha))
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         self.GetTotalThrust()
@@ -198,12 +193,13 @@ class Aircraft(Aviation):
 
     def Aircraft_Forces(self):
         C_L = self.Wings.Get_C_L()
-        C_D = self.Wings.Get_C_D()
+        C_D = self.Get_C_D()
         S = self.Wings.S_wing
         self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
         self.Weight = self.TotalMass*self.g
         self.GetTotalThrust()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
+        print(self.V_infty/sp.constants.knot)
 
     def GetC_L_max(self, Components):
         C_L = 0
@@ -246,14 +242,14 @@ class Aircraft(Aviation):
             self.V_infty = np.sqrt(value.T@value)
             if self.V_infty != 0:
                 self.Velocity_hat = value/self.V_infty
-            self.Mach = self.V_infty/self.acousic_v
         object.__setattr__(self, name, value)
+        if name == "Lift":
+            self.Coefficients.Lift = value
         if name == "Altitude":
             if isinstance(value, (float, int)):
                 self.Atmosphere_attr()
                 self.Engine.Altitude = value
-                self.Wings.Altitude = value
-                self.Mach = self.V_infty/self.acousic_v
+                self.Coefficients.Altitude = value
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
             

@@ -5,27 +5,43 @@ PA_28_181_wings_dict = dict({
     "b_wing" : [35.5, "ft"],
     "S_wet" : [362.34, "ft2"],
     "c_bar" : [4.829, "ft"],
-    "L_c_4_wing" : [5.25, "ft"],
+    "L_c_4_wing" : [5.25, "deg"],
     "tc_avg" : [0.124, "None"],
     "tc_max_loc" : [0.141, "None"],
     "tc_max" : [0.104, "None"],
     "c_tip" : [3.5, "ft"],
-    "c_root" : [6 + (1/6), "ft"]
+    "c_root" : [6 + (1/6), "ft"],
+    "C_l_alpha" : [0.11031, "None"],
+    "C_l_0" : [0.347, "None"],
+    "rle" : [0.07217848, "None"]
 })
 
-
-
-
-
 PA_28_181_HorizontalStabilizer_dict = dict({
-    "b_h" : [12 + 10.48/12,"ft"]
+    "b_h" : [12 + 10.48/12,"ft"],
+    "c_root_h" : [16.858332177318598 - 14.28583225600806, "ft"],
+    "c_tip_h" : [16.858332177318598 - 14.28583225600806, "ft"],
+    "L_c_4_h" : [0, "deg"],
+    "S_h" : [(16.858332177318598 - 14.28583225600806)*12.9791667, "ft2"],
+    "tc_max_h" : [0.06530633636363636, "None"],
+    "tc_avg_h" : [0.1200344, "None"],
+    "S_h_wet" : [68.08541736959069, "ft2"] ,
+    "tc_max_loc_h" : [0.3003177, "None"]
 })
 
 PA_28_181_VerticalStabilizer_dict = dict({
+    "V_stab_area" : [11.08438, "ft2"], 
+    "S_v_wet" : [25.682414101748073, "ft2"],
+    "tc_max_v" : [0.06530633636363636, "None"],
+    "tc_avg_v" : [0.1200344, "None"],
+    "tc_max_loc_v" : [0.3003177, "None"],
+    "L_c_4_v" : [34.56949355, "deg"],
+    "c_tip_v" : [1.707, "ft"],
+    "c_root_v" : [3.858, "ft"],
+    "b_v" : [4.0425, "ft"]
 })
 
 PA_28_181_Fuselage_dict = dict({
-    "l_f" : [16.8,"ft"],
+    "l_fus" : [16.8,"ft"],
     #H_fus_max = 3.75 #ft
     #H_fus_min =
     #W_fus = 3.5 #ft
@@ -81,17 +97,7 @@ height = 7 +(1/3) #ft
 #H_Stab_chord_max =
 #H_Stab_chord_min =
 
-c_root_h = 16.858332177318598 - 14.28583225600806 #ft #top view
-c_tip_h = 16.858332177318598 - 14.28583225600806  #ft #top view #not accurate
-b_h = 12.9791667 #ft #APM
-L_c_4_h = 0 #c/4, deg #top view
-S_h = (16.858332177318598 - 14.28583225600806)*12.9791667 #ft2 #APM
-AR_h = (b_h**2)/S_h 
-taper_h = 1
-tc_max_h = 0.06530633636363636  #top view
-tc_avg_h = 0.1200344
-S_h_wet = 68.08541736959069 #S_h_expo*(1.977+0.52*tc_avg_h)# #ft2 # Eq 7.12 Raymer 6th Ed. 
-tc_max_loc_h = 0.3003177 #top view of Vtail
+
 
 #c_bar_h  = c_root_h * (2/3)*(1 + taper_h + taper_h**2)/(1+taper_h) #ft 
 
@@ -100,22 +106,9 @@ tc_max_loc_h = 0.3003177 #top view of Vtail
 
 #V_Stab_height =
 #V_stab_width =
-V_stab_area = 11.08438 #ft^2 # My calculation shows the reference area to be 12.5945867091379
-S_v_wet = 25.682414101748073 #S_v_expo*(1.977+0.52*tc_avg_v)# #ft2 # Eq 7.12 Raymer 6th Ed.
-tc_max_v = 0.06530633636363636 #top view
-tc_avg_v = 0.1200344
-tc_max_loc_v = 0.3003177 #top view
-L_c_4_v =  34.56949355 #c/4, deg
-c_tip_v = 1.707 #ft #side view
-c_root_v = 3.858 #ft #side view
-b_v = 4.0425 #ft
+
  
-#S_v = 174+55/144 #ft2 #APM
 
-#taper_v = c_tip_v/c_root_v
-#S_v_expo= 195.088 #only one side, same as htail.
-
-#c_bar_v  = c_root_v * (2/3)*(1 + taper_v + taper_v**2)/(1+taper_v) #ft
 
 
 #L_gear data use page 423 for drag calculations

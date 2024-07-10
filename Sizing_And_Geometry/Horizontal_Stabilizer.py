@@ -20,5 +20,7 @@ class HorizontalStabilizer(Aircraft):
         self.C_L = 0
         self.e0 = 1
         self.Dictionary_setattr(AircraftDict[self.PartName])
+        self.taper = self.c_tip_h/self.c_root_h
+        self.AR_h = (self.b_h**2)/self.S_h 
     def EvaluateC_D(self):
         return 0.005
