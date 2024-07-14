@@ -56,17 +56,6 @@ class Coefficients(Aviation):
         Reynolds_Number = self.rho*L*V_infty/self.mu
         return Reynolds_Number
 
-    def C_f(self):
-        """
-        WARNINGS!!! 
-        Reynolds number and Mach number are currently not coded into this class as of yet
-        """
-        from CDo_fus import calcCf
-        C_f = calcCf(self.Re(), self.Mach)
-        for Component in self.External_Components:
-            Component.C_f = C_f
-
-
     def Get_CD0_Wing(self):
         C_D0 = CDo_wing_calc(self.Re(), self.Mach, self.L_c_4_wing, self.tc_avg, self.S_wing, self.S_wet, self.tc_max_loc,
                              self.Lift_Force, self.vinf, self.density, self.tc_max, self.c_tip, self.c_root, self.S_wing, self.b_wing)
@@ -121,25 +110,25 @@ class Coefficients(Aviation):
         CDo_nac = 0
         CD_misc_val = CD_misc_calc(CDo_pyl, self.Get_CD0_Fuselage(), self.Get_CD0_Wing(),CDo_nac,
                                    self.Get_CD0_VerticalStabilizer(), self.Get_CD0_HorizontalStabilizer(),CD_misc_cons)
-        C_D = C_D0 + C_Di*self.Ground_Effect + CD_misc_cons + CDo_pyl + CDo_nac + CD_misc_val
-        print(C_D)
+        C_D = C_D0 + C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val
         return C_D
-
+    
+# Roskam Part 6 Chapter 4
 
     def Freedom_Units(self):
         # Wing parameters converted to imperial units
         self.L_c_4_wing = self.Wings.L_c_4_wing
         self.tc_avg = self.Wings.tc_avg
-        self.S_wing = self.Wings.S_wing / sp.constants.foot**2
+        self.S_wing = round(self.Wings.S_wing / sp.constants.foot**2, 6)
         self.S_wet = self.Wings.S_wet / sp.constants.foot**2
         self.tc_max_loc = self.Wings.tc_max_loc
         self.tc_max = self.Wings.tc_max
         self.c_tip = self.Wings.c_tip / sp.constants.foot
         self.c_root = self.Wings.c_root / sp.constants.foot
         self.b_wing = self.Wings.b_wing / sp.constants.foot
-        self.AR = self.Wings.AR  
+        self.AR = self.Wings.AR
         self.taper = self.Wings.taper 
-        self.C_l_alpha = self.Wings.C_l_alpha 
+        self.C_l_alpha = self.Wings.C_l_alpha
         self.C_l_0 = self.Wings.C_l_0
         self.rle = self.Wings.rle
 
@@ -184,7 +173,7 @@ class Coefficients(Aviation):
             object.__setattr__(self, name, value)
             
             if name == "Lift":
-                self.Lift_Force = value / sp.constants.pound
+                self.Lift_Force = value / sp.constants.lbf
             if name == "Altitude":
                 if isinstance(value, (float, int)):
                     self.Atmosphere_attr()
@@ -193,5 +182,7 @@ class Coefficients(Aviation):
                     self.visc = self.mu / sp.constants.slug*sp.constants.foot
                     if value < self.b_wing:
                         self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
+                    else:
+                        self.Ground_Effect = 1
                 else: 
                     raise TypeError("Cannot accept value of type {}".format(type(value)))

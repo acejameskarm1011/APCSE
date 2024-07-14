@@ -39,6 +39,7 @@ class Aircraft(Aviation):
         self.AircraftDict = AircraftDict
         self.Components = Components
         self.Wings = Components["Wings"]
+        self.alpha = (self.Wings.alpha-3)/180*np.pi
         self.HorizontalStabilizer = Components["HorizontalStabilizer"]
         self.Fuselage = Components["Fuselage"]
         self.VerticalStabilizer = Components["VerticalStabilizer"]
@@ -53,8 +54,7 @@ class Aircraft(Aviation):
         self.Drag = 0.
         self.Thrust = 0.
         self.Atmosphere_attr()
-        self.Velocity_hat = np.array([1., 0., 0.])
-        self.Velocity = np.zeros(3, float)
+        self.V_infty = 0.
         self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
         self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
         self.GlideSpeed = AircraftDict["VSpeed"]["GlideSpeed"]
@@ -143,6 +143,7 @@ class Aircraft(Aviation):
         C_D : float
             The coefficient of drag [no units]
         """
+        self.Coefficients.V_infty = self.V_infty
         C_D = self.Coefficients.Get_C_D()
         return C_D
     
@@ -178,28 +179,26 @@ class Aircraft(Aviation):
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
 
     def Set_Lift(self):
-        self.Lift = self.Weight*np.cos(self.Pitch)
+        self.GetTotalThrust()
+        self.Lift = self.Weight*np.cos(self.Pitch)-self.Thrust*np.sin(self.alpha)
         S = self.Wings.S_wing
         C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
         self.Wings.Set_C_L(C_L)
-        # C_L = self.Wings.Get_C_L()
-        # self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
+        self.alpha = (self.Wings.alpha-3)/180*np.pi
 
         C_D = self.Get_C_D()
-        # print("Angle of Attack: {}".format(self.Wings.alpha))
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
-        self.GetTotalThrust()
+        
 
 
     def Aircraft_Forces(self):
+        self.GetTotalThrust()
         C_L = self.Wings.Get_C_L()
         C_D = self.Get_C_D()
         S = self.Wings.S_wing
         self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
         self.Weight = self.TotalMass*self.g
-        self.GetTotalThrust()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
-        print(self.V_infty/sp.constants.knot)
 
     def GetC_L_max(self, Components):
         C_L = 0
@@ -234,6 +233,12 @@ class Aircraft(Aviation):
 
 
     def __setattr__(self, name: str, value):
+        if name == "V_infty":
+            self.Coefficients.V_infty = value
+        if name == "alpha":
+            if value > 16/np.pi*180:
+                raise ValueError("Angle of Attack of {} deg is not valid".format(value/np.pi*180))
+        """
         if name == "Velocity":
             if not isinstance(value, np.ndarray):
                 raise TypeError("Velocity attribute must be a NumPy array")
@@ -242,6 +247,7 @@ class Aircraft(Aviation):
             self.V_infty = np.sqrt(value.T@value)
             if self.V_infty != 0:
                 self.Velocity_hat = value/self.V_infty
+        """
         object.__setattr__(self, name, value)
         if name == "Lift":
             self.Coefficients.Lift = value

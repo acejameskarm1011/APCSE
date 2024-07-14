@@ -32,6 +32,7 @@ class Landing(Take_Off):
         self.Atmosphere_attr()
         self.Aircraft.Set_RPM(0)
         self.RPM = self.Aircraft.Engine.RPM
+        self.Aircraft.Wings.Phase = "Landing"
         self.Pitch = 0
 
         self.Position = self.Aircraft.Position

@@ -1,3 +1,4 @@
+from math import copysign
 import scipy as sp
 import numpy as np
 from Control.MissionPhase.MissionPhase import MissionPhase
@@ -22,6 +23,7 @@ class Climb(MissionPhase):
             Desired altitude to fly to
         """
         print("Climb Phase Starting")
+        self.Aircraft.Wings.alpha += 2
         self.RPM = self.Aircraft.Engine.RPM
         self.V_infty = self.Aircraft.V_infty
         self.z_max = Pattern_Altitude*self.ft_to_m
@@ -57,7 +59,8 @@ class Climb(MissionPhase):
         self.Altitude_List = self.Altitude_List
         print("Time elapsed during climb: {} min".format(self.Time_List[-1]/60))
         if not np.any(z > Max_z):
-            print(z[-5:-1]*self.m_to_ft)
+            from Plotting.Plotting import ClimbPlot
+            ClimbPlot(self, title = "Climb Failed")
             raise Exception("Simulation did not run long enough to reach pattern altitude. Ajust and increase the time length so that the Aircraft can reach pattern altitude.")
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
@@ -67,16 +70,42 @@ class Climb(MissionPhase):
         self.z = z
         self.Aircraft.Position = np.array([x, y, z])
         self.V_infty = V_infty
+        self.Aircraft.Pitch = Pitch
         self.Get_Aircraft_Attr()
 
         dxdt = V_infty*np.cos(Pitch)
         dydt = 0
         dzdt = V_infty*np.sin(Pitch)
         
-        dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
-        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) - .2*Pitch
+
+        V_des = 76*sp.constants.knot
+        if np.abs(V_infty-V_des)>2:
+            Pitch_control = copysign(.02, V_infty-V_des)
+        else:
+            Pitch_control = (V_infty-V_des)/V_des*0.7
+
+
+        dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty) + Pitch_control
+
+        if dgamma_dt < 0 and Pitch < 0:
+            dgamma_dt = 0
+        elif dgamma_dt < -0.05 or Pitch < 0:
+            self.Get_Aircraft_Attr(set = True)
+            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) + 0.1
+            dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
+
+        return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
+
         if dgamma_dt < 0 and Pitch == 0:
             dgamma_dt = 0
+        elif Pitch > 2*np.pi/180:
+            self.Get_Aircraft_Attr(set = True)
+            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty)
+            dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
+            if V_infty < 60*sp.constants.knot:
+                print(V_infty)
+                exit()
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
     def Condition(self):
@@ -87,8 +116,8 @@ class Climb(MissionPhase):
 
 
 
-    def Get_Aircraft_Attr(self):
-        super().Get_Aircraft_Attr()
+    def Get_Aircraft_Attr(self, set = False):
+        super().Get_Aircraft_Attr(set)
         self.Altitude = self.Aircraft.Altitude
 
     def List_to_Array(self):

@@ -11,22 +11,34 @@ from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 from PiperArcherIII_Blueprint import ArcherEngine
 
 
-n = 1000
-ArcherAircraft.Lift = ArcherAircraft.Weight
-V_arr = np.linspace(0, 180, n)*sp.constants.knot
-alt = np.arange(0, 12000, 6)
 
-for h in alt:
-    for v in V_arr:
+
+# Plot each of the drag components to find where
+# n = 100\
+# ArcherAircraft.Lift = ArcherAircraft.Weight
+# V_arr = np.linspace(0, 180, n)*sp.constants.knot
+# alt = np.array([0, 1, 2, 3, 700, 2000, 5000, 10000], float)
+# MaxC_D = 7
+# for h in alt:
+#     C_D = []
+#     ArcherAircraft.Altitude = h
+#     for v in V_arr:
+#         ArcherAircraft.V_infty = v
+#         C_D.append(ArcherAircraft.Coefficients.Get_C_D())
         
-    plt.plot()
+#     plt.plot(V_arr/sp.constants.knot, C_D, label = "Altitude: {}ft".format(round(h)))
+# # plt.plot([90, 90], [0, MaxC_D], "k--", label = "Max Sim Velocity")
+# plt.xlabel(r"$V_{\infty}$ [kts]")
+# plt.ylabel(r"$C_D$")
+# plt.title(r"$C_D$ vs. $V_\infty$")
+# plt.ylim(0,MaxC_D)
+# plt.ylim(bottom = 0)
+# plt.legend()
+# plt.show()
+# exit()
 
 
 
-
-
-
-exit()
 ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr
@@ -34,12 +46,6 @@ T = ControlArcher.Time_Arr
 
 
 Pattern_Plot(ControlArcher)
-
-
-
-
-
-
 
 
 exit()

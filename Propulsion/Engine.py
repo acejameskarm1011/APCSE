@@ -73,7 +73,7 @@ class PistonEngine(Powerplant):
         # Propeller information is different between props, so we have a class for those properties
         self.MaxBreakHorsePower = MaxBreakHorsePower
         # Units in Horse Power
-        self.eta = 0.92
+        self.eta = 0.93
         # Current Model for the engine to propeller efficiency is unknown
         self.BreakHorsePower = self.MaxBreakHorsePower
         # Power of the engine in terms of horsepower
@@ -199,11 +199,12 @@ class PistonEngine(Powerplant):
             Current power output of the propeller [W]
         """
         sigma = self.rho/self.rho_SL
-        R_m = np.sin(self.Throttle*np.pi/2)
+        input = self.Throttle
+        R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4
         if np.isclose(1.0, self.Throttle):
-            self.Power = self.MaxPower*sigma
-        else:
-            self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097))
+            R_m = 0.999999
+            
+        self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097))
         return self.Power
 
     def Get_FuelConsumption(self):
@@ -233,6 +234,7 @@ class PistonEngine(Powerplant):
         if name == "RPM":
             self.Throttle = self.RPM/self.MaxRPM
             self.Get_Power() 
+            self.PowerRating = self.Power/self.MaxBreakPower
             # RPM affects power, so if the RPM changes, then so must the power
         
         ######################

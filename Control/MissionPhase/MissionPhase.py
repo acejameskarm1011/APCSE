@@ -7,11 +7,14 @@ class MissionPhase(Control):
         self.Aircraft = AircraftInstance
         self.MaxRPM = self.Aircraft.Engine.MaxRPM
 
-    def Get_Aircraft_Attr(self):
+    def Get_Aircraft_Attr(self, set=False):
         """
         Get all needed Aircraft attributes for a desired mission phase.
         """
-        self.Aircraft.Aircraft_Forces()
+        if set:
+            self.Aircraft.Set_Lift()
+        else:
+            self.Aircraft.Aircraft_Forces()
         self.Lift = self.Aircraft.Lift
         self.Drag = self.Aircraft.Drag
         self.Weight = self.Aircraft.Weight

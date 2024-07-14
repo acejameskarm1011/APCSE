@@ -34,7 +34,8 @@ class Wings(Aircraft):
 
         ################
         self.alpha_crit = 12
-        self.alpha = 3 # Make sure it stays at 3 deg for Landing ground roll
+        self.alpha_0 = 2.5 # Make sure it stays at 3 deg for Landing ground roll
+        self.alpha = self.alpha_0
         # self.alpha = 0
         self.tau = 0
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
@@ -121,7 +122,10 @@ class Wings(Aircraft):
         self.C_L = C_L
         self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_l_alpha)
         if self.alpha > self.alpha_crit:
-            print(self.alpha)
+            pass
+            # print(self.C_L)
+        elif self.alpha > self.alpha_crit*1.2:
+            raise Exception("Angle Attack Value: {} deg is not valid".format(self.alpha))
         #     self.alpha = self.alpha_crit
 
     def Flaps(self, deg):
@@ -137,6 +141,11 @@ class Wings(Aircraft):
             if value < self.b_wing:
                 self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
             self.Atmosphere_attr()
+        if name == "Phase":
+            if name == "Take-Off":
+                self.alpha = self.alpha_0
+            if name == "Landing":
+                self.alpha = self.alpha_0
 
     def __repr__(self) -> str:
           return "Wings: {}".format(self.Name)

@@ -166,17 +166,19 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     if isinstance(Climb.Aircraft.Engine, ElectricEngineTest):
         title = "Electric " + title
     linewidth = 3
-    V_infty = Climb.Velocity_List / sp.constants.knot
-    Pitch = Climb.Pitch_List
-    Distance = Climb.Position_x / sp.constants.foot
-    time = Climb.Time
-    V_NE = Climb.Aircraft.NeverExceedSpeed
-    Altitude = Climb.Altitude_List
-    Percent = Climb.Percent_List
-    Lift = Climb.Lift_List
-    Drag = Climb.Drag_List
+    exitpart = -50
 
-    Thrust = Climb.Thrust_List
+    V_infty = Climb.Velocity_List[:exitpart] / sp.constants.knot
+    Pitch = Climb.Pitch_List[:exitpart]
+    Distance = Climb.Position_x[:exitpart] / sp.constants.foot
+    time = Climb.Time_List[:exitpart]
+    V_NE = Climb.Aircraft.NeverExceedSpeed
+    Altitude = Climb.Altitude_List[:exitpart]
+    Percent = Climb.Percent_List[:exitpart]
+    Lift = Climb.Lift_List[:exitpart]
+    Drag = Climb.Drag_List[:exitpart]
+
+    Thrust = Climb.Thrust_List[:exitpart]
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, Pitch*180/np.pi, "g-", linewidth=linewidth)
@@ -214,7 +216,7 @@ def Climb_Velocity_FlightAngle_Plot(Climb, title = "Aircraft Climb Velocity Char
     V_z = Climb.Velocity_z / sp.constants.knot
     V_infty = np.sqrt(Climb.Velocity_x**2 + Climb.Velocity_z**2) / sp.constants.knot
     Pitch = np.array(Climb.Pitch_List)/np.pi*180
-    time = Climb.Time
+    time = Climb.Time_List
     Altitude = Climb.Altitude_List
     Percent = Climb.Percent_List
 
@@ -333,6 +335,12 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     fig.suptitle(title)
     plt.savefig(image_dir + r"\\Cruise_Performance\\" + title.replace(" ", "_")+".png")
     plt.show()
+
+
+
+
+
+
 
 
 
