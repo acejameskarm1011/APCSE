@@ -18,8 +18,8 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     """
     Using the Control Class, we plot the state of the aircraft through a loop through the pattern
     """
-    if isinstance(Control.Aircraft.Engine, ElectricEngineTest):
-        title = "Electric " + title
+    
+    title = Control.Aircraft_Type + title
     linewidth = 3
     time = Control.Time_Arr / 60 # min
     Distance = Control.Position_x_Arr / sp.constants.nautical_mile
@@ -299,7 +299,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     V_infty = Cruise.Velocity_List / sp.constants.knot
     Distance = Cruise.Position_x / sp.constants.nautical_mile
     RPM = Cruise.RPM_List
-    time = Cruise.Time
+    time = Cruise.Time_List
     Thrust = Cruise.Thrust_List
     Percent = Cruise.Percent_List
     Lift = Cruise.Lift_List
@@ -311,7 +311,7 @@ def CruisePlot(Cruise, title = "Cruise Plots"):
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, np.round(np.array(RPM), 2), "g-", linewidth=linewidth)
     axs[0,0].set_ylabel(r"RPM [rev/min]")
-    axs[0,0].set_ylim(0, Cruise.MaxRPM)
+    # axs[0,0].set_ylim(0, Cruise.MaxRPM)
     axs[0,0].set_xlim((0,time.max()))
     axs[0,1].plot(time, V_infty, linewidth=linewidth)
     axs[0,1].set_ylabel(r"Velocity - $V_\infty$ [kts]")

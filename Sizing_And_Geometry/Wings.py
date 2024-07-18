@@ -130,8 +130,8 @@ class Wings(Aircraft):
 
     def Flaps(self, deg):
         factor = deg / 40
-        self.C_L_flaps = 0.05 * factor
-        self.C_D_flaps = 0.1 * factor
+        self.C_L_flaps = 0.02 * factor
+        self.C_D_flaps = 0.08 * factor
 
 
 

@@ -16,18 +16,20 @@ def Descent_Plot(Descent, title = "Descent Plots"):
     """
     if isinstance(Descent.Aircraft.Engine, ElectricEngineTest):
         title = "Electric " + title
+
+    end = -20
     linewidth = 3
-    V_infty = Descent.Velocity_List / sp.constants.knot
-    Pitch = Descent.Pitch_List
-    Distance = Descent.Position_x / sp.constants.foot
-    time = Descent.Times
+    V_infty = Descent.Velocity_List[:end] / sp.constants.knot
+    Pitch = Descent.Pitch_List[:end]
+    Distance = Descent.Position_x[:end] / sp.constants.foot
+    time = Descent.Time_List[:end]
     V_NE = Descent.Aircraft.NeverExceedSpeed
-    Altitude = Descent.Altitude_List
-    Percent = Descent.Percent_List
-    Lift = Descent.Lift_List
-    Drag = Descent.Drag_List
-    RPM = Descent.RPM_List
-    Thrust = Descent.Thrust_List
+    Altitude = Descent.Altitude_List[:end]
+    Percent = Descent.Percent_List[:end]
+    Lift = Descent.Lift_List[:end]
+    Drag = Descent.Drag_List[:end]
+    RPM = Descent.RPM_List[:end]
+    Thrust = Descent.Thrust_List[:end]
 
     fig, axs = plt.subplots(3, 2, constrained_layout=True, figsize = (14,8))
     axs[0,0].plot(time, Pitch*180/np.pi, "g-", linewidth=linewidth)

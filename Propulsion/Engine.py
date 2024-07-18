@@ -217,6 +217,8 @@ class PistonEngine(Powerplant):
         mdot = - self.Fuel_Consumption
         return mdot
     
+    def __str__(self) -> str:
+        return "Conventional"
 
 
     def __setattr__(self, name, value):
@@ -299,3 +301,5 @@ class ElectricEngineTest(PistonEngine):
         self.Power = self.MaxPower*self.Throttle
     def __repr__(self) -> str:
           return "ElectricEngineTest: {}".format(self.Name)
+    def __str__(self) -> str:
+        return "Electric"

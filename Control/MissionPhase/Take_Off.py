@@ -68,17 +68,18 @@ class Take_Off(MissionPhase):
         
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         self.Aircraft.Endurance = self.Time_List[-1]
-        print("Ground Rolls is: {} with a dt of {}".format(self.Position_x[-1]*self.m_to_ft, delta_t))
+        print("Ground Rolls is: {} ft".format(round(self.Position_x[-1]*self.m_to_ft)))
 
     def TakeOff_ODE(self, State, mass):
-                x, y, z, V_infty = State
-                self.V_infty = V_infty
-                self.Get_Aircraft_Attr()
-                dxdt = V_infty
-                dydt = 0
-                dzdt = 0
-                dv_dt = (self.Thrust-self.Drag-(mass*self.g-self.Lift)*self.mu_f)/mass
-                return np.array([dxdt, dydt, dzdt, dv_dt])
+        x, y, z, V_infty = State
+        self.V_infty = V_infty
+        self.Get_Aircraft_Attr()
+        dxdt = V_infty
+        dydt = 0
+        dzdt = 0
+        
+        dv_dt = (self.Thrust-self.Drag-(mass*self.g-self.Lift)*self.mu_f)/mass
+        return np.array([dxdt, dydt, dzdt, dv_dt])
     
     def reset(self, ground_level = 0):
         """

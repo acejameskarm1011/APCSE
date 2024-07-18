@@ -16,45 +16,61 @@ class Control(Aviation):
     def __init__(self, AircraftInstance) -> None:
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
         self.Aircraft = AircraftInstance
+        self.Aircraft_Type = str(self.Aircraft.Engine)
+
+        if self.Aircraft_Type == "Conventional":
+            RPM_des_Cruise = 2306 # Found using quasi - cruise
+            RPM_des_Descent = 1600
+        elif self.Aircraft_Type == "Electric":
+            RPM_des_Cruise = 1900 # Found using quasi - cruise
+            RPM_des_Descent = 1200
+        else:
+            raise Exception("Missing an Aircraft Type...")
+        
         self.Take_Off = Take_Off(self.Aircraft)
         self.Climb = Climb(self.Aircraft)
-        self.Cruise = Cruise(self.Aircraft)
-        self.Descent = Descent(self.Aircraft)
+        self.Cruise = Cruise(self.Aircraft, RPM_des_Cruise)
+        self.Descent = Descent(self.Aircraft, RPM_des_Descent)
         self.Landing = Landing(self.Aircraft)
         
         self.key = -1.05 # Factor used to determine where one phase begins and another one begins
-
 
 
     def Pattern_Cycle(self):
         """
         This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
         """
+        from Plotting.Plotting import ClimbPlot, CruisePlot, Descent_Plot, TakeOff_Plot
         self.Phase_Change = []
         self.Take_Off.Ground_Roll_Sim_ODESolve()
-        self.Climb.Pattern_Work_Climb_Solve(tmax=60)
+        # TakeOff_Plot(self.Take_Off)
+        self.Climb.Pattern_Work_Climb_Solve(tmax=3*60.)
+        # ClimbPlot(self.Climb)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         self.Phase_Change.append(self.Take_Off.Time_List[-1])
+        
 
-        self.Cruise.Downwind_Solve_1()
+
+        self.Cruise.Downwind_Solve_1(tmax=2.*60.)
+        # CruisePlot(self.Cruise)
         self.Cruise.Time_List += self.Climb.Time_List[-1]
         self.Phase_Change.append(self.Climb.Time_List[-1])
 
-        self.Descent.Approach_Descent(tmax=10.*60)
+        self.Descent.Approach_Descent(tmax=1.2*60.)
+        Descent_Plot(self.Descent)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
         self.Phase_Change.append(self.Cruise.Time_List[-1])
 
         self.Landing.Ground_Roll()
+        # TakeOff_Plot(self.Landing)
         self.Landing.Time_List += self.Descent.Time_List[-1]
         self.Phase_Change.append(self.Descent.Time_List[-1])
-
-
-
         
         print("Gathering Data...")
         self.Gather_States()
         self.Gather_Aerodynamics()
         self.Gather_EnginePars()
+
 
     def Gather_States(self):
         """
@@ -112,6 +128,7 @@ class Control(Aviation):
                 # input.append(self.key)
             self.__setattr__(Aero + "_Arr", np.block(input)[:-1])
         
+
     def Gather_EnginePars(self):
         """
         Gather's the aircraft's Engine-Data into arrays for the entire mission.

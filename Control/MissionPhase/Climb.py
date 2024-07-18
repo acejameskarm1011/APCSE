@@ -57,7 +57,7 @@ class Climb(MissionPhase):
         self.Weight_List = self.Weight_List
         self.Percent_List = self.Percent_List
         self.Altitude_List = self.Altitude_List
-        print("Time elapsed during climb: {} min".format(self.Time_List[-1]/60))
+        print("Time elapsed during climb: {} min".format(round(self.Time_List[-1]/60, 3)))
         if not np.any(z > Max_z):
             from Plotting.Plotting import ClimbPlot
             ClimbPlot(self, title = "Climb Failed")
@@ -79,10 +79,10 @@ class Climb(MissionPhase):
         
 
         V_des = 76*sp.constants.knot
-        if np.abs(V_infty-V_des)>2:
-            Pitch_control = copysign(.02, V_infty-V_des)
+        if np.abs(V_infty-V_des)>0.3:
+            Pitch_control = copysign(0.01, V_infty-V_des)
         else:
-            Pitch_control = (V_infty-V_des)/V_des*0.7
+            Pitch_control = (V_infty-V_des)/V_des*1.4
 
 
         dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
@@ -90,10 +90,11 @@ class Climb(MissionPhase):
 
         if dgamma_dt < 0 and Pitch < 0:
             dgamma_dt = 0
-        elif dgamma_dt < -0.05 or Pitch < 0:
+        elif Pitch > 4/180*np.pi and dgamma_dt > 0:
             self.Get_Aircraft_Attr(set = True)
-            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty) + 0.1
-            dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
+            dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
+            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
+            
 
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
@@ -119,6 +120,7 @@ class Climb(MissionPhase):
     def Get_Aircraft_Attr(self, set = False):
         super().Get_Aircraft_Attr(set)
         self.Altitude = self.Aircraft.Altitude
+        self.alpha = self.Aircraft.alpha
 
     def List_to_Array(self):
         super().List_to_Array()

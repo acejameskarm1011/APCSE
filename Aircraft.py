@@ -65,6 +65,8 @@ class Aircraft(Aviation):
         self.FuelRatio = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.Weight = self.TotalMass * self.g
+        self.Get_C_D()
+        self.Get_C_L()
 
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         if isinstance(self.Engine, ElectricEngineTest):
@@ -133,10 +135,16 @@ class Aircraft(Aviation):
             self.BatteryEnergy += BatteryDrain
             self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
 
+    def Get_C_L(self):
+        """
+        Currently using only the wings, we evaluate the coefficient of lift and gain the """
+        self.C_L = self.Wings.Get_C_L()
+        return self.C_L
+
     def Get_C_D(self):
         """
-        This method uses the aircraft's current state and evaluates the C_D for each of the exterior components. This class is still under construction
-        until each external component is more developed with their own models.
+        This method uses the aircraft's current state and evaluates the C_D for each of the exterior components.
+        Code is based on Roskam calculation for drag, with work completed by Eric, et al.
 
         Returns
         ------
@@ -144,8 +152,8 @@ class Aircraft(Aviation):
             The coefficient of drag [no units]
         """
         self.Coefficients.V_infty = self.V_infty
-        C_D = self.Coefficients.Get_C_D()
-        return C_D
+        self.C_D = self.Coefficients.Get_C_D()
+        return self.C_D
     
     def HybridizeBattery(self, BatteryDensity, MassFactor = None, PowerFactor = None, eta_mass = None):
         """
@@ -182,8 +190,8 @@ class Aircraft(Aviation):
         self.GetTotalThrust()
         self.Lift = self.Weight*np.cos(self.Pitch)-self.Thrust*np.sin(self.alpha)
         S = self.Wings.S_wing
-        C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
-        self.Wings.Set_C_L(C_L)
+        self.C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
+        self.Wings.Set_C_L(self.C_L)
         self.alpha = (self.Wings.alpha-3)/180*np.pi
 
         C_D = self.Get_C_D()
@@ -280,9 +288,13 @@ class Aircraft(Aviation):
             Battery = self.BatteryRatio
         Forces_vals = np.round(np.array([self.Lift, self.Thrust, self.Drag, self.Weight], float))
         Forces = "\n\tLift: {} [N], \n\tThrust: {} [N], \n\tDrag: {} [N], \n\tWeight: {} [N]\n".format(*Forces_vals)
+        Pos_Vel_vals = np.round(np.array([self.Altitude, self.V_infty/sp.constants.knot, self.Pitch/np.pi*180, self.alpha/np.pi*180],float))
+        Pos_Vel = "\n\tAltitude: {} [ft], \n\tV_infty: {} [kts], \n\tPitch: {} [deg], \n\tAOA: {} [deg]\n".format(*Pos_Vel_vals)
+        Aero_Vals = np.round(np.array([self.C_L, self.C_D],float), 5)
+        Aero = "\n\tC_L: {} [None], \n\tC_D: {} [None]\n".format(*Aero_Vals)
         Engine_Status = np.round(np.array([self.Engine.RPM, self.Engine.Power/sp.constants.hp, self.FuelRatio*100, Battery*100], float))
         Engine = "\n\tRPM: {} [rev/min], \n\tPower: {} [hp], \n\tFuel: {} [%], \n\tBattery: {}".format(*Engine_Status)
         Last = "With an altitude of {} [ft], true airspeed of {} [kts], and with engine parameters being: {}\n\n".format(self.Altitude, self.V_infty/sp.constants.knot, Engine)
-        return "\n\n{} is flying with forces: {}".format(self.AircraftName, Forces) + Last
+        return "\n\n{} is flying with state: {}".format(self.AircraftName, Forces) + Aero + Pos_Vel + Engine
     # def __repr__(self) -> str:
     #       return "Aircraft: {}".format(self.AircraftName)

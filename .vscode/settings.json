@@ -8,5 +8,6 @@
         "./Propulsion",
         "./Drag_Model/AE-298"
     ],
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "python.REPL.enableREPLSmartSend": false
 }
