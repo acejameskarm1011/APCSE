@@ -22,8 +22,8 @@ class Control(Aviation):
             RPM_des_Cruise = 2306 # Found using quasi - cruise
             RPM_des_Descent = 1600
         elif self.Aircraft_Type == "Electric":
-            RPM_des_Cruise = 1900 # Found using quasi - cruise
-            RPM_des_Descent = 1200
+            RPM_des_Cruise = 1500 # Found using quasi - cruise
+            RPM_des_Descent = 1000
         else:
             raise Exception("Missing an Aircraft Type...")
         
@@ -57,7 +57,7 @@ class Control(Aviation):
         self.Phase_Change.append(self.Climb.Time_List[-1])
 
         self.Descent.Approach_Descent(tmax=1.2*60.)
-        Descent_Plot(self.Descent)
+        # Descent_Plot(self.Descent)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
         self.Phase_Change.append(self.Cruise.Time_List[-1])
 

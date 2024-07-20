@@ -44,12 +44,13 @@ from PiperArcherIII_Blueprint import ArcherEngine
 
 
 
-ControlArcher = Control(ElectricArcherAircraft)
+ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr
 T = ControlArcher.Time_Arr
+print(round(ArcherAircraft.BatteryRatio*100, 2))
+
 Pattern_Plot(ControlArcher)
-print(round(ElectricArcherAircraft.BatteryRatio*100, 2))
 
 exit()
 

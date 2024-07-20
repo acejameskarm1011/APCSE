@@ -59,7 +59,12 @@ PA_28_181_Performance_dict = dict({
 PA_28_181_Mass_dict = dict({
     "MGTOW" : [2550., "lbf"],
     "MaxFuel" : [48*6., "lbf"],
-    "EmptyMass" : [1600, "lbf"]
+    "EmptyMass" : [1600, "lbf"],
+    "EmptyMass_Arm" : [87.5, "in"],
+    "FrontSeat_Arm" : [80.5, "in"],
+    "RearSeat_Arm" : [118.1, "in"],
+    "Fuel_Arm" : [95, "in"],
+    "Baggage_Arm" : [142.8, "in"]
 })
 
 PA_28_181_VSpeed_dict = dict({
@@ -79,48 +84,3 @@ PA_28_181_Dict = dict({
     "VSpeed" : PA_28_181_VSpeed_dict,
     "Mass" : PA_28_181_Mass_dict
 })
-
-
-#Basic parameters
-Length = 24.0 #ft
-height = 7 +(1/3) #ft
-
-
-
-
-#L_Engine = 3.69230769 #ft
-#W_Engine = W_fus
-
-#H_Stab Data
-
-#H_Stab_Span = 11 + (21/24) #ft
-#H_Stab_chord_max =
-#H_Stab_chord_min =
-
-
-
-#c_bar_h  = c_root_h * (2/3)*(1 + taper_h + taper_h**2)/(1+taper_h) #ft 
-
-
-#V_Stab Data
-
-#V_Stab_height =
-#V_stab_width =
-
- 
-
-
-
-#L_gear data use page 423 for drag calculations
-L_gear_flatplate = 1.161678
-
-#Propeller data use thrust calculations
-#Data received from https://www.sensenich.com/wp-content/uploads/2019/10/P4EA_R13-1.pdf
-#Model: Sensenich 76EM8S14-0-62
-
-Prop_dia = 6 + (1/3) #ft
-Prop_thickness = (7/24) #ft
-Prop_pitch = 5 + (1/6) #ft at 0.75 of the length from the center to the tip I recomend this site for the calculation in case data is inaccurate (https://vansairforce.net/threads/calculating-propeller-pitch.202266/)
-
-Prop_hub_dia = 0.5 #ft
-Prop_hub_thickness = 0.25 #ft

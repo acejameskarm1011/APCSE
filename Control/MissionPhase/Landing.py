@@ -66,7 +66,7 @@ class Landing(Take_Off):
         #     raise Exception("Simulation did not run long enough to stop. Ajust and increase the time length so that the Aircraft can reach 0 speed.")
         
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
-        print("Ground Rolls is: {} with a dt of {}".format((self.Position_x[-1]-self.Position[0])*self.m_to_ft, delta_t))
+        print("Ground Rolls is: {} ft with a dt of {}".format(round((self.Position_x[-1]-self.Position[0])*self.m_to_ft), delta_t))
 
 
     def Condition(self):

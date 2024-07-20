@@ -61,7 +61,7 @@ class Descent(Climb):
         self.Percent_List = self.Percent_List
         self.Altitude_List = self.Altitude_List
         
-        print("Time elapsed during descent: {} min".format(self.Time_List[-1]/60))
+        print("Time elapsed during descent: {} min".format(round(self.Time_List[-1]/60, 3)))
         if not np.any(z < Ground_Altitude):
             from Plotting.Plotting import Descent_Plot
             Descent_Plot(self, title = "Descent Failed")

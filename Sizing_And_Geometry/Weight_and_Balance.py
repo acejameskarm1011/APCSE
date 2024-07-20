@@ -1,18 +1,24 @@
 from Aviation import Aviation
+import numpy as np
 
 class Mass(Aviation):
-    def __init__(self, AircraftDict, MaxMass = 1e10, MaxFuelMass = 1e10) -> None:
+    def __init__(self, AircraftDict, FrontSeatMass, RearSeatMass = 0, BaggageMass = 0, Tabs = False) -> None:
         self.Dictionary_setattr(AircraftDict["Mass"])
-        if MaxMass >= self.MGTOW:
-            self.MaxMass = self.MGTOW
-        elif MaxMass < self.EmptyMass:
-            self.MaxMass = self.EmptyMass
+        self.FrontSeatMass = FrontSeatMass
+        self.RearSeatMass = RearSeatMass
+        self.BaggageMass = BaggageMass
+        if Tabs:
+            self.MaxFuelMass = self.MaxFuel*2/3
         else:
-            self.MaxMass = MaxMass
-        if MaxFuelMass > self.MaxFuel:
             self.MaxFuelMass = self.MaxFuel
-        else:
-            self.MaxFuelMass = MaxFuelMass
+            
+        Masses = np.array([self.EmptyMass, FrontSeatMass, RearSeatMass, BaggageMass, self.MaxFuelMass])
+        Arms = np.array([self.EmptyMass_Arm, self.FrontSeat_Arm, self.RearSeat_Arm, self.Baggage_Arm, self.Fuel_Arm])        
+
+        self.MaxMass = sum(Masses)
+
+        self.CG = sum(Masses*Arms)/sum(Masses)
+
         self.Altitude = 0
         self.Atmosphere_attr()  
         self.reset()
