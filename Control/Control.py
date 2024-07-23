@@ -2,6 +2,7 @@
 from Aviation import Aviation
 import numpy as np
 from Plotting.Plotting import TakeOff_Plot
+from Emissions import Emissions
 
 class Control(Aviation):
     """
@@ -16,6 +17,7 @@ class Control(Aviation):
     def __init__(self, AircraftInstance) -> None:
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
         self.Aircraft = AircraftInstance
+        self.MGTOW_Percent = self.Aircraft.MGTOW_Percent
         self.Aircraft_Type = str(self.Aircraft.Engine)
 
         if self.Aircraft_Type == "Conventional":
@@ -32,6 +34,8 @@ class Control(Aviation):
         self.Cruise = Cruise(self.Aircraft, RPM_des_Cruise)
         self.Descent = Descent(self.Aircraft, RPM_des_Descent)
         self.Landing = Landing(self.Aircraft)
+
+        self.TotalEmissions_List = []
         
         self.key = -1.05 # Factor used to determine where one phase begins and another one begins
 
@@ -42,26 +46,59 @@ class Control(Aviation):
         """
         from Plotting.Plotting import ClimbPlot, CruisePlot, Descent_Plot, TakeOff_Plot
         self.Phase_Change = []
+        M_1 = self.Aircraft.TotalMass
+        E_1 = self.Aircraft.BatteryEnergy
         self.Take_Off.Ground_Roll_Sim_ODESolve()
+        M_2 = self.Aircraft.TotalMass
+        E_2 = self.Aircraft.BatteryEnergy
+        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
+        self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
         # TakeOff_Plot(self.Take_Off)
+
+
+        M_1 = self.Aircraft.TotalMass
+        E_1 = self.Aircraft.BatteryEnergy
         self.Climb.Pattern_Work_Climb_Solve(tmax=3*60.)
+        M_2 = self.Aircraft.TotalMass
+        E_2 = self.Aircraft.BatteryEnergy
+        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
+
         # ClimbPlot(self.Climb)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         self.Phase_Change.append(self.Take_Off.Time_List[-1])
         
 
-
+        M_1 = self.Aircraft.TotalMass
+        E_1 = self.Aircraft.BatteryEnergy
         self.Cruise.Downwind_Solve_1(tmax=2.*60.)
+        M_2 = self.Aircraft.TotalMass
+        E_2 = self.Aircraft.BatteryEnergy
+        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
+
         # CruisePlot(self.Cruise)
         self.Cruise.Time_List += self.Climb.Time_List[-1]
         self.Phase_Change.append(self.Climb.Time_List[-1])
 
+
+        M_1 = self.Aircraft.TotalMass
+        E_1 = self.Aircraft.BatteryEnergy
         self.Descent.Approach_Descent(tmax=1.2*60.)
+        M_2 = self.Aircraft.TotalMass
+        E_2 = self.Aircraft.BatteryEnergy
+        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
+
         # Descent_Plot(self.Descent)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
         self.Phase_Change.append(self.Cruise.Time_List[-1])
 
+
+        M_1 = self.Aircraft.TotalMass
+        E_1 = self.Aircraft.BatteryEnergy
         self.Landing.Ground_Roll()
+        M_2 = self.Aircraft.TotalMass
+        E_2 = self.Aircraft.BatteryEnergy
+        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
+
         # TakeOff_Plot(self.Landing)
         self.Landing.Time_List += self.Descent.Time_List[-1]
         self.Phase_Change.append(self.Descent.Time_List[-1])
@@ -70,6 +107,7 @@ class Control(Aviation):
         self.Gather_States()
         self.Gather_Aerodynamics()
         self.Gather_EnginePars()
+        self.Gather_Emissions()
 
 
     def Gather_States(self):
@@ -157,5 +195,11 @@ class Control(Aviation):
                     input.append(getattr(Phase, Para + "_List"))
                     # input.append(self.key)
             self.__setattr__(Para + "_Arr", np.block(input)[:-1])
+
+    def Gather_Emissions(self):
+        self.TotalEmissions_Arr = np.array(self.TotalEmissions_List)
+        self.TotalEmissions = np.sum(self.TotalEmissions_Arr, axis=0)
+        self.Total_CO2, self.Total_CH4, self.Total_N2O, self.Total_Pb = self.TotalEmissions
+
     def __repr__(self) -> str:
           return "Control"

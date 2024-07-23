@@ -21,9 +21,9 @@ class MissionPhase(Control):
         self.Thrust = self.Aircraft.Thrust
         
         if isinstance(self.Aircraft.Engine, ElectricEngineTest):
-            self.Percent = 100*self.Aircraft.BatteryRatio
+            self.Percent = 100*self.Aircraft.BatteryPercent
         else:
-            self.Percent = 100*self.Aircraft.FuelRatio
+            self.Percent = 100*self.Aircraft.FuelPercent
             
     def Adam_Bashforth_Solve(self, Initial, func, tmax, delta_t):
         """

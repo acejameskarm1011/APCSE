@@ -62,13 +62,16 @@ class Aircraft(Aviation):
         self.MaxMass = self.Mass.MaxMass
         self.FuelMass = self.Mass.FuelMass
         self.MaxFuel = self.FuelMass
-        self.FuelRatio = self.FuelMass/self.MaxFuel
+        self.FuelPercent = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
+        self.MGTOW_Percent = self.MaxMass/self.Mass.MGTOW
         self.Weight = self.TotalMass * self.g
         self.Get_C_D()
         self.Get_C_L()
 
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
+        self.BatteryEnergy = 0
+
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
@@ -77,7 +80,7 @@ class Aircraft(Aviation):
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
             self.FuelMass = 0.
             self.MaxEnergy = self.BatteryEnergy
-            self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
+            self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
     def GetTotalThrust(self):
         """
         Using the current engine on the aircraft, the total thrust output is computed in units of Netwons. The engine power output is directly
@@ -129,11 +132,11 @@ class Aircraft(Aviation):
         self.FuelMass += mdot*delta_t
         self.TotalMass += mdot*delta_t
         self.Masses.append(self.TotalMass)
-        self.FuelRatio = self.FuelMass/self.MaxFuel
+        self.FuelPercent = self.FuelMass/self.MaxFuel
         if isinstance(self.Engine, ElectricEngineTest):
             BatteryDrain = self.Engine.Get_EnergyDrain(delta_t)
             self.BatteryEnergy += BatteryDrain
-            self.BatteryRatio = self.BatteryEnergy/self.MaxEnergy
+            self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
 
     def Get_C_L(self):
         """
@@ -285,14 +288,14 @@ class Aircraft(Aviation):
         if not isinstance(self.Engine, ElectricEngineTest):
             Battery = "0"
         else:
-            Battery = self.BatteryRatio
+            Battery = self.BatteryPercent
         Forces_vals = np.round(np.array([self.Lift, self.Thrust, self.Drag, self.Weight], float))
         Forces = "\n\tLift: {} [N], \n\tThrust: {} [N], \n\tDrag: {} [N], \n\tWeight: {} [N]\n".format(*Forces_vals)
         Pos_Vel_vals = np.round(np.array([self.Altitude, self.V_infty/sp.constants.knot, self.Pitch/np.pi*180, self.alpha/np.pi*180],float))
         Pos_Vel = "\n\tAltitude: {} [ft], \n\tV_infty: {} [kts], \n\tPitch: {} [deg], \n\tAOA: {} [deg]\n".format(*Pos_Vel_vals)
         Aero_Vals = np.round(np.array([self.C_L, self.C_D],float), 5)
         Aero = "\n\tC_L: {} [None], \n\tC_D: {} [None]\n".format(*Aero_Vals)
-        Engine_Status = np.round(np.array([self.Engine.RPM, self.Engine.Power/sp.constants.hp, self.FuelRatio*100, Battery*100], float))
+        Engine_Status = np.round(np.array([self.Engine.RPM, self.Engine.Power/sp.constants.hp, self.FuelPercent*100, Battery*100], float))
         Engine = "\n\tRPM: {} [rev/min], \n\tPower: {} [hp], \n\tFuel: {} [%], \n\tBattery: {}".format(*Engine_Status)
         Last = "With an altitude of {} [ft], true airspeed of {} [kts], and with engine parameters being: {}\n\n".format(self.Altitude, self.V_infty/sp.constants.knot, Engine)
         return "\n\n{} is flying with state: {}".format(self.AircraftName, Forces) + Aero + Pos_Vel + Engine

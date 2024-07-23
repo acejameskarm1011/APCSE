@@ -90,7 +90,7 @@ class Climb(MissionPhase):
 
         if dgamma_dt < 0 and Pitch < 0:
             dgamma_dt = 0
-        elif Pitch > 4/180*np.pi and dgamma_dt > 0:
+        elif Pitch > 6/180*np.pi and dgamma_dt > 0:
             self.Get_Aircraft_Attr(set = True)
             dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
             dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
@@ -98,16 +98,6 @@ class Climb(MissionPhase):
 
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
-        if dgamma_dt < 0 and Pitch == 0:
-            dgamma_dt = 0
-        elif Pitch > 2*np.pi/180:
-            self.Get_Aircraft_Attr(set = True)
-            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch))/(mass*V_infty)
-            dv_dt = (self.Thrust-self.Drag-self.Weight*np.sin(Pitch))/mass
-            if V_infty < 60*sp.constants.knot:
-                print(V_infty)
-                exit()
-        return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
     def Condition(self):
         Bool = self.z <= self.z_max

@@ -68,7 +68,8 @@ class Take_Off(MissionPhase):
         
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         self.Aircraft.Endurance = self.Time_List[-1]
-        print("Ground Rolls is: {} ft".format(round(self.Position_x[-1]*self.m_to_ft)))
+        self.GroundRoll = self.Position_x[-1]*self.m_to_ft
+        print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
 
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State

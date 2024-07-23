@@ -66,6 +66,7 @@ class PistonEngine(Powerplant):
         # Below is tick to check if any methods are being called on too many times
         self.tick = 0
         self.RPM_tick = 0
+        self.Gal_Hr_List = []
 
         self.Name = Name + ": Piston Engine"
         # Since this is a test class, we will use the general "Name" to keep track of what the class is
@@ -200,7 +201,7 @@ class PistonEngine(Powerplant):
         """
         sigma = self.rho/self.rho_SL
         input = self.Throttle
-        R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4
+        R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4 # the 0.4 has been validated to be valid from a paper about emissions 
         if np.isclose(1.0, self.Throttle):
             R_m = 0.999999
             
@@ -215,6 +216,10 @@ class PistonEngine(Powerplant):
         self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # m^3
         self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60  # kg/s
         mdot = - self.Fuel_Consumption
+        gal_hour = self.Fuel_Consumption/self.Fuel_Density*60**2/sp.constants.gallon
+        
+        # gal_hour.append()
+        # print("Fuel burn: {} gal/hour\nWith RPM: {}".format(round(gal_hour, 2), round(self.RPM)))
         return mdot
     
     def __str__(self) -> str:

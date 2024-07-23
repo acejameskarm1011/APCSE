@@ -19,7 +19,7 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     Using the Control Class, we plot the state of the aircraft through a loop through the pattern
     """
     
-    title = Control.Aircraft_Type + title
+    title_plot = Control.Aircraft_Type + " " + title + " at {}\% MGTOW".format(round(Control.MGTOW_Percent*100, 1))
     linewidth = 3
     time = Control.Time_Arr / 60 # min
     Distance = Control.Position_x_Arr / sp.constants.nautical_mile
@@ -82,7 +82,7 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
     axes[2,1].set_xlim((0,time.max()))
 
     axes[2,2].plot(time, Percent, "y--", linewidth=linewidth)
-    axes[2,2].set_ylabel("Percent [\\%]")
+    axes[2,2].set_ylabel(r"Percent [\%]")
     axes[2,2].set_xlim((0,time.max()))
     
     
@@ -97,7 +97,8 @@ def Pattern_Plot(Control, title = "Pattern Work Plot"):
 
     # axes[1,0].set_ylim((0, Thrust.max()*1.2))
     # axes[1,1].set_ylim((0, Percent.max()*1.2))
-    fig.suptitle(title)
+    fig.suptitle(title_plot)
+    title = Control.Aircraft_Type + title + " at {} MGTOW".format(round(Control.MGTOW_Percent, 1))
     plt.savefig(image_dir + "\\Pattern_Performance\\" + title.replace(" ", "_") + ".png")
     plt.show()
     
