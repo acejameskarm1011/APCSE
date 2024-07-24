@@ -51,7 +51,7 @@ class Control(Aviation):
             RPM_des_Descent = 1600*RPM_Factor
         elif self.Aircraft_Type == "Electric":
             RPM_des_Cruise = 2100*RPM_Factor # Found using quasi - cruise
-            RPM_des_Descent = 1600*RPM_Factor
+            RPM_des_Descent = 1400*RPM_Factor
         else:
             raise Exception("Missing an Aircraft Type...")
         
@@ -80,6 +80,10 @@ class Control(Aviation):
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+        print("MGTOW Percent: {}\nGround Roll: {}\nFinal Percent {}".format(self.MGTOW_Percent, self.Take_Off_GroundRoll, self.Take_Off.Percent))
+        print("CO2: {}, CH4: {}, NOx: {}, Pb: {}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
+        print("{}\t{}\t{}\t{}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
+        exit()
         # TakeOff_Plot(self.Take_Off)
 
         M_1 = self.Aircraft.TotalMass

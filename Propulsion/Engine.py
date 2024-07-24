@@ -102,7 +102,7 @@ class PistonEngine(Powerplant):
         Volume = np.pi/4*N_cylinders*(bore**2*stroke) # Total Volume
         compression_ratio = 8.5 # Useable volume to nonuseable is 8.5:1
         self.V_displacement = Volume * (compression_ratio-1)/(compression_ratio)
-        self.Mixture = "lean"
+        self.Mixture = "RICH"
         self.Fuel_Density = 6*self.lbf_to_kg/sp.constants.gallon  # kg/m^3
                 
         Number = 5000

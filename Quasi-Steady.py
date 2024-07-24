@@ -1,22 +1,22 @@
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
-from PiperArcherIII_Blueprint import ElectricArcherAircraft
+from PiperArcherIII_Blueprint import ArcherAircraft
 
 
 
 
-# ElectricArcherAircraft.TotalMass *= 0.84
+# ArcherAircraft.TotalMass *= 0.84
 
 # RPM = [2265, 2406, 2515, 2700]
 # Power_des = []
 # # RPM = np.linspace(0,2700, 100)
 # PowerRat = []
 # for rpm in RPM:
-#     ElectricArcherAircraft.Engine.RPM = rpm
+#     ArcherAircraft.Engine.RPM = rpm
 #     print("RPM: {}".format(rpm))
-#     print("Power rating: {}".format(ElectricArcherAircraft.Engine.PowerRating*100))
-#     PowerRat.append(ElectricArcherAircraft.Engine.PowerRating)
+#     print("Power rating: {}".format(ArcherAircraft.Engine.PowerRating*100))
+#     PowerRat.append(ArcherAircraft.Engine.PowerRating)
 # plt.plot(RPM, PowerRat)
 # plt.show()
 
@@ -31,21 +31,21 @@ from PiperArcherIII_Blueprint import ElectricArcherAircraft
 # color = ["r", "y", "g", "k", "b"]
 
 # fig, axs = plt.subplots(1, 1, constrained_layout=True, figsize = (8,6))
-# ElectricArcherAircraft.V_infty = V_infty
-# ElectricArcherAircraft.Set_RPM(1500)
-# ElectricArcherAircraft.Wings.Flaps(40)
+# ArcherAircraft.V_infty = V_infty
+# ArcherAircraft.Set_RPM(1500)
+# ArcherAircraft.Wings.Flaps(40)
 # for (h, c) in zip(Altitude_Arr, color):
-#     ElectricArcherAircraft.Altitude = h
+#     ArcherAircraft.Altitude = h
     
-#     # Power_calc = .5*ElectricArcherAircraft.rho*V_infty**3*ElectricArcherAircraft.Wings.S_wing*(ElectricArcherAircraft.Get_C_D()+ElectricArcherAircraft.Wings.Get_C_L()*np.tan(Pitch_Arr))
-#     # Power_model = V_infty*ElectricArcherAircraft.Thrust*np.ones(n)
+#     # Power_calc = .5*ArcherAircraft.rho*V_infty**3*ArcherAircraft.Wings.S_wing*(ArcherAircraft.Get_C_D()+ArcherAircraft.Wings.Get_C_L()*np.tan(Pitch_Arr))
+#     # Power_model = V_infty*ArcherAircraft.Thrust*np.ones(n)
 #     Power_calc = []
 #     for gamma in Pitch_Arr:
-#         ElectricArcherAircraft.Pitch = gamma
-#         ElectricArcherAircraft.Set_Lift()    
-#         Power_calc.append(V_infty*(ElectricArcherAircraft.Drag+ElectricArcherAircraft.Weight*np.sin(gamma)))
+#         ArcherAircraft.Pitch = gamma
+#         ArcherAircraft.Set_Lift()    
+#         Power_calc.append(V_infty*(ArcherAircraft.Drag+ArcherAircraft.Weight*np.sin(gamma)))
 #     Power_calc = np.array(Power_calc)
-#     Power_model = ElectricArcherAircraft.Engine.Power*np.ones(n)
+#     Power_model = ArcherAircraft.Engine.Power*np.ones(n)
     
 #     axs.plot(Pitch_Arr*180/np.pi, Power_model/sp.constants.hp, color = c, label = "h = {} ft".format(h))
 #     axs.plot(Pitch_Arr*180/np.pi, Power_calc/sp.constants.hp, "--", color = c)
@@ -63,36 +63,36 @@ Altitude_Arr = np.array([30, 2000, 4000, 6000, 8000], float) # 1000 -> 0.0224586
 Velocity_Arr = np.linspace(60,140,n)*sp.constants.knot     # 1000 -> 0.1066374803233
 RPM_Arr = np.linspace(0,2700,n)
 
-RPM_Cruise = 1700
+RPM_Cruise = 2300
 V_cruise = 90*sp.constants.knot
 
 color = ["r", "y", "g", "k", "b"]
 
-fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize = (8,6))
-ElectricArcherAircraft.Pitch = 0
-ElectricArcherAircraft.Set_RPM(RPM_Cruise)
+fig, axs = plt.subplots(1, 2, constrained_layout=True, figsize = (11,6))
+ArcherAircraft.Pitch = 0
+ArcherAircraft.Set_RPM(RPM_Cruise)
 for (h, c) in zip(Altitude_Arr, color):
-    ElectricArcherAircraft.Altitude = h
+    ArcherAircraft.Altitude = h
     
     Thrust_Arr = []
     Drag_Arr = []
     for v in Velocity_Arr:
-        ElectricArcherAircraft.V_infty = v
-        ElectricArcherAircraft.Set_Lift()    
-        Thrust_Arr.append(ElectricArcherAircraft.Thrust)
-        Drag_Arr.append(ElectricArcherAircraft.Drag)
+        ArcherAircraft.V_infty = v
+        ArcherAircraft.Set_Lift()    
+        Thrust_Arr.append(ArcherAircraft.Thrust)
+        Drag_Arr.append(ArcherAircraft.Drag)
     Thrust_Arr = np.array(Thrust_Arr)        
     Drag_Arr = np.array(Drag_Arr)
     axs[0].plot(Velocity_Arr[4:]/sp.constants.knot, Thrust_Arr[4:]/Drag_Arr[4:], color = c, label = "h = {} ft".format(h))
 
-    ElectricArcherAircraft.V_infty = V_cruise
+    ArcherAircraft.V_infty = V_cruise
     Thrust_Arr = []
     Drag_Arr = []
     for RPM in RPM_Arr:
-        ElectricArcherAircraft.Set_RPM(RPM)
-        ElectricArcherAircraft.Set_Lift()    
-        Thrust_Arr.append(ElectricArcherAircraft.Thrust)
-        Drag_Arr.append(ElectricArcherAircraft.Drag)
+        ArcherAircraft.Set_RPM(RPM)
+        ArcherAircraft.Set_Lift()    
+        Thrust_Arr.append(ArcherAircraft.Thrust)
+        Drag_Arr.append(ArcherAircraft.Drag)
     
     Thrust_Arr = np.array(Thrust_Arr)        
     Drag_Arr = np.array(Drag_Arr)
