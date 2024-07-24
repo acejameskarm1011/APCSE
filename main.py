@@ -42,6 +42,18 @@ from PiperArcherIII_Blueprint import ArcherEngine
 # plt.show()
 # exit()
 
+N = 5
+Mass_Arr_Tabs = np.linspace(1912.5, 2550, N)
+
+
+
+print(Mass_Arr_Tabs)
+
+
+
+
+
+print(ArcherAircraft)
 ControlArcher = Control(ArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr

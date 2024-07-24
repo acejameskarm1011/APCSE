@@ -107,6 +107,7 @@ class PistonEngine(Powerplant):
                 
         Number = 5000
         self.PArr = np.linspace(0, self.MaxPower, Number)
+
     def Thrust_Static(self):
         """
         Using the engine's current propeller, power setting, and altitude this method returns the static thrust. This method requires no inputs.
@@ -217,7 +218,7 @@ class PistonEngine(Powerplant):
         self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60  # kg/s
         mdot = - self.Fuel_Consumption
         gal_hour = self.Fuel_Consumption/self.Fuel_Density*60**2/sp.constants.gallon
-        
+
         # gal_hour.append()
         # print("Fuel burn: {} gal/hour\nWith RPM: {}".format(round(gal_hour, 2), round(self.RPM)))
         return mdot

@@ -14,6 +14,13 @@ plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
 
+def Emissions_Plot():
+    pass
+
+
+
+
+
 def Pattern_Plot(Control, title = "Pattern Work Plot"):
     """
     Using the Control Class, we plot the state of the aircraft through a loop through the pattern

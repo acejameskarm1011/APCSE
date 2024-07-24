@@ -44,6 +44,9 @@ class Wings(Aircraft):
         self.Ground_Effect = 1
         self.Phase = ""
 
+    def reset(self):
+        self.alpha = self.alpha_0
+
     def Get_C_D0(self):
         raise Exception("This function shouldn't be called anymore!")
         CDo_wing_calc(re, mach, sweep, tc_avg, sref, swet, maxtcloc, Weight, vinf, rho, tcmax, ctip, croot, Wsref, Span)

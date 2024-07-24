@@ -50,9 +50,8 @@ class Aircraft(Aviation):
         self.Coefficients = Coefficients(self.ExtertnalComponents)
         self.Altitude = 0.
         self.Position = np.zeros(3, float)
-        self.Lift = 0.
-        self.Drag = 0.
-        self.Thrust = 0.
+        self.Pitch = 0
+
         self.Atmosphere_attr()
         self.V_infty = 0.
         self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
@@ -65,22 +64,41 @@ class Aircraft(Aviation):
         self.FuelPercent = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.MGTOW_Percent = self.MaxMass/self.Mass.MGTOW
-        self.Weight = self.TotalMass * self.g
-        self.Get_C_D()
-        self.Get_C_L()
+        self.Aircraft_Forces()
 
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
-        self.BatteryEnergy = 0
+        self.BatteryEnergy = 0.
+        self.MaxEnergy = 0.
 
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
             BatteryDensity = 250. # Wh/kg
-            BatteryEta = 0.5 # A source should be used to bakc this up
+            BatteryEta = 0.5 # A source should be used to back this up
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
             self.FuelMass = 0.
+            self.MaxFuel = 0.
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
+
+    def reset(self):
+        self.Altitude = 0.
+        self.V_infty = 0.
+        self.Position = np.array([0,0,0], float)
+        self.TotalMass = self.MaxMass
+        self.FuelMass = self.MaxFuel
+        self.BatteryEnergy = self.MaxEnergy
+
+        self.Set_RPM(2700)
+        self.Wings.reset()
+        self.alpha = (self.Wings.alpha-3)/180*np.pi
+
+        self.Aircraft_Forces()
+
+    def Switch_Tabs(self):
+        if 
+
+
     def GetTotalThrust(self):
         """
         Using the current engine on the aircraft, the total thrust output is computed in units of Netwons. The engine power output is directly
@@ -140,7 +158,8 @@ class Aircraft(Aviation):
 
     def Get_C_L(self):
         """
-        Currently using only the wings, we evaluate the coefficient of lift and gain the """
+        Currently using only the wings, we evaluate the coefficient of lift and gain the
+        """
         self.C_L = self.Wings.Get_C_L()
         return self.C_L
 
@@ -204,11 +223,12 @@ class Aircraft(Aviation):
 
     def Aircraft_Forces(self):
         self.GetTotalThrust()
-        C_L = self.Wings.Get_C_L()
-        C_D = self.Get_C_D()
+        C_L = self.Get_C_L()
         S = self.Wings.S_wing
         self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
         self.Weight = self.TotalMass*self.g
+
+        C_D = self.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
 
     def GetC_L_max(self, Components):

@@ -35,7 +35,7 @@ ArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict,
 
 
 AircraftName = "Electric " + AircraftName
-EmptyFactor = 0.94
+EmptyFactor = 1
 PiperArcherIII_Dict["Mass"]["EmptyMass"] *= EmptyFactor
 ArcherMass = Mass(PiperArcherIII_Dict, Pilot_Mass, Rear_Mass, Baggage, Tabs=False)
 

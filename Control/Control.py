@@ -14,18 +14,19 @@ class Control(Aviation):
         Must input an instance of an Aircraft so that the control class will be able to employ methods that will update the 
         characteristics of the Aircraft.
     """
-    def __init__(self, AircraftInstance) -> None:
+    def __init__(self, AircraftInstance, ) -> None:
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
         self.Aircraft = AircraftInstance
         self.MGTOW_Percent = self.Aircraft.MGTOW_Percent
         self.Aircraft_Type = str(self.Aircraft.Engine)
 
+        RPM_Factor = self.Aircraft.MGTOW_Percent
         if self.Aircraft_Type == "Conventional":
-            RPM_des_Cruise = 2306 # Found using quasi - cruise
-            RPM_des_Descent = 1600
+            RPM_des_Cruise = 2306*RPM_Factor # Found using quasi - cruise
+            RPM_des_Descent = 1600*RPM_Factor
         elif self.Aircraft_Type == "Electric":
-            RPM_des_Cruise = 1500 # Found using quasi - cruise
-            RPM_des_Descent = 1000
+            RPM_des_Cruise = 1500*RPM_Factor # Found using quasi - cruise
+            RPM_des_Descent = 1000*RPM_Factor
         else:
             raise Exception("Missing an Aircraft Type...")
         
@@ -36,8 +37,34 @@ class Control(Aviation):
         self.Landing = Landing(self.Aircraft)
 
         self.TotalEmissions_List = []
+        self.Take_Off_GroundRoll_List = []
+        
         
         self.key = -1.05 # Factor used to determine where one phase begins and another one begins
+
+    def reset(self, MGTOW_Percent):
+        from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
+        self.Aircraft.reset()
+        RPM_Factor = MGTOW_Percent
+        if self.Aircraft_Type == "Conventional":
+            RPM_des_Cruise = 2306*RPM_Factor # Found using quasi - cruise
+            RPM_des_Descent = 1600*RPM_Factor
+        elif self.Aircraft_Type == "Electric":
+            RPM_des_Cruise = 1500*RPM_Factor # Found using quasi - cruise
+            RPM_des_Descent = 1000*RPM_Factor
+        else:
+            raise Exception("Missing an Aircraft Type...")
+        
+        self.Take_Off = Take_Off(self.Aircraft)
+        self.Climb = Climb(self.Aircraft)
+        self.Cruise = Cruise(self.Aircraft, RPM_des_Cruise)
+        self.Descent = Descent(self.Aircraft, RPM_des_Descent)
+        self.Landing = Landing(self.Aircraft)
+
+        self.TotalEmissions_List = []
+        self.Take_Off_GroundRoll_List = []
+
+
 
 
     def Pattern_Cycle(self):
@@ -54,7 +81,6 @@ class Control(Aviation):
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
         # TakeOff_Plot(self.Take_Off)
-
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
@@ -200,6 +226,12 @@ class Control(Aviation):
         self.TotalEmissions_Arr = np.array(self.TotalEmissions_List)
         self.TotalEmissions = np.sum(self.TotalEmissions_Arr, axis=0)
         self.Total_CO2, self.Total_CH4, self.Total_N2O, self.Total_Pb = self.TotalEmissions
+
+    def __setattr__(self, name, value):
+        if name == "Take_Off_GroundRoll":
+            self.Take_Off_GroundRoll_List.append(value)
+        object.__setattr__(self, name, value)
+
 
     def __repr__(self) -> str:
           return "Control"
