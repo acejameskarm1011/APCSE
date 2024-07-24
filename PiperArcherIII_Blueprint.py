@@ -13,7 +13,7 @@ ArcherEngine = PistonEngine(AircraftName, ArcherPropeller)
 
 
 from scipy import constants
-Pilot_Mass = 150*constants.lb
+Pilot_Mass = (150+472)*constants.lb
 Rear_Mass = 15*constants.lb
 Baggage = 25*constants.lb
 
@@ -25,6 +25,7 @@ Baggage = 25*constants.lb
 
 
 ArcherMass = Mass(PiperArcherIII_Dict, Pilot_Mass, Rear_Mass, Baggage, Tabs=False)
+
 ArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
                           Wings = ArcherWings, 
                           HorizontalStabilizer = ArcherHorizontalStabilizer, 

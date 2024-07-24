@@ -78,6 +78,7 @@ class Cruise(MissionPhase):
 
 
     def Condition(self):
+        Bool = self.V_infty < 60*sp.constants.knot
         Bool = True
         return Bool
 

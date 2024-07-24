@@ -94,7 +94,7 @@ class Descent(Climb):
         return np.array([*dPosition_dt, dv_dt, dgamma_dt])
     
     def Condition(self):
-        Bool = self.z >= self.z_min or self.V_infty < 30*sp.constants.knot
+        Bool = self.z >= self.z_min or self.V_infty < 50*sp.constants.knot
         return Bool
 
     def delta_RPM(self, V_infty, RPM):

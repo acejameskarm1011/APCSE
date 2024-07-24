@@ -77,7 +77,7 @@ class Aircraft(Aviation):
             BatteryEta = 0.5 # A source should be used to back this up
             self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
             self.FuelMass = 0.
-            self.MaxFuel = 0.
+            self.MaxFuel = 1
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
 
@@ -96,7 +96,7 @@ class Aircraft(Aviation):
         self.Aircraft_Forces()
 
     def Switch_Tabs(self):
-        if 
+        pass
 
 
     def GetTotalThrust(self):

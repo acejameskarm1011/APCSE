@@ -50,8 +50,8 @@ class Control(Aviation):
             RPM_des_Cruise = 2306*RPM_Factor # Found using quasi - cruise
             RPM_des_Descent = 1600*RPM_Factor
         elif self.Aircraft_Type == "Electric":
-            RPM_des_Cruise = 1500*RPM_Factor # Found using quasi - cruise
-            RPM_des_Descent = 1000*RPM_Factor
+            RPM_des_Cruise = 2100*RPM_Factor # Found using quasi - cruise
+            RPM_des_Descent = 1600*RPM_Factor
         else:
             raise Exception("Missing an Aircraft Type...")
         

@@ -47,18 +47,18 @@ Mass_Arr_Tabs = np.linspace(1912.5, 2550, N)
 
 
 
-print(Mass_Arr_Tabs)
+# print(Mass_Arr_Tabs)
 
 
 
 
 
-print(ArcherAircraft)
-ControlArcher = Control(ArcherAircraft)
+
+ControlArcher = Control(ElectricArcherAircraft)
 ControlArcher.Pattern_Cycle()
 V = ControlArcher.Velocity_Arr
 T = ControlArcher.Time_Arr
-print(round(ArcherAircraft.FuelPercent*100, 2))
+# print(round(ArcherAircraft.FuelPercent*100, 2))
 
 Pattern_Plot(ControlArcher)
 

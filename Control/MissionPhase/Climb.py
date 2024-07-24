@@ -90,7 +90,7 @@ class Climb(MissionPhase):
 
         if dgamma_dt < 0 and Pitch < 0:
             dgamma_dt = 0
-        elif Pitch > 6/180*np.pi and dgamma_dt > 0:
+        elif Pitch > 4/180*np.pi and dgamma_dt > 0:
             self.Get_Aircraft_Attr(set = True)
             dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
             dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
