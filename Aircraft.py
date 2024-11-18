@@ -267,7 +267,7 @@ class Aircraft(Aviation):
         if name == "V_infty":
             self.Coefficients.V_infty = value
         if name == "alpha":
-            if value > 16/np.pi*180:
+            if value/np.pi*180 > 16:
                 raise ValueError("Angle of Attack of {} deg is not valid".format(value/np.pi*180))
         """
         if name == "Velocity":

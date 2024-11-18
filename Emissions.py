@@ -1,10 +1,5 @@
 from scipy import constants
 
-
-
-
-CO2 = 3053.40482195453
-
 Climb = {
     # g/kg
     "Take-Off" : 925,
@@ -16,6 +11,11 @@ Climb = {
 	"Idle" : 649
 }
 
+
+
+#######################################
+# Here are all of the emissions utilized for the plotting in the manuscript.
+CO2 = 3053.40482195453
 HC = {
     "Take-Off" : 44.3,
     "Climb" : 44.3,
@@ -25,7 +25,6 @@ HC = {
     "Taxi" : 53.8,
 	"Idle" : 121.5
 }
-
 NOx = {
     "Take-Off" : 3.2,	
     "Climb" : 3.2,
@@ -35,27 +34,12 @@ NOx = {
     "Taxi" : 2.5,
 	"Idle" : 0.2
 }
-
-PM = {
-    "Take-Off" : 0.093,	
-    "Climb" : 0.093,
-    "Cruise" : 0.144,
-    "Descent" : 0.493,
-    "Final" : 0.493,
-    "Taxi" : 0.051,
-	"Idle" : 0.046
-}
-
-eGrid = {
+eGrid = { # Chicago Grid from Elle Dissert
     # g/MJ
     "CO2" : 0.134527827333333,
-
     "CH4" : 0.00001247378,
-
     "N2O" : 1.76396888888889E-06
-
 }
-
 def Pb_Emissions(Fuel_mass):
     """
     Get the amount of lead emissions in units of grams [g]
@@ -76,6 +60,22 @@ def Pb_Emissions(Fuel_mass):
 
     Pb_mass = (1-Pb_retention) * (Fuel_mass) * (Pb_content/(Gas_density*constants.lb))
     return Pb_mass
+##############################################
+
+
+PM = {
+    "Take-Off" : 0.093,	
+    "Climb" : 0.093,
+    "Cruise" : 0.144,
+    "Descent" : 0.493,
+    "Final" : 0.493,
+    "Taxi" : 0.051,
+	"Idle" : 0.046
+}
+
+
+
+
 
 
 def Emissions(Mass, Energy, Mission, Particle = "ALL"):

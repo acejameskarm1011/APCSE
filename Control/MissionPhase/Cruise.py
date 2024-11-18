@@ -14,8 +14,9 @@ class Cruise(MissionPhase):
     def __init__(self, AircraftInstance, RPM_des) -> None:
         super().__init__(AircraftInstance)
         self.RPM_des = RPM_des
+        print("RPM desired: ", RPM_des)
 
-    def Downwind_Solve_1(self, tmax = 60, delta_t = 1e-2):
+    def Downwind_Solve_1(self, tmax = 60., delta_t = 1e-2):
         print("{} is now Cruising".format(self.Aircraft.AircraftName))
         self.alpha = self.Aircraft.alpha
         self.Aircraft.alpha = self.alpha
@@ -35,6 +36,8 @@ class Cruise(MissionPhase):
         self.tick = False
         Initial = np.block([Position, V_infty, self.RPM])
         Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, tmax, delta_t)
+        
+
         self.Position_x = Solution[:,0]
         self.Position_y = Solution[:,1]
         self.Position_z = Solution[:,2]
@@ -42,6 +45,10 @@ class Cruise(MissionPhase):
         self.Time_List = tArr
         self.List_to_Array()
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
+        if self.V_infty < 60*sp.constants.knot:
+            from Plotting.Plotting import CruisePlot
+            CruisePlot(self, title = "Cruise Failed")
+            raise Exception("Unexpected error occured, needs to be checked")
 
         
 
@@ -52,7 +59,7 @@ class Cruise(MissionPhase):
 
         self.Aircraft.V_infty = V_infty
         
-        if -0.01 >= self.V_des-V_infty >= -5*sp.constants.knot or self.tick:
+        if -0.1 >= self.V_des-V_infty >= -5*sp.constants.knot or self.tick:
             self.RPM = self.RPM_des
             self.tick = True
         else:
@@ -78,8 +85,9 @@ class Cruise(MissionPhase):
 
 
     def Condition(self):
-        Bool = self.V_infty < 60*sp.constants.knot
+        # Bool = self.V_infty < 60*sp.constants.knot
         Bool = True
+        Bool = self.V_infty > 60*sp.constants.knot
         return Bool
 
 

@@ -27,7 +27,6 @@ class Wings(Aircraft):
         self.AR = self.b_wing**2/self.S_wing
         self.taper = self.c_tip/self.c_root
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
-        self.K = 1/(np.pi*self.e_0*self.AR)
         self.Flaps(0)
 
         self.C_L_0 = self.C_l_0
@@ -39,6 +38,8 @@ class Wings(Aircraft):
         # self.alpha = 0
         self.tau = 0
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
+        # There is a better equation to use for evaluating C_L_alpha in Raymer 7th p414
+        
         ###########
 
         self.Ground_Effect = 1
@@ -88,7 +89,6 @@ class Wings(Aircraft):
     
     def Get_C_Di(self):
         raise Exception("This function shouldn't be called anymore!")
-        return self.K*self.Get_C_L()**2 * self.Ground_Effect
 
     def Get_C_L(self):
         """
@@ -142,7 +142,7 @@ class Wings(Aircraft):
         object.__setattr__(self, name, value)
         if name == "Altitude":
             if value < self.b_wing:
-                self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
+                self.Ground_Effect = (16*(value+10)/self.b_wing)**2/(1 + (16*(value+10)/self.b_wing)**2) # McCormick Appoximation for Ground Effect
             self.Atmosphere_attr()
         if name == "Phase":
             if name == "Take-Off":

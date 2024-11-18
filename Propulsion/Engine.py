@@ -309,3 +309,23 @@ class ElectricEngineTest(PistonEngine):
           return "ElectricEngineTest: {}".format(self.Name)
     def __str__(self) -> str:
         return "Electric"
+    
+
+
+
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import scienceplots
+from Plotting.Descent_Plot import Descent_Plot
+
+
+plt.style.use(["science","grid"])
+textsize = 18
+plt.rcParams.update({'font.size': textsize})
+
+
+
+
+
+    
+

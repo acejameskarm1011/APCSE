@@ -42,13 +42,35 @@ from PiperArcherIII_Blueprint import ArcherEngine
 # plt.show()
 # exit()
 
-N = 5
-Mass_Arr_Tabs = np.linspace(1912.5, 2550, N)
+# N = 5
+# Mass_Arr_Tabs = np.linspace(1912.5, 2550, N)
 
 
 
-# print(Mass_Arr_Tabs)
+# Alt_arr = np.array([0, 2000, 4000, 6000, 8000])
 
+# n = 5
+# V_arr = np.linspace(0.001,180,n)*sp.constants.knot
+
+# ArcherPropeller = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
+# EngTest = PistonEngine("Test", ArcherPropeller)
+# EngTest.RPM = 2700
+# fig, axes = plt.subplots(1, 1, constrained_layout=True, figsize = (10,6))
+# for h in Alt_arr:
+#     EngTest.Altitude = h
+#     Thrust = []
+#     for V in V_arr:
+#         Thrust.append(EngTest.Get_Thrust(V, V_arr[-1]))
+#     axes.plot(V_arr/sp.constants.knot, Thrust, "--", label = "Actual Thrust at h = {} ft".format(h))
+# Thrust_Ideal = EngTest.Power/V_arr
+# axes.plot(V_arr/sp.constants.knot, Thrust_Ideal, label = r"Ideal")
+# axes.set_xlabel(r"$V_\infty$ [knots]")
+# axes.set_ylabel("$T$ [N]")
+# axes.set_title(r"Plots of Actual and Idea Thrust vs. $V_\infty$")
+# axes.set_ylim((0, 5000))
+# plt.legend()
+# plt.show()
+# exit()
 
 
 
@@ -78,7 +100,7 @@ exit()
 
 
 
-ClimbPlot(ArcherClimbSim)
+# ClimbPlot(ArcherClimbSim)
 # Climb_Velocity_FlightAngle_Plot(ArcherClimbSim)
 # print("Archer is at altitude: {}".format(ArcherAircraft.Altitude))
 # Performance_Climb_Plot(ArcherAircraft)
