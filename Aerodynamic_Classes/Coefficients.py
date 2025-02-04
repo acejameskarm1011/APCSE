@@ -175,14 +175,12 @@ class Coefficients(Aviation):
             if name == "Lift":
                 self.Lift_Force = value / sp.constants.lbf
             if name == "Altitude":
-                if isinstance(value, (float, int)):
-                    self.Atmosphere_attr()
-                    self.Mach = self.V_infty / self.acousic_v
-                    self.density = self.rho / sp.constants.slug*sp.constants.foot**3
-                    self.visc = self.mu / sp.constants.slug*sp.constants.foot
-                    if value < self.b_wing:
-                        self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
-                    else:
-                        self.Ground_Effect = 1
-                else: 
-                    raise TypeError("Cannot accept value of type {}".format(type(value)))
+                self.Atmosphere_attr()
+                self.Mach = self.V_infty / self.acousic_v
+                self.density = self.rho / sp.constants.slug*sp.constants.foot**3
+                self.visc = self.mu / sp.constants.slug*sp.constants.foot
+                if value < self.b_wing:
+                    self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
+                else:
+                    self.Ground_Effect = 1
+             

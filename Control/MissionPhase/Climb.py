@@ -23,7 +23,7 @@ class Climb(MissionPhase):
             Desired altitude to fly to
         """
         print("Climb Phase Starting")
-        self.Aircraft.Wings.alpha += 2
+        self.Aircraft.alpha = 0/180*np.pi
         self.RPM = self.Aircraft.Engine.RPM
         self.V_infty = self.Aircraft.V_infty
         self.z_max = Pattern_Altitude*self.ft_to_m
@@ -85,8 +85,9 @@ class Climb(MissionPhase):
             Pitch_control = (V_infty-V_des)/V_des*1.4
 
 
+
         dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
-        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty) + Pitch_control
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty) #+ Pitch_control
 
         if dgamma_dt < 0 and Pitch < 0:
             dgamma_dt = 0
@@ -115,6 +116,7 @@ class Climb(MissionPhase):
     def List_to_Array(self):
         super().List_to_Array()
         self.Altitude_List = np.array(self.Altitude_List)
+        self.Alpha_List = np.array(self.Alpha_List)
 
 
     def Save_Data(self):
@@ -123,6 +125,21 @@ class Climb(MissionPhase):
             self.Altitude_List = [self.Altitude]
         else:
             self.Altitude_List.append(self.Altitude)
+        if not hasattr(self, "Alpha_List"):
+            self.Alpha_List = [self.Aircraft.alpha]
+        else:
+            self.Alpha_List.append(self.Aircraft.alpha)
 
     def __repr__(self) -> str:
           return "Climb"
+    
+    def __dict__(self):
+        dict = super().__dict__()
+        dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
+        dict["Altitude [ft]"] = self.Altitude_List
+        dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
+        dict["Time [s]"] = self.Time_List
+        dict["RPM [rev/min]"] = self.MaxRPM
+        dict["Pitch [deg]"] = self.Pitch_List / np.pi * 180
+        dict["AOA [deg]"] = self.Alpha_List / np.pi * 180
+        return dict

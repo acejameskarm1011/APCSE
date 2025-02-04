@@ -45,7 +45,6 @@ class Aircraft(Aviation):
         self.VerticalStabilizer = Components["VerticalStabilizer"]
         self.Engine = Components["Engine"]
         self.Mass = Components["Mass"]
-        self.Mass = Components["Mass"]
         self.ExtertnalComponents = [self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer]
         self.Coefficients = Coefficients(self.ExtertnalComponents)
         self.Altitude = 0.
@@ -266,6 +265,7 @@ class Aircraft(Aviation):
     def __setattr__(self, name: str, value):
         if name == "V_infty":
             self.Coefficients.V_infty = value
+            self.Wings.V_infty = value
         if name == "alpha":
             if value/np.pi*180 > 16:
                 raise ValueError("Angle of Attack of {} deg is not valid".format(value/np.pi*180))
@@ -287,6 +287,7 @@ class Aircraft(Aviation):
                 self.Atmosphere_attr()
                 self.Engine.Altitude = value
                 self.Coefficients.Altitude = value
+                self.Wings.Altitude = value
             else: 
                 raise TypeError("Cannot accept value of type {}".format(type(value)))
             

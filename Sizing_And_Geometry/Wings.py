@@ -2,7 +2,8 @@ import sys
 sys.path.append("./Drag_Model/AE-298")
 from Aircraft import Aircraft
 import numpy as np
-
+from Airfoils.airfoil_3D_interp import ThreeDim_Interp
+# from Airfoils.airfoil_analysis import C_l_0
 
 
 class Wings(Aircraft):
@@ -33,7 +34,7 @@ class Wings(Aircraft):
 
         ################
         self.alpha_crit = 12
-        self.alpha_0 = 2.5 # Make sure it stays at 3 deg for Landing ground roll
+        self.alpha_0 = 3 # Make sure it stays at 3 deg for Landing ground roll
         self.alpha = self.alpha_0
         # self.alpha = 0
         self.tau = 0
@@ -106,9 +107,18 @@ class Wings(Aircraft):
         -----
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
-        C_L = self.C_L_0 + self.C_l_alpha*self.alpha + self.C_L_flaps
-        self.C_L = C_L
-        return C_L
+
+        method = "threeD"
+
+        if method == "threeD":
+            Re = self.V_infty*self.rho*self.c_bar/self.mu
+            self.C_l = ThreeDim_Interp(Re, AOA = self.alpha)
+            self.C_L = self.C_l*self.AR/(self.AR+2)
+            return self.C_L
+        else:
+            C_L = self.C_L_0 + self.C_l_alpha*self.alpha + self.C_L_flaps
+            self.C_L = C_L
+            return C_L
     
 
 
@@ -122,8 +132,15 @@ class Wings(Aircraft):
         ---------
 
         """
-        self.C_L = C_L
-        self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_l_alpha)
+        method = "threeD"
+
+        if method == "threeD":
+            self.C_L = C_L
+            C_l = self.C_L*(self.AR+2)/self.AR
+            self.alpha = ThreeDim_Interp(Re = self.V_infty*self.rho*self.c_bar/self.mu, C_l = C_l)
+        else:
+            self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
+
         if self.alpha > self.alpha_crit:
             pass
             # print(self.C_L)
@@ -139,17 +156,23 @@ class Wings(Aircraft):
 
 
     def __setattr__(self, name, value):
+        if name == "V_infty":
+            self.Mach = value / self.acousic_v 
         object.__setattr__(self, name, value)
         if name == "Altitude":
             if value < self.b_wing:
                 self.Ground_Effect = (16*(value+10)/self.b_wing)**2/(1 + (16*(value+10)/self.b_wing)**2) # McCormick Appoximation for Ground Effect
             self.Atmosphere_attr()
+            if hasattr(self, "V_infty"):
+                self.Mach = self.V_infty / self.acousic_v
         if name == "Phase":
             if name == "Take-Off":
                 self.alpha = self.alpha_0
             if name == "Landing":
                 self.alpha = self.alpha_0
+       
+
+
 
     def __repr__(self) -> str:
           return "Wings: {}".format(self.Name)
-    

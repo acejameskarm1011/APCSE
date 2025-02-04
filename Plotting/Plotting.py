@@ -14,10 +14,6 @@ plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
 
-def Emissions_Plot():
-    pass
-
-
 
 
 

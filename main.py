@@ -7,8 +7,9 @@ np.set_printoptions(suppress=True)
 
 from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot, Pattern_Plot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
-
 from PiperArcherIII_Blueprint import ArcherEngine
+
+
 
 
 
@@ -75,14 +76,28 @@ from PiperArcherIII_Blueprint import ArcherEngine
 
 
 
+ArcherAircraft.V_infty = 76*ArcherAircraft.knots_to_mps
 
-ControlArcher = Control(ElectricArcherAircraft)
+print("Climb Thrust at sea level is: ")
+print(ArcherAircraft.GetTotalThrust()*ArcherAircraft.N_to_lbf)
+
+
+
+
+
+
+
+ControlArcher = Control(ArcherAircraft)
+# ControlArcher.TakeOff_only()
+# exit()
+
+
+
+
 ControlArcher.Pattern_Cycle()
-V = ControlArcher.Velocity_Arr
-T = ControlArcher.Time_Arr
 # print(round(ArcherAircraft.FuelPercent*100, 2))
 
-Pattern_Plot(ControlArcher)
+# Pattern_Plot(ControlArcher)
 
 exit()
 

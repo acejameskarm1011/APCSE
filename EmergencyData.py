@@ -21,8 +21,6 @@ plt.rcParams.update({'font.size': textsize})
 MGTOW_Arr = np.array([1, 0.960784314, 0.921568627, 0.882352941, 0.843137255, 0.799215686])
 
 Model_GR = []
-C_Emissions
-E_Emissions
 
 
 

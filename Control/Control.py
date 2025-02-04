@@ -1,8 +1,10 @@
 #Control
 from Aviation import Aviation
 import numpy as np
-from Plotting.Plotting import TakeOff_Plot
 from Emissions import Emissions
+from Save_to_Excel import Save_to_Excel
+
+import pandas as pd
 
 class Control(Aviation):
     """
@@ -21,12 +23,6 @@ class Control(Aviation):
         self.MGTOW_Percent = self.Aircraft.MGTOW_Percent
         self.reset(self.MGTOW_Percent)
         
-
-        
-        
-        
-        
-
     def reset(self, MGTOW_Percent):
         self.Aircraft.reset()
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
@@ -59,18 +55,24 @@ class Control(Aviation):
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+        Save_to_Excel("Take-Off_Only", self.Take_Off)
 
+    def TakeOffToClimb(self):
+        self.Take_Off.Ground_Roll_Sim_ODESolve()
+     
+        self.Climb.Pattern_Work_Climb_Solve(tmax=3*60., Pattern_Altitude=self.Pattern_Altitude)
+
+        self.Climb.Time_List += self.Take_Off.Time_List[-1]
+        
         print("Gathering Data...")
-        self.Gather_States()
-        self.Gather_Aerodynamics()
-        self.Gather_EnginePars()
-        self.Gather_Emissions()
+        Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb)
+        
 
     def Pattern_Cycle(self):
         """
         This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
         """
-        from Plotting.Plotting import ClimbPlot, CruisePlot, Descent_Plot, TakeOff_Plot
+        # from Plotting.Plotting import ClimbPlot, CruisePlot, Descent_Plot, TakeOff_Plot
         self.Phase_Change = []
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
@@ -90,7 +92,7 @@ class Control(Aviation):
         self.Climb.Pattern_Work_Climb_Solve(tmax=3*60., Pattern_Altitude=self.Pattern_Altitude)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
-        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
+        # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
 
         # ClimbPlot(self.Climb)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
@@ -102,7 +104,7 @@ class Control(Aviation):
         self.Cruise.Downwind_Solve_1(tmax=2*60.)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
-        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
+        # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
 
         # CruisePlot(self.Cruise)
         
@@ -115,7 +117,7 @@ class Control(Aviation):
         self.Descent.Approach_Descent(tmax=1.2*60.)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
-        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
+        # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
 
         # Descent_Plot(self.Descent)
         self.Descent.Time_List += self.Cruise.Time_List[-1]
@@ -127,17 +129,18 @@ class Control(Aviation):
         self.Landing.Ground_Roll()
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
-        self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
+        # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
 
         # TakeOff_Plot(self.Landing)
         self.Landing.Time_List += self.Descent.Time_List[-1]
         self.Phase_Change.append(self.Descent.Time_List[-1])
         
         print("Gathering Data...")
-        self.Gather_States()
-        self.Gather_Aerodynamics()
-        self.Gather_EnginePars()
-        self.Gather_Emissions()
+        Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
+        # self.Gather_States()
+        # self.Gather_Aerodynamics()
+        # self.Gather_EnginePars()
+        # self.Gather_Emissions()
 
 
     def Gather_States(self):

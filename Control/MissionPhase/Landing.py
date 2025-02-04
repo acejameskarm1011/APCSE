@@ -78,3 +78,8 @@ class Landing(Take_Off):
     
     def __repr__(self) -> str:
           return "Landing"
+
+    def __dict__(self):
+        dict = super().__dict__()
+        dict["RPM [rev/min]"] = self.RPM
+        return dict

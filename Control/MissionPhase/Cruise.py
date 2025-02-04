@@ -134,6 +134,14 @@ class Cruise(MissionPhase):
         super().Get_Aircraft_Attr(set)
         self.alpha = self.Aircraft.alpha
 
-
     def __repr__(self) -> str:
           return "Cruise"
+    
+    def __dict__(self):
+        dict = super().__dict__()
+        dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
+        dict["Altitude [ft]"] = self.Altitude
+        dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
+        dict["Time [s]"] = self.Time_List
+        dict["RPM [rev/min]"] = self.RPM_List
+        return dict

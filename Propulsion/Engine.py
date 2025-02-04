@@ -193,7 +193,7 @@ class PistonEngine(Powerplant):
 
     def Get_Power(self):
         """
-        This is the function that should be called when the power should be 
+        This returns the current power output [W] of the engine based on altitude and RPM setting
 
         Returns
         -------
@@ -316,7 +316,6 @@ class ElectricEngineTest(PistonEngine):
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import scienceplots
-from Plotting.Descent_Plot import Descent_Plot
 
 
 plt.style.use(["science","grid"])

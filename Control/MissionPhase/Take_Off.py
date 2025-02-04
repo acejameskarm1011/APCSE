@@ -56,11 +56,12 @@ class Take_Off(MissionPhase):
 
 
         self.List_to_Array()
-        self.Lift_List = self.Lift_List 
-        self.Thrust_List = self.Thrust_List 
-        self.Drag_List = self.Drag_List 
-        self.Weight_List = self.Weight_List 
-        self.Percent_List = self.Percent_List
+        # Likely unnecessary
+        # self.Lift_List = self.Lift_List 
+        # self.Thrust_List = self.Thrust_List 
+        # self.Drag_List = self.Drag_List 
+        # self.Weight_List = self.Weight_List 
+        # self.Percent_List = self.Percent_List
 
         if not np.any(np.abs(self.Velocity_List*self.mps_to_knots) > V_r):
             print(V_infty*self.mps_to_knots)
@@ -100,3 +101,15 @@ class Take_Off(MissionPhase):
 
     def __repr__(self) -> str:
           return "Take-Off"
+    
+    def __dict__(self):
+        dict = super().__dict__()
+        # print(self.Weight_List)
+        # exit()
+        dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
+        dict["Altitude [ft]"] = self.Altitude
+        dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
+        dict["Time [s]"] = self.Time_List
+        dict["RPM [rev/min]"] = self.MaxRPM
+        dict["Ground Roll [ft]"] = self.Position_x * self.m_to_ft
+        return dict

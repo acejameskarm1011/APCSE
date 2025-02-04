@@ -134,6 +134,15 @@ class MissionPhase(Control):
 
     def __repr__(self) -> str:
           return "MissionPhase"
+    
+    def __dict__(self):
+        return {
+            "Thrust [lbf]" : self.Thrust_List*self.N_to_lbf,
+            "Lift [lbf]" : self.Lift_List*self.N_to_lbf,
+            "Drag [lbf]" : self.Drag_List*self.N_to_lbf,
+            "Weight [lbf]" : self.Weight_List*self.N_to_lbf,
+            "Percent [%]" : self.Percent_List
+        }
 
 class subphase(MissionPhase):
     pass

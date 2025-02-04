@@ -36,6 +36,7 @@ class Aviation:
     fps_to_knots = sp.constants.foot/sp.constants.knot
     knots_to_fps = sp.constants.knot/sp.constants.foot
     lbf_to_kg = sp.constants.pound
+    N_to_lbf = 0.2248089431
     h_to_s = 60**2
 
     def __init__(self, Altitude = 0) -> None:

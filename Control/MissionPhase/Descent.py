@@ -140,3 +140,8 @@ class Descent(Climb):
 
     def __repr__(self) -> str:
           return "Descent"
+ 
+    def __dict__(self):
+        dict = super().__dict__()
+        dict["RPM [rev/min]"] = self.RPM_List
+        return dict
