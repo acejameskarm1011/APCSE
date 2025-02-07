@@ -28,7 +28,7 @@ def Save_to_Excel(MissionType, *Phases):
         Phase = Phase.__dict__()
         AllPhases[PhaseName] = Phase
         PhaseString = PhaseString + PhaseName + "_"
-    totalstring = filepath + MissionType + "_" +  PhaseString[:-1] + ".xlsx"
+    totalstring = filepath + MissionType + ".xlsx"
 
     writer = pd.ExcelWriter(totalstring)
     for key0 in AllPhases:

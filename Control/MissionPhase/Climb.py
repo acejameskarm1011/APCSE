@@ -23,7 +23,7 @@ class Climb(MissionPhase):
             Desired altitude to fly to
         """
         print("Climb Phase Starting")
-        self.Aircraft.alpha = 0/180*np.pi
+        
         self.RPM = self.Aircraft.Engine.RPM
         self.V_infty = self.Aircraft.V_infty
         self.z_max = Pattern_Altitude*self.ft_to_m
@@ -96,7 +96,7 @@ class Climb(MissionPhase):
             dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
             dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
             
-
+            
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
 
@@ -111,7 +111,6 @@ class Climb(MissionPhase):
     def Get_Aircraft_Attr(self, set = False):
         super().Get_Aircraft_Attr(set)
         self.Altitude = self.Aircraft.Altitude
-        self.alpha = self.Aircraft.alpha
 
     def List_to_Array(self):
         super().List_to_Array()

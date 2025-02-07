@@ -21,7 +21,7 @@ plt.rcParams.update({'font.size': textsize})
 
 
 a0 = "new"
-data = pd.read_excel("ExcelFiles\\29_01_2025\\Conventional_Full_Pattern_Mission_{}.xlsx".format(a0), sheet_name = "Climb", header=None)
+data = pd.read_excel("ExcelFiles\\03_02_2025\\Conventional_Up_to_Climb{}.xlsx".format(""), sheet_name = "Climb", header=None)
 dataframe = pd.DataFrame(data).to_numpy()
 Attributes = dataframe[0,:]
 

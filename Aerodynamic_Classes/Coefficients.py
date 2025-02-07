@@ -110,7 +110,11 @@ class Coefficients(Aviation):
         CDo_nac = 0
         CD_misc_val = CD_misc_calc(CDo_pyl, self.Get_CD0_Fuselage(), self.Get_CD0_Wing(),CDo_nac,
                                    self.Get_CD0_VerticalStabilizer(), self.Get_CD0_HorizontalStabilizer(),CD_misc_cons)
-        C_D = C_D0 + C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val + self.Wings.C_D_flaps  + 0.003
+ 
+
+        C_D = C_D0 + C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val + self.Wings.C_D_flaps # I do not remember what this is for +  0.003
+        print(C_D)
+        exit()
         return C_D
     
 # Roskam Part 6 Chapter 4

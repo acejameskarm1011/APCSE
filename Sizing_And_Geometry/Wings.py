@@ -26,6 +26,7 @@ class Wings(Aircraft):
         self.Name = self.AircraftName + self.PartName
         self.Dictionary_setattr(AircraftDict[self.PartName])
         self.AR = self.b_wing**2/self.S_wing
+        self.S_ref = self.S_wing
         self.taper = self.c_tip/self.c_root
         self.e_0 = 1.78*(1-0.045*self.AR**(0.68)) - 0.64
         self.Flaps(0)
@@ -141,10 +142,8 @@ class Wings(Aircraft):
         else:
             self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
 
-        if self.alpha > self.alpha_crit:
-            pass
-            # print(self.C_L)
-        elif self.alpha > self.alpha_crit*1.2:
+
+        if self.alpha > self.alpha_crit*1.2:
             raise Exception("Angle Attack Value: {} deg is not valid".format(self.alpha))
         #     self.alpha = self.alpha_crit
 

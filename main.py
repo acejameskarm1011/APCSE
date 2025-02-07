@@ -8,7 +8,12 @@ np.set_printoptions(suppress=True)
 from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot, Pattern_Plot
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
 from PiperArcherIII_Blueprint import ArcherEngine
+import scienceplots
 
+
+plt.style.use(["science","grid"])
+textsize = 18
+plt.rcParams.update({'font.size': textsize})
 
 
 
@@ -76,25 +81,88 @@ from PiperArcherIII_Blueprint import ArcherEngine
 
 
 
-ArcherAircraft.V_infty = 76*ArcherAircraft.knots_to_mps
-
-print("Climb Thrust at sea level is: ")
-print(ArcherAircraft.GetTotalThrust()*ArcherAircraft.N_to_lbf)
 
 
 
 
+V_r = 66*ArcherAircraft.knots_to_mps
+
+ArcherAircraft.V_infty = V_r
+ArcherAircraft.alpha = 0
 
 
+ArcherAircraft.Aircraft_Forces()
+
+ArcherAircraft.Set_Lift()
+
+
+num = 100
+for i in range(num):
+    ArcherAircraft.Aircraft_Forces()
+    ArcherAircraft.Set_Lift()
+
+
+print("C_L_req: ", ArcherAircraft.C_L)
+print("Required AOA: ", ArcherAircraft.alpha/np.pi*180, "deg")
+
+
+
+
+
+
+
+
+n = 200
+V_infty_arr = np.linspace(0, V_r*1.5, n)
+
+
+
+mu = 0.04
+
+ArcherAircraft.alpha = 0
+
+
+Lift_list = []
+Thrust_list = []
+Drag_list = []
+Weight_list = []
+Normal_list = []
+for i, V in enumerate(V_infty_arr):
+    ArcherAircraft.V_infty = V
+    ArcherAircraft.Aircraft_Forces()
+    Lift_list.append(ArcherAircraft.Lift * ArcherAircraft.N_to_lbf)
+    Thrust_list.append(ArcherAircraft.Thrust * ArcherAircraft.N_to_lbf)
+    Drag_list.append(ArcherAircraft.Drag * ArcherAircraft.N_to_lbf)
+    Weight_list.append(ArcherAircraft.Weight * ArcherAircraft.N_to_lbf)
+    Normal_list.append((ArcherAircraft.Weight - ArcherAircraft.Lift - ArcherAircraft.Thrust*np.sin(ArcherAircraft.alpha))*ArcherAircraft.N_to_lbf)
+
+
+
+
+fig, ax = plt.subplots(1, 1, constrained_layout = True, figsize = (10,10))
+
+KTAS = V_infty_arr * ArcherAircraft.mps_to_knots
+
+ax.plot(KTAS, Lift_list, label = "Lift")
+ax.plot(KTAS, Thrust_list, label = "Thrust")
+ax.plot(KTAS, Drag_list, label = "Drag")
+ax.plot(KTAS, Weight_list, label = "Weight")
+ax.plot(KTAS, Normal_list, label = "Normal")
+
+ax.legend()
+ax.set_ylabel("Forces [lbf]")
+ax.set_xlabel("Velocity [knots]")
+
+plt.grid()
+plt.show()
+
+exit()
 
 ControlArcher = Control(ArcherAircraft)
-# ControlArcher.TakeOff_only()
-# exit()
 
 
 
-
-ControlArcher.Pattern_Cycle()
+ControlArcher.TakeOffToClimb()
 # print(round(ArcherAircraft.FuelPercent*100, 2))
 
 # Pattern_Plot(ControlArcher)

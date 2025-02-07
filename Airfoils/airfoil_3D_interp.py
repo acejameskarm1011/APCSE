@@ -76,10 +76,6 @@ def ThreeDim_Interp(Re, **kwargs):
 
     i = len(Reynolds_Numbers[Reynolds_Numbers <= Re])-1
 
-
-
-
-
     if i == C_l.shape[0]-1:
         C_l_Re = C_l[i]
     else:

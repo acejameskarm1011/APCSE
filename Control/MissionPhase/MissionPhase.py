@@ -3,6 +3,8 @@ from Propulsion.Engine import ElectricEngineTest
 import numpy as np
 class MissionPhase(Control):
     weather = "Good"
+    mu_f = 0.04
+    mu_br = 0.4
     def __init__(self, AircraftInstance) -> None:
         self.Aircraft = AircraftInstance
         self.MaxRPM = self.Aircraft.Engine.MaxRPM
@@ -19,6 +21,7 @@ class MissionPhase(Control):
         self.Drag = self.Aircraft.Drag
         self.Weight = self.Aircraft.Weight
         self.Thrust = self.Aircraft.Thrust
+        self.alpha = self.Aircraft.alpha
         
         if isinstance(self.Aircraft.Engine, ElectricEngineTest):
             self.Percent = 100*self.Aircraft.BatteryPercent

@@ -65,7 +65,7 @@ class Control(Aviation):
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         
         print("Gathering Data...")
-        Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb)
+        Save_to_Excel(self.Aircraft_Type + "_Up_to_Climb", self.Take_Off, self.Climb)
         
 
     def Pattern_Cycle(self):

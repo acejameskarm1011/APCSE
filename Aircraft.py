@@ -68,6 +68,7 @@ class Aircraft(Aviation):
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         self.BatteryEnergy = 0.
         self.MaxEnergy = 0.
+        self.alpha = 0
 
         if isinstance(self.Engine, ElectricEngineTest):
             # If it is detected that the engine used is an electric one, then the aircraft class
@@ -230,6 +231,9 @@ class Aircraft(Aviation):
         C_D = self.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
 
+
+
+
     def GetC_L_max(self, Components):
         C_L = 0
         k = 0
@@ -269,6 +273,7 @@ class Aircraft(Aviation):
         if name == "alpha":
             if value/np.pi*180 > 16:
                 raise ValueError("Angle of Attack of {} deg is not valid".format(value/np.pi*180))
+            self.Wings.alpha = value + self.Wings.alpha_0
         """
         if name == "Velocity":
             if not isinstance(value, np.ndarray):
