@@ -101,8 +101,10 @@ class Coefficients(Aviation):
                                  self.c_root, self.C_l_alpha, self.AR,self.L_c_4_wing)
         self.Wings.C_Di = C_Di
         return C_Di
-    
+
     def Get_C_D(self):
+        
+
         C_D0 = self.Get_CD0_Wing() + self.Get_CD0_VerticalStabilizer() + self.Get_CD0_HorizontalStabilizer() + self.Get_CD0_Fuselage()
         C_Di = self.Get_CDi_Wing() + self.Get_CDi_HorizontalStabilizer() + self.Get_CDi_Fuselage()
         CD_misc_cons = 0.05
