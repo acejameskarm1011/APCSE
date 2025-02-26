@@ -70,8 +70,7 @@ class Take_Off(MissionPhase):
         self.Aircraft.Endurance = self.Time_List[-1]
         self.GroundRoll = self.Position_x[-1]*self.m_to_ft
         print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
-        print("Final take-off velocity: ", self.V_infty*self.mps_to_knots)
-        exit()
+        print("Final take-off velocity: ", self.V_infty*self.mps_to_knots, "knots")
 
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State
@@ -85,7 +84,7 @@ class Take_Off(MissionPhase):
             self.Aircraft.alpha = 5/180*np.pi
 
         k_D = 1
-        k_L = 1.5
+        k_L = 1
 
         self.Weight = mass*self.g
         self.Normal = mass*self.g-k_L*self.Lift-self.Thrust*np.sin(self.alpha)

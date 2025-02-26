@@ -60,7 +60,7 @@ class Control(Aviation):
     def TakeOffToClimb(self):
         self.Take_Off.Ground_Roll_Sim_ODESolve()
      
-        self.Climb.Pattern_Work_Climb_Solve(tmax=3*60., Pattern_Altitude=self.Pattern_Altitude)
+        self.Climb.Pattern_Work_Climb_Solve(tmax=5*60., Pattern_Altitude=self.Pattern_Altitude)
 
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         
@@ -84,7 +84,6 @@ class Control(Aviation):
         # print("MGTOW Percent: {}\nGround Roll: {}\nFinal Percent {}".format(self.MGTOW_Percent, self.Take_Off_GroundRoll, self.Take_Off.Percent))
         # print("CO2: {}, CH4: {}, NOx: {}, Pb: {}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
         # print("{}\t{}\t{}\t{}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
-        # exit()
         # TakeOff_Plot(self.Take_Off)
 
         M_1 = self.Aircraft.TotalMass

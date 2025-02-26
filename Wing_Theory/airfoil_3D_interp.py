@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from time import time
 
 import sys
-sys.path.append("\\Airfoils")
+sys.path.append("\\Wing_Theory")
 
 import os
 current_dir = os.getcwd()
 
 
-Airfoil_dir = current_dir + "\\Airfoils"
+Airfoil_dir = current_dir + "\\Wing_Theory"
 
 os.chdir(Airfoil_dir)
 

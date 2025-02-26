@@ -6,7 +6,9 @@ np.set_printoptions(suppress=True)
 
 
 from Plotting.Plotting import CruisePlot, Descent_Plot, TakeOff_Plot, Pattern_Plot
+
 from PiperArcherIII_Blueprint import ArcherAircraft, ElectricArcherAircraft
+
 from PiperArcherIII_Blueprint import ArcherEngine
 import scienceplots
 
@@ -77,7 +79,6 @@ plt.rcParams.update({'font.size': textsize})
 # plt.legend()
 # plt.show()
 # exit()
-
 
 
 
@@ -156,13 +157,15 @@ ax.set_xlabel("Velocity [knots]")
 plt.grid()
 plt.show()
 
-exit()
 
 ControlArcher = Control(ArcherAircraft)
 
 
 
 ControlArcher.TakeOffToClimb()
+
+
+
 # print(round(ArcherAircraft.FuelPercent*100, 2))
 
 # Pattern_Plot(ControlArcher)

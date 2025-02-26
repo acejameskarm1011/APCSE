@@ -2,7 +2,7 @@ import sys
 sys.path.append("./Drag_Model/AE-298")
 from Aircraft import Aircraft
 import numpy as np
-from Airfoils.airfoil_3D_interp import ThreeDim_Interp
+from Wing_Theory.airfoil_3D_interp import ThreeDim_Interp
 # from Airfoils.airfoil_analysis import C_l_0
 
 
@@ -41,8 +41,17 @@ class Wings(Aircraft):
         self.tau = 0
         self.C_L_alpha = self.C_l_alpha/(1 + self.C_l_alpha/(np.pi*self.AR)*(1 + self.tau))
         # There is a better equation to use for evaluating C_L_alpha in Raymer 7th p414
-        
-        ###########
+
+
+        #######################
+        # Wing Theory evaluation
+        from Wing_Theory.wing_analysis import C_L_0, C_L_alpha, C_l_max
+        self.C_L_0 = C_L_0
+        self.C_L_alpha = C_L_alpha
+        self.C_L_max = C_l_max
+        self.alpha_crit = int((self.C_L_max - self.C_L_0)/self.C_L_alpha)
+        self.method = "LLT"
+        #######################
 
         self.Ground_Effect = 1
         self.Phase = ""
@@ -111,7 +120,7 @@ class Wings(Aircraft):
 
         method = "threeD"
 
-        if method == "threeD":
+        if self.method == "threeD":
             Re = self.V_infty*self.rho*self.c_bar/self.mu
             self.C_l = ThreeDim_Interp(Re, AOA = self.alpha)
             self.C_L = self.C_l*self.AR/(self.AR+2)
@@ -135,7 +144,7 @@ class Wings(Aircraft):
         """
         method = "threeD"
 
-        if method == "threeD":
+        if self.method == "threeD":
             self.C_L = C_L
             C_l = self.C_L*(self.AR+2)/self.AR
             self.alpha = ThreeDim_Interp(Re = self.V_infty*self.rho*self.c_bar/self.mu, C_l = C_l)

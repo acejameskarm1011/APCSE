@@ -20,8 +20,8 @@ textsize = 18
 plt.rcParams.update({'font.size': textsize})
 
 
-a0 = "new"
-data = pd.read_excel("ExcelFiles\\03_02_2025\\Conventional_Up_to_Climb{}.xlsx".format(""), sheet_name = "Climb", header=None)
+a0 = "18_02_2025"
+data = pd.read_excel("ExcelFiles\\18_02_2025\\Conventional_Up_to_Climb{}.xlsx".format(""), sheet_name = "Climb", header=None)
 dataframe = pd.DataFrame(data).to_numpy()
 Attributes = dataframe[0,:]
 

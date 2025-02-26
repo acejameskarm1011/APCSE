@@ -115,8 +115,6 @@ class Coefficients(Aviation):
  
 
         C_D = C_D0 + C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val + self.Wings.C_D_flaps # I do not remember what this is for +  0.003
-        print(C_D)
-        exit()
         return C_D
     
 # Roskam Part 6 Chapter 4

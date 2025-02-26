@@ -52,6 +52,7 @@ class Aircraft(Aviation):
         self.Pitch = 0
 
         self.Atmosphere_attr()
+
         self.V_infty = 0.
         self.RotationSpeed = AircraftDict["VSpeed"]["RotationSpeed"]
         self.NeverExceedSpeed = AircraftDict["VSpeed"]["NeverExceedSpeed"]
@@ -64,6 +65,8 @@ class Aircraft(Aviation):
         self.TotalMass = self.Mass.TotalMass
         self.MGTOW_Percent = self.MaxMass/self.Mass.MGTOW
         self.Aircraft_Forces()
+
+
 
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
         self.BatteryEnergy = 0.
@@ -80,6 +83,7 @@ class Aircraft(Aviation):
             self.MaxFuel = 1
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
+
 
     def reset(self):
         self.Altitude = 0.
@@ -223,11 +227,11 @@ class Aircraft(Aviation):
 
     def Aircraft_Forces(self):
         self.GetTotalThrust()
+
         C_L = self.Get_C_L()
         S = self.Wings.S_wing
         self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
         self.Weight = self.TotalMass*self.g
-
         C_D = self.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
 

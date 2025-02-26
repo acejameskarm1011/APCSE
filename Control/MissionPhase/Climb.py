@@ -9,7 +9,7 @@ class Climb(MissionPhase):
      - V_y is the relative velocity required best rate of climb flight. Example, the PA28-181 requires a Vy of 76 knots.
      - The power setting will be the same as with take-off, FULL POWER
     """ 
-    def Pattern_Work_Climb_Solve(self, tmax = 100, delta_t = 1e-2, Pattern_Altitude = 700):
+    def Pattern_Work_Climb_Solve(self, tmax = 200, delta_t = 1e-2, Pattern_Altitude = 700):
         """
         For pattern altitudes  it is usually about 700-1000 ft above ground level
 
@@ -87,7 +87,7 @@ class Climb(MissionPhase):
 
 
         dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
-        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty) #+ Pitch_control
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)# + Pitch_control
 
         if dgamma_dt < 0 and Pitch < 0:
             dgamma_dt = 0
