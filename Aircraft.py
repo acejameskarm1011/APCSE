@@ -39,7 +39,8 @@ class Aircraft(Aviation):
         self.AircraftDict = AircraftDict
         self.Components = Components
         self.Wings = Components["Wings"]
-        self.alpha = (self.Wings.alpha-3)/180*np.pi
+        self.alphaInstalled = 3 # units of degrees
+        self.alpha = (self.Wings.alpha-self.alphaInstalled)/180*np.pi
         self.HorizontalStabilizer = Components["HorizontalStabilizer"]
         self.Fuselage = Components["Fuselage"]
         self.VerticalStabilizer = Components["VerticalStabilizer"]
@@ -219,15 +220,15 @@ class Aircraft(Aviation):
         self.C_L = self.Lift/(1/2*self.rho*self.V_infty**2*S)
         self.Wings.Set_C_L(self.C_L)
         self.alpha = (self.Wings.alpha-3)/180*np.pi
-
         C_D = self.Get_C_D()
         self.Drag = 1/2*self.rho*self.V_infty**2*S*C_D
         
 
 
     def Aircraft_Forces(self):
+        if hasattr(self, "Climb"):
+            pass
         self.GetTotalThrust()
-
         C_L = self.Get_C_L()
         S = self.Wings.S_wing
         self.Lift = 1/2*self.rho*self.V_infty**2*S*C_L
@@ -277,7 +278,8 @@ class Aircraft(Aviation):
         if name == "alpha":
             if value/np.pi*180 > 16:
                 raise ValueError("Angle of Attack of {} deg is not valid".format(value/np.pi*180))
-            self.Wings.alpha = value + self.Wings.alpha_0
+            self.Wings.alpha = value/np.pi*180 + self.alphaInstalled
+
         """
         if name == "Velocity":
             if not isinstance(value, np.ndarray):

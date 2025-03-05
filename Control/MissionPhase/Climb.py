@@ -24,6 +24,7 @@ class Climb(MissionPhase):
         """
         print("Climb Phase Starting")
         
+        self.Aircraft.Climb = None
         self.RPM = self.Aircraft.Engine.RPM
         self.V_infty = self.Aircraft.V_infty
         self.z_max = Pattern_Altitude*self.ft_to_m
@@ -34,6 +35,30 @@ class Climb(MissionPhase):
         self.Pitch = 0
         self.Position = self.Aircraft.Position
         self.Velocity = self.Aircraft.Velocity
+        alphaInitial = self.alpha
+
+        ArcherAircraft = self.Aircraft
+        ArcherAircraft.V_infty = 76 * self.knots_to_mps
+        flightAngle = 11/180*np.pi
+        i=0
+        while i < 3:
+            ArcherAircraft.Set_Lift()
+            # print(flightAngle/np.pi*180)
+            flightAngle = np.arcsin((ArcherAircraft.Thrust*np.cos(ArcherAircraft.alpha)-ArcherAircraft.Drag)/ArcherAircraft.Weight)
+            ArcherAircraft.Pitch = flightAngle
+            i+=1
+        self.trimForces = ArcherAircraft.Lift + ArcherAircraft.Thrust*np.cos(ArcherAircraft.alpha)-ArcherAircraft.Weight*np.cos(flightAngle)
+        self.idealPitch = flightAngle
+        self.idealAlpha = ArcherAircraft.alpha
+        # print(ArcherAircraft.alpha/np.pi*180)
+        self.stopPitch = 0
+        self.set = False
+
+        self.Aircraft.Pitch = self.Pitch
+        self.Aircraft.alpha = alphaInitial
+        self.Aircraft.Position = self.Position
+        self.Aircraft.Velocity = self.Velocity
+        # print("Ideal pitch angle", int(self.idealPitch/np.pi*180))
 
 
         Initial = np.block([self.Position, self.V_infty, self.Pitch])
@@ -71,32 +96,47 @@ class Climb(MissionPhase):
         self.Aircraft.Position = np.array([x, y, z])
         self.V_infty = V_infty
         self.Aircraft.Pitch = Pitch
-        self.Get_Aircraft_Attr()
+        self.Get_Aircraft_Attr(self.set)
 
         dxdt = V_infty*np.cos(Pitch)
         dydt = 0
         dzdt = V_infty*np.sin(Pitch)
         
-
         V_des = 76*sp.constants.knot
         if np.abs(V_infty-V_des)>0.3:
-            Pitch_control = copysign(0.01, V_infty-V_des)
+            Pitch_control = copysign(0.1, V_infty-V_des)
         else:
-            Pitch_control = (V_infty-V_des)/V_des*1.4
-
-
+            Pitch_control = (V_infty-V_des)/V_des*2
 
         dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
-        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)# + Pitch_control
 
+
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha)-self.stopPitch)/(mass*V_infty) + Pitch_control
+        dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty) # Actual 
+
+        limitingFactor = 0.25
+        limitingFactor = 0.25
+        limitingFactor = 0.25
+        limitingFactor = 0.25
+        
+        dgamma_dt = limitingFactor*dgamma_dt # Limited version 
+
+
+        self.gForce = np.sqrt((dgamma_dt*V_infty)**2)/self.g
+
+        print(V_infty*self.mps_to_knots)
+        self.set = False
         if dgamma_dt < 0 and Pitch < 0:
+            print("Why is dgamma_dt less than zero")
+            print(dgamma_dt)
+            exit()
+        elif Pitch/np.pi*180 > self.idealPitch/np.pi*180 and dgamma_dt > 0:
+            self.stopPitch = self.trimForces
+            self.Aircraft.alpha = self.idealAlpha
             dgamma_dt = 0
-        elif Pitch > 4/180*np.pi and dgamma_dt > 0:
-            self.Get_Aircraft_Attr(set = True)
-            dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
-            dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
-            
-            
+            # self.set = True
+            # dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-self.Weight*np.sin(Pitch))/mass
+            # dgamma_dt = (self.Lift-self.Weight*np.cos(Pitch)+self.Thrust*np.sin(self.alpha))/(mass*V_infty)
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
 

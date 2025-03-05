@@ -85,7 +85,7 @@ plt.rcParams.update({'font.size': textsize})
 
 
 
-
+"""
 V_r = 66*ArcherAircraft.knots_to_mps
 
 ArcherAircraft.V_infty = V_r
@@ -157,7 +157,7 @@ ax.set_xlabel("Velocity [knots]")
 plt.grid()
 plt.show()
 
-
+"""
 ControlArcher = Control(ArcherAircraft)
 
 

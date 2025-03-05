@@ -1,9 +1,18 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from time import time
-from Wing_Theory.solve_ls import solve_ls
-from Wing_Theory.lifting_line_theory import solve_fourier_coefficients
+cwd = os.getcwd()
+print(cwd)
+
+if cwd == r"C:\APCSE\Wing_Theory":
+
+    from solve_ls import solve_ls
+    from lifting_line_theory import solve_fourier_coefficients
+else:
+    from Wing_Theory.solve_ls import solve_ls
+    from Wing_Theory.lifting_line_theory import solve_fourier_coefficients
 from matplotlib.gridspec import GridSpec
 import scienceplots
 plt.style.use(["science","grid"])
@@ -20,14 +29,20 @@ np.set_printoptions(suppress=True)
 t0 = time()
 
 # Takes in airfoil dat file and turns the coordinates into a numpy array
-data = pd.read_csv("Wing_Theory\\naca652415.dat", header=None)
+if cwd == r"C:\APCSE\Wing_Theory":
+    data = pd.read_csv("naca652415.dat", header=None)
+    AirfoilTools = pd.read_csv("xf-naca652415-il-1000000.csv", header=None)
+
+else:
+    data = pd.read_csv("Wing_Theory\\naca652415.dat", header=None)
+    AirfoilTools = pd.read_csv("Wing_Theory\\xf-naca652415-il-1000000.csv", header=None)
+
 dataframe = pd.DataFrame(data).to_numpy()[1:]
 data = []
 for i, df in enumerate(dataframe):
     data.append(np.array(df[0].split("   ")).astype(float))
 data = np.array(data)
 
-AirfoilTools = pd.read_csv("Wing_Theory\\xf-naca652415-il-1000000.csv", header=None)
 AFT_df = pd.DataFrame(AirfoilTools).to_numpy()[10:,:]
 
 AFT_alpha = AFT_df[1:,0].astype(float)
@@ -135,7 +150,9 @@ l_2 = l_3 - 7.0534  +l_1   # ft
 Sref = 2*(l_1*(c_root+delta_c) + 1/2*(l_2-l_2)*(2*c_root+delta_c) + (l_3-l_2)*(c_root) + 1/2*(span/2-l_3)*(c_root+c_tip))
 AR = span**2/Sref
 # print(AR)
-# print(Sref)
+print(Sref)
+print("DOUBLE CHECK THE AREA CALCULATION HERE!!!")
+exit()
 # print("Pringing aspect ratio in wing analysis")
 # exit()
 def chord_y(y):
@@ -187,6 +204,10 @@ C_L_5 = np.pi*AR*A_n[0]
 
 A_n, theta = solve_fourier_coefficients(N, C_l_alpha, chord_theta, span, alpha_theta_0, alpha_ZL_func)
 C_L_0 = np.pi*AR*A_n[0]
+
+sigma = np.pi*AR*sum(A_n[1:]**2)/A_n[0]**2
+spaneff = 1/(1+sigma)
+# print(spaneff)
 
 
 C_L_alpha = (C_L_5 - C_L_0)/(alpha_5-alpha_0) # 1/deg

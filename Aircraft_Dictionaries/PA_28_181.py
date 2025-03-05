@@ -1,7 +1,8 @@
 #PA28
 from numpy import pi
 PA_28_181_wings_dict = dict({
-    "S_wing" : [171.8, "ft2"],
+    "S_wing" : [171.8, "ft2"], # sourced from https://www.planeandpilotmag.com/article/piper-archer-iii/
+    #"S_wing" : [140.37456642666666, "ft2"], # sourced wing planfrom geometry - This value seems to blow up the drag
     "b_wing" : [35.5, "ft"],
     "S_wet" : [362.34, "ft2"],
     "c_bar" : [4.829, "ft"],

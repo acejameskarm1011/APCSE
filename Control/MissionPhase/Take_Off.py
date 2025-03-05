@@ -31,7 +31,7 @@ class Take_Off(MissionPhase):
         self.RPM = self.MaxRPM
         self.Aircraft.Set_RPM(self.RPM)
         self.reset()
-        self.V_r = self.Aircraft.RotationSpeed*1.0
+        self.V_r = self.Aircraft.RotationSpeed
         V_r = self.V_r
         self.Get_Aircraft_Attr()
         self.Pitch = 0
@@ -48,29 +48,14 @@ class Take_Off(MissionPhase):
         self.Position_y = Solution[:,1]
         self.Position_z = Solution[:,2]
         self.Velocity_List = Solution[:,3] 
-        self.Time_List = tArr
-
-        
-        
-
-
+        self.Time_List = tArr        
         self.List_to_Array()
-        # Likely unnecessary
-        # self.Lift_List = self.Lift_List 
-        # self.Thrust_List = self.Thrust_List 
-        # self.Drag_List = self.Drag_List 
-        # self.Weight_List = self.Weight_List 
-        # self.Percent_List = self.Percent_List
 
-        # if not np.any(np.abs(self.Weight <= self.Lift) > 0):
-        #     print(V_infty*self.mps_to_knots)
-        #     raise Exception("Simulation did not run long enough in order for rotation speed. Ajust and increase the time length so that the Aircraft can reach rotation speed.")
-        
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         self.Aircraft.Endurance = self.Time_List[-1]
         self.GroundRoll = self.Position_x[-1]*self.m_to_ft
         print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
-        print("Final take-off velocity: ", self.V_infty*self.mps_to_knots, "knots")
+        print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots), "knots")
 
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State
@@ -86,9 +71,10 @@ class Take_Off(MissionPhase):
         k_D = 1
         k_L = 1
 
-        self.Weight = mass*self.g
-        self.Normal = mass*self.g-k_L*self.Lift-self.Thrust*np.sin(self.alpha)
-        dv_dt = (self.Thrust*np.cos(self.alpha)-k_D*self.Drag-(self.Normal)*self.mu_f)/mass
+        self.Normal = self.Weight-self.Lift-self.Thrust*np.sin(self.alpha)
+        if self.Normal < 0:
+            self.mu_f = 0
+        dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-(self.Normal)*self.mu_f)/mass
         return np.array([dxdt, dydt, dzdt, dv_dt])
     
     def reset(self, ground_level = 0):
@@ -104,7 +90,7 @@ class Take_Off(MissionPhase):
         self.Aircraft.Position = np.zeros(3, float)
     
     def Condition(self):
-        Bool = self.Normal >= 0
+        Bool = self.Normal >= -5*self.lbf_to_kg*self.g
         return Bool
 
     def __repr__(self) -> str:

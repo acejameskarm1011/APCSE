@@ -118,7 +118,7 @@ class Wings(Aircraft):
         This uses the airfoil approximation for the drag coefficient, and this should not be used for official end use.
         """
 
-        method = "threeD"
+        # method = "threeD"
 
         if self.method == "threeD":
             Re = self.V_infty*self.rho*self.c_bar/self.mu
