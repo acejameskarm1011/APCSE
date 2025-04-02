@@ -84,7 +84,6 @@ for h_p in h_p_arr:
     ArcherAircraft.Set_Lift()
     thrust_arr.append(ArcherAircraft.Thrust*ArcherAircraft.N_to_lbf)
     drag_arr.append(ArcherAircraft.Drag*ArcherAircraft.N_to_lbf)
-    drag_arr.append(ArcherAircraft.Drag*ArcherAircraft.N_to_lbf)
     alpha_arr.append(ArcherAircraft.alpha/np.pi*180)
     dv_dt.append((ArcherAircraft.Thrust*np.cos(ArcherAircraft.alpha)-ArcherAircraft.Drag-ArcherAircraft.Weight*np.sin(flightAngle))/(ArcherAircraft.Weight/ArcherAircraft.g))
 

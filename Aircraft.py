@@ -109,7 +109,7 @@ class Aircraft(Aviation):
         Using the current engine on the aircraft, the total thrust output is computed in units of Netwons. The engine power output is directly
         related to the current throttle setting and atmospheric conditions. With a selected power, the thrust  
         """
-        self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.NeverExceedSpeed)
+        self.Thrust = self.Engine.Get_Thrust(self.V_infty, self.BestClimbSpeed)
         return self.Thrust
     
     def Set_RPM(self, RPM):

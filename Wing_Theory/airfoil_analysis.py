@@ -97,26 +97,9 @@ A_2 = 2/(np.pi-dtheta)*np.trapz(dz_dx*np.cos(2*theta[:-1]), theta[:-1])
 
 
 
-
-# A_n = []
-# for n in range(n_max):
-#     n += 1
-#     A_n.append(
-# A_1 = np.array(A_n)
-
-# Summation = np.zeros(theta.shape)
-# for n, A in enumerate(A_n):
-#     Summation += A*np.sin((n+1)*theta)
-# print(np.trapz(2*np.sin(theta)*Summation, theta))
-
 C_l = 2*np.pi*A_0 + np.pi*A_1
-error = (C_l-AFT_C_l) #/AFT_C_l*100
+error = (C_l-AFT_C_l)
 
-# AOA_er = AOA[error<100]
-# error = error[error<100]
-
-# AOA_er = AOA[error>-100]
-# error = error[error>-100]
 
 t1 = time()
 
@@ -141,4 +124,3 @@ fig.savefig("C_l_vs_AOA.png")
 
 print("Took {} s to load".format(t1-t0))
 
-# print(np.round(constants_MAC,5))

@@ -13,8 +13,34 @@ class Cruise(MissionPhase):
     """
     def __init__(self, AircraftInstance, RPM_des) -> None:
         super().__init__(AircraftInstance)
-        self.RPM_des = RPM_des
-        print("RPM desired: ", RPM_des)
+
+        vInfty = self.Aircraft.V_infty
+        alt = self.Aircraft.Altitude
+        alpha = self.Aircraft.alpha
+
+        RPM_des = 2700
+        self.RPM = RPM_des
+        deltamV = 100
+
+        self.Aircraft.V_infty = 90 * self.knots_to_mps
+        self.Aircraft.Altitude = 700
+        self.Aircraft.Set_Lift()
+
+        while np.abs(deltamV) > .1:
+            self.Aircraft.Set_Lift()
+            self.Get_Aircraft_Attr(True)
+            deltamV = (self.Drag - self.Thrust*np.cos(self.alpha))
+            self.RPM += deltamV
+            if self.RPM == 250:
+                raise ValueError("This ain't correct")
+        
+        self.Aircraft.V_infty = vInfty
+        self.Aircraft.Altitude = alt
+        self.Aircraft.alpha = alpha
+        self.Aircraft.Aircraft_Forces()
+
+        self.RPM_des = round(self.RPM)
+        print("RPM desired: ", self.RPM_des)
 
     def Downwind_Solve_1(self, tmax = 60., delta_t = 1e-2):
         print("{} is now Cruising".format(self.Aircraft.AircraftName))
@@ -85,7 +111,6 @@ class Cruise(MissionPhase):
 
 
     def Condition(self):
-        # Bool = self.V_infty < 60*sp.constants.knot
         Bool = True
         Bool = self.V_infty > 60*sp.constants.knot
         return Bool
@@ -121,6 +146,8 @@ class Cruise(MissionPhase):
     def List_to_Array(self):
         super().List_to_Array()
         self.RPM_List = np.array(self.RPM_List)
+        self.Alpha_List = np.array(self.Alpha_List)
+
 
     def Save_Data(self):
         super().Save_Data()
@@ -128,11 +155,14 @@ class Cruise(MissionPhase):
             self.RPM_List = [self.RPM]
         else:
             self.RPM_List.append(self.RPM)
+        if not hasattr(self, "Alpha_List"):
+            self.Alpha_List = [self.Aircraft.alpha]
+        else:
+            self.Alpha_List.append(self.Aircraft.alpha)
 
 
     def Get_Aircraft_Attr(self, set=False):
         super().Get_Aircraft_Attr(set)
-        self.alpha = self.Aircraft.alpha
 
     def __repr__(self) -> str:
           return "Cruise"
@@ -142,6 +172,6 @@ class Cruise(MissionPhase):
         dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
         dict["Altitude [ft]"] = self.Altitude
         dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
-        dict["Time [s]"] = self.Time_List
         dict["RPM [rev/min]"] = self.RPM_List
+        dict["AOA [deg]"] = self.Alpha_List / np.pi * 180
         return dict

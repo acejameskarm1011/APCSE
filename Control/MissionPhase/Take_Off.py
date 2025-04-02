@@ -55,6 +55,7 @@ class Take_Off(MissionPhase):
         self.Aircraft.Endurance = self.Time_List[-1]
         self.GroundRoll = self.Position_x[-1]*self.m_to_ft
         print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
+        print("POH Ground Roll at ISA SL - 1,050 ft")
         print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots), "knots")
 
     def TakeOff_ODE(self, State, mass):
@@ -96,14 +97,23 @@ class Take_Off(MissionPhase):
     def __repr__(self) -> str:
           return "Take-Off"
     
+    def Save_Data(self):
+        super().Save_Data()
+        if not hasattr(self, "Alpha_List"):
+            self.Alpha_List = [self.Aircraft.alpha]
+        else:
+            self.Alpha_List.append(self.Aircraft.alpha)
+    def List_to_Array(self):
+        super().List_to_Array()
+        self.Alpha_arr = np.array(self.Alpha_List)
+
+
     def __dict__(self):
         dict = super().__dict__()
-        # print(self.Weight_List)
-        # exit()
         dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
         dict["Altitude [ft]"] = self.Altitude
         dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
-        dict["Time [s]"] = self.Time_List
         dict["RPM [rev/min]"] = self.MaxRPM
         dict["Ground Roll [ft]"] = self.Position_x * self.m_to_ft
+        dict["AOA [deg]"] = self.Alpha_arr / np.pi*180
         return dict

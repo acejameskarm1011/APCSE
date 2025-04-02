@@ -75,6 +75,7 @@ class PistonEngine(Powerplant):
         self.MaxBreakHorsePower = MaxBreakHorsePower
         # Units in Horse Power
         self.eta = 0.93
+        # self.eta = 0.9
         # Current Model for the engine to propeller efficiency is unknown
         self.BreakHorsePower = self.MaxBreakHorsePower
         # Power of the engine in terms of horsepower
@@ -126,15 +127,14 @@ class PistonEngine(Powerplant):
         # Using Disk Momentum theory, we get the thrust for a stationary aircraft
         return Thrust_Static
 
-    def Get_Thrust(self, Velocity_infty, Velocity_NE):
+    def Get_Thrust(self, Velocity_infty, Velocity_Max):
         """
         Utilizing a quadradic interpolation of the 
         """
         V = Velocity_infty
-        if Velocity_infty > Velocity_NE:
-            raise ValueError("Velocity cannot be this high: {}".format(Velocity_infty*self.mps_to_knots))
-            Velocity_infty = Velocity_NE
-        Velocity_Max = Velocity_NE
+        if Velocity_infty > Velocity_Max:
+            self.Thrust = self.Power / Velocity_infty
+            return self.Thrust
         Thrust_Max = self.Power/Velocity_Max
         Thrust_Static = self.Thrust_Static()
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
@@ -202,7 +202,13 @@ class PistonEngine(Powerplant):
         """
         sigma = self.rho/self.rho_SL
         input = self.Throttle
-        R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4 # the 0.4 has been validated to be valid from a paper about emissions 
+        
+        ######################################################################################     
+        # This is old code, found to overestimate the power output during flight - needs tailoring   
+        R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4 # the 0.4 has been validated to be valid from a paper about emissions (WTF) 
+        ######################################################################################
+       
+        R_m = 0.9*np.sin(self.Throttle**6.5*np.pi/2) + 0.1 # This is now in progress again
         if np.isclose(1.0, self.Throttle):
             R_m = 0.999999
             

@@ -3,6 +3,7 @@ from Aviation import Aviation
 import numpy as np
 from Emissions import Emissions
 from Save_to_Excel import Save_to_Excel
+from Save_to_CSV import Save_to_CSV
 
 import pandas as pd
 
@@ -56,6 +57,8 @@ class Control(Aviation):
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
         Save_to_Excel("Take-Off_Only", self.Take_Off)
+        Save_to_CSV(self.Take_Off)
+
 
     def TakeOffToClimb(self):
         self.Take_Off.Ground_Roll_Sim_ODESolve()
@@ -66,6 +69,7 @@ class Control(Aviation):
         
         print("Gathering Data...")
         Save_to_Excel(self.Aircraft_Type + "_Up_to_Climb", self.Take_Off, self.Climb)
+        Save_to_CSV(self.Take_Off, self.Climb)
         
 
     def Pattern_Cycle(self):
@@ -136,14 +140,14 @@ class Control(Aviation):
         
         print("Gathering Data...")
         Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
-        # self.Gather_States()
-        # self.Gather_Aerodynamics()
-        # self.Gather_EnginePars()
-        # self.Gather_Emissions()
+        Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
 
 
     def Gather_States(self):
         """
+        THIS IS AN OUTDATED METHOD, PLEASE USE Save_to_Excel and Save_to_CSV !
+        ----------------------------------------------------------------------
+
         Gather's the aircraft's State-Data into arrays for the entire mission.
         To obtain the data, run this function and call the attributes:
 

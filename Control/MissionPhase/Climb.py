@@ -124,13 +124,13 @@ class Climb(MissionPhase):
 
         self.gForce = np.sqrt((dgamma_dt*V_infty)**2)/self.g
 
-        print(V_infty*self.mps_to_knots)
+
         self.set = False
         if dgamma_dt < 0 and Pitch < 0:
             print("Why is dgamma_dt less than zero")
             print(dgamma_dt)
             exit()
-        elif Pitch/np.pi*180 > self.idealPitch/np.pi*180 and dgamma_dt > 0:
+        elif Pitch/np.pi*180 > self.idealPitch/np.pi*180*0.85 and dgamma_dt > 0:
             self.stopPitch = self.trimForces
             self.Aircraft.alpha = self.idealAlpha
             dgamma_dt = 0
@@ -177,7 +177,6 @@ class Climb(MissionPhase):
         dict["Velocity [knots]"] = self.Velocity_List * self.mps_to_knots
         dict["Altitude [ft]"] = self.Altitude_List
         dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
-        dict["Time [s]"] = self.Time_List
         dict["RPM [rev/min]"] = self.MaxRPM
         dict["Pitch [deg]"] = self.Pitch_List / np.pi * 180
         dict["AOA [deg]"] = self.Alpha_List / np.pi * 180

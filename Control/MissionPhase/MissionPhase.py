@@ -8,6 +8,7 @@ class MissionPhase(Control):
     def __init__(self, AircraftInstance) -> None:
         self.Aircraft = AircraftInstance
         self.MaxRPM = self.Aircraft.Engine.MaxRPM
+        self.Time_List = []
 
     def Get_Aircraft_Attr(self, set=False):
         """
@@ -22,6 +23,7 @@ class MissionPhase(Control):
         self.Weight = self.Aircraft.Weight
         self.Thrust = self.Aircraft.Thrust
         self.alpha = self.Aircraft.alpha
+        self.g = self.Aircraft.g
         
         if isinstance(self.Aircraft.Engine, ElectricEngineTest):
             self.Percent = 100*self.Aircraft.BatteryPercent
@@ -140,10 +142,11 @@ class MissionPhase(Control):
     
     def __dict__(self):
         return {
-            "Thrust [lbf]" : self.Thrust_List*self.N_to_lbf,
-            "Lift [lbf]" : self.Lift_List*self.N_to_lbf,
-            "Drag [lbf]" : self.Drag_List*self.N_to_lbf,
-            "Weight [lbf]" : self.Weight_List*self.N_to_lbf,
+            "Time [s]" : self.Time_List,
+            "Thrust [lb]" : self.Thrust_List*self.N_to_lbf,
+            "Lift [lb]" : self.Lift_List*self.N_to_lbf,
+            "Drag [lb]" : self.Drag_List*self.N_to_lbf,
+            "Weight [lb]" : self.Weight_List*self.N_to_lbf,
             "Percent [%]" : self.Percent_List
         }
 

@@ -17,7 +17,7 @@ def Save_to_Excel(MissionType, *Phases):
     This function takes multiple phases of flight, sorts the data, and then exports the aircraft and flight data into an excel spreadsheet.
     """
 
-    filepath = current_directory + "\\ExcelFiles\\" + "{}_{}_{}\\".format(day,month,year)
+    filepath = current_directory + "\\DataFiles\\" + "{}_{}_{}\\".format(month,day,year)
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 

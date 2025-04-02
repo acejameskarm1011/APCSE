@@ -4,8 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from time import time
 cwd = os.getcwd()
-print(cwd)
-
 if cwd == r"C:\APCSE\Wing_Theory":
 
     from solve_ls import solve_ls
@@ -150,9 +148,9 @@ l_2 = l_3 - 7.0534  +l_1   # ft
 Sref = 2*(l_1*(c_root+delta_c) + 1/2*(l_2-l_2)*(2*c_root+delta_c) + (l_3-l_2)*(c_root) + 1/2*(span/2-l_3)*(c_root+c_tip))
 AR = span**2/Sref
 # print(AR)
-print(Sref)
-print("DOUBLE CHECK THE AREA CALCULATION HERE!!!")
-exit()
+# print(Sref)
+print("DOUBLE CHECK THE AREA CALCULATION IN WING_ANALYSIS.py!!!")
+# exit()
 # print("Pringing aspect ratio in wing analysis")
 # exit()
 def chord_y(y):
@@ -207,7 +205,8 @@ C_L_0 = np.pi*AR*A_n[0]
 
 sigma = np.pi*AR*sum(A_n[1:]**2)/A_n[0]**2
 spaneff = 1/(1+sigma)
-# print(spaneff)
+print("Archer Aircraft has span efficieny of:")
+print(spaneff)
 
 
 C_L_alpha = (C_L_5 - C_L_0)/(alpha_5-alpha_0) # 1/deg

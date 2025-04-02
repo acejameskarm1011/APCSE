@@ -2,7 +2,7 @@
 from numpy import pi
 PA_28_181_wings_dict = dict({
     "S_wing" : [171.8, "ft2"], # sourced from https://www.planeandpilotmag.com/article/piper-archer-iii/
-    #"S_wing" : [140.37456642666666, "ft2"], # sourced wing planfrom geometry - This value seems to blow up the drag
+    # "S_wing" : [140.37456642666666, "ft2"], # sourced wing planfrom geometry - This value seems to blow up the drag
     "b_wing" : [35.5, "ft"],
     "S_wet" : [362.34, "ft2"],
     "c_bar" : [4.829, "ft"],
@@ -10,12 +10,14 @@ PA_28_181_wings_dict = dict({
     "tc_avg" : [0.124, "None"],
     "tc_max_loc" : [0.141, "None"],
     "tc_max" : [0.104, "None"],
-    "c_tip" : [3.5, "ft"],
-    "c_root" : [6 + (1/6), "ft"],
+    "c_tip" : [3 + 6.2/12, "ft"],
+    "c_root" : [5.25, "ft"],
     "C_l_alpha" : [0.11031, "None"],
     "C_l_0" : [0.347, "None"],
-    "rle" : [0.07217848, "None"]
+    "rle" : [0.07217848, "None"] # Rough calculation ended up with 0.0875
 })
+
+print("Look into the dimensions of the PA28")
 
 PA_28_181_HorizontalStabilizer_dict = dict({
     "b_h" : [12 + 10.48/12,"ft"],

@@ -162,7 +162,13 @@ ControlArcher = Control(ArcherAircraft)
 
 
 
-ControlArcher.TakeOffToClimb()
+ControlArcher.Pattern_Cycle()
+
+
+
+
+exit()
+ControlArcher.Pattern_Cycle()
 
 
 

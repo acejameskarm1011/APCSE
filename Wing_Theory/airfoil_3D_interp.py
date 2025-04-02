@@ -93,35 +93,3 @@ def ThreeDim_Interp(Re, **kwargs):
     j = len(y[y <= target])-1
     result = (x[j+1]-x[j])/(y[j+1]-y[j])*(target-y[j]) + x[j]
     return result
-
-
-
-"""
-C_l_test = .2
-for i in range(int(300)):
-    AOA_test = ThreeDim_Interp(150000, C_l = C_l_test)
-print(AOA_test)
-
-
-t1 = time()
-print("Took {} s to load".format(t1-t0))
-fig, ax = plt.subplots(1, 2, constrained_layout = True, figsize = (12,8))
-ax[0].plot(AFT_alpha, AFT_C_l, "r.", label = "Test Data at $Re=1,000,000$")
-ax[0].set_xlabel("Angle of Attack [deg]")
-ax[0].set_ylabel(r"$C_l$")
-ax[0].legend()
-ax[0].grid()
-
-
-ax[1].set_xlabel("Angle of Attack [deg]")
-ax[1].set_ylabel(r"error [$\Delta C_l$]")
-ax[1].grid()
-# ax[1].set_ylim(-100,100)
-# fig.savefig("C_l_vs_AOA.png")
-# plt.show()
-
-
-
-
-
-# print(np.round(constants_MAC,5))"""

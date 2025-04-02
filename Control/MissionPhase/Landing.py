@@ -34,7 +34,7 @@ class Landing(Take_Off):
         self.RPM = self.Aircraft.Engine.RPM
         self.Aircraft.Wings.Phase = "Landing"
         self.Pitch = 0
-
+        self.V_r = self.Aircraft.RotationSpeed
         self.Position = self.Aircraft.Position
         self.V_infty = self.Aircraft.V_infty
 
