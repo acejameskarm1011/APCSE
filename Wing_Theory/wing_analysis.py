@@ -72,7 +72,7 @@ t_c = y_upper-y_lower
 # print("Maximum Thickness: {} %".format(round(t_c.max()*100)))
 
 # Plots the data
-plotting = False
+plotting = True
 printing = False
 if plotting:
     fig, ax = plt.subplots(1, 1, constrained_layout = True, figsize = (10,10))
@@ -125,7 +125,8 @@ A_2 = 2/(np.pi-dtheta)*np.trapz(dz_dx*np.cos(2*theta[:-1]), theta[:-1])
 C_l_alpha = 2*np.pi
 C_l_0 = 2*np.pi*(- 1/(np.pi-dtheta)*np.trapz(dz_dx, theta[:-1])) + np.pi*(A_1)
 
-
+print(C_l_0)
+exit()
 C_l = C_l_0 + alpha*C_l_alpha
 
 alpha_ZL = - C_l_0/C_l_alpha * (180/np.pi)
