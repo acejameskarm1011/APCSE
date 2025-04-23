@@ -1,0 +1,69 @@
+PiperArcherIII
+
+#Mach
+0.0
+
+#IYsym   IZsym   Zsym
+0	0	0.0
+################################Ref Area, chord, and Spanlength
+#Sref    Cref    Bref
+148.47242976	 4.440452049007182	 35.5
+
+#############################Reference point for moment calculation
+#Xref    Yref    Zref
+1.1101130122517955	 0	 0
+#--------------------------------------------------
+##########################################Wing surface
+SURFACE 
+Wing 
+!Nchordwise  Cspace  Nspanwise  Sspace
+10          1.0       20          1.0
+##########################################Mirror point
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0 
+
+#--------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+0.0	 0.0	 0	 6.2096	 0	 20	 0
+
+AFILE
+NACA_65-415.dat
+
+#--------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+0.0	 1.8953	 0.09919233786725144	 6.2096	 0	 20	 0
+
+AFILE
+NACA_65-415.dat
+
+#-------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+0.9596	 4.3584	 0.22810103168924636	 5.25	 0	 20	 0
+
+AFILE
+NACA_65-415.dat
+
+#-------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+0.9596	 8.7053	 0.45560019988169886	 5.25	 0	 20	 0
+
+AFILE
+NACA_65-415.dat
+#-------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+1.170283668272754	 17.75	 0.9289632233122529	 3.5166666666666666	 0	 20	 0
+
+AFILE
+NACA_65-415.dat
+#-------------------------------------------------------------

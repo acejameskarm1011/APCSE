@@ -1,0 +1,111 @@
+ControlSurfaceDemo
+
+#Mach
+0.5
+
+#IYsym   IZsym   Zsym
+0	0	0.0
+################################Ref Area, chord, and Spanlength
+#Sref    Cref    Bref
+325	 11.386818327701395	 34.910600109422354
+
+#############################Reference point for moment calculation
+#Xref    Yref    Zref
+3     0.0     0.0
+#--------------------------------------------------
+##########################################Wing surface
+SURFACE 
+Wing 
+!Nchordwise  Cspace  Nspanwise  Sspace
+10          1.0       20          1.0
+##########################################Mirror point
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0 
+
+#--------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+22.0	 0.0	 0.0	 16.926351568204776	 0	 20	 0
+
+AFILE
+NACA_65-304.dat
+
+#-------------------------------------------------------------
+SECTION
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+37.2337164113843	 17.455300054711177	 0.0	 1.6926351568204776	 0	 20	 0
+
+AFILE
+NACA_65-304.dat
+
+
+##########################################Canard surface
+SURFACE 
+Canard
+# Canard 
+!Nchordwise  Cspace  Nspanwise  Sspace
+10          1.0       20          1.0
+##########################################Mirror point
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0 
+
+#--------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+11.1	 0.0	 2	 8.365006475390997	 0	 20	 0
+
+AFILE
+NACA_64-008.dat
+
+#-------------------------------------------------------------
+SECTION
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+17.66139105603008	 7.842193570679061	 2.686103034610305	 0.8365006475390997	 0	 20	 0
+
+AFILE
+NACA_64-008.dat
+
+##########################################VT surface
+SURFACE 
+VT
+# VT 
+!Nchordwise  Cspace  Nspanwise  Sspace
+10          1.0       20          1.0
+##########################################Mirror point
+YDUPLICATE 
+0.0
+
+ANGLE
+0.0
+
+SCALE
+1.0   1.0   1.0 
+
+#--------------------------------------------------------------
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+SECTION
+32.98	 2	 2	 10.475656017578482	 0	 20	 0
+
+AFILE
+NACA_64-008.dat
+
+#-------------------------------------------------------------
+SECTION
+#    Xle         Yle         Zle         chord       angle   Nspan  Sspace
+36.825534599660514	 6.596194077712559	 9.960841664045326	 1.0475656017578483	 0	 20	 0
+
+AFILE
+NACA_64-008.dat
+#-------------------------------------------------------------

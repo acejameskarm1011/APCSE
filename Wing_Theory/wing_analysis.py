@@ -72,8 +72,8 @@ t_c = y_upper-y_lower
 # print("Maximum Thickness: {} %".format(round(t_c.max()*100)))
 
 # Plots the data
-plotting = True
-printing = False
+plotting = False
+printing = 0
 if plotting:
     fig, ax = plt.subplots(1, 1, constrained_layout = True, figsize = (10,10))
     color_data = "b."
@@ -125,8 +125,8 @@ A_2 = 2/(np.pi-dtheta)*np.trapz(dz_dx*np.cos(2*theta[:-1]), theta[:-1])
 C_l_alpha = 2*np.pi
 C_l_0 = 2*np.pi*(- 1/(np.pi-dtheta)*np.trapz(dz_dx, theta[:-1])) + np.pi*(A_1)
 
-print(C_l_0)
-exit()
+# print(C_l_0)
+# exit()
 C_l = C_l_0 + alpha*C_l_alpha
 
 alpha_ZL = - C_l_0/C_l_alpha * (180/np.pi)
@@ -143,13 +143,13 @@ c_tip = 3+6.2/12           # ft
 c_root = 5.25              # ft
 delta_c = 0.9596           # ft
 l_1 = 3.7906/2             # ft
-l_3 = span/2 - 9.0447+l_1  # ft
-l_2 = l_3 - 7.0534  +l_1   # ft
+l_3 = span/2 - 9.0447  # ft
+l_2 = l_1 + 2.4631   # ft
 
 Sref = 2*(l_1*(c_root+delta_c) + 1/2*(l_2-l_2)*(2*c_root+delta_c) + (l_3-l_2)*(c_root) + 1/2*(span/2-l_3)*(c_root+c_tip))
 AR = span**2/Sref
 # print(AR)
-# print(Sref)
+# print("Sref", Sref)
 print("DOUBLE CHECK THE AREA CALCULATION IN WING_ANALYSIS.py!!!")
 # exit()
 # print("Pringing aspect ratio in wing analysis")
@@ -206,15 +206,15 @@ C_L_0 = np.pi*AR*A_n[0]
 
 sigma = np.pi*AR*sum(A_n[1:]**2)/A_n[0]**2
 spaneff = 1/(1+sigma)
-print("Archer Aircraft has span efficieny of:")
-print(spaneff)
+
+if printing:
+    print("Archer Aircraft has span efficieny of: {}".format(spaneff))
 
 
 C_L_alpha = (C_L_5 - C_L_0)/(alpha_5-alpha_0) # 1/deg
 
 alpha_arr = np.linspace(-8, 12, points)
 C_L_arr = C_L_0 + C_L_alpha*alpha_arr
-
 
 
 if printing:

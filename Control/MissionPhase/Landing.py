@@ -41,6 +41,8 @@ class Landing(Take_Off):
         self.Get_Aircraft_Attr()
 
         self.mu_f = 0.4
+        self.Aircraft.Wings.Flaps(40)
+        self.Aircraft.alpha = 0
 
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)       
@@ -67,6 +69,21 @@ class Landing(Take_Off):
         
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         print("Ground Rolls is: {} ft with a dt of {}".format(round((self.Position_x[-1]-self.Position[0])*self.m_to_ft), delta_t))
+    def TakeOff_ODE(self, State, mass):
+        x, y, z, V_infty = State
+        self.V_infty = V_infty
+        self.Get_Aircraft_Attr()
+        dxdt = V_infty
+        dydt = 0
+        dzdt = 0
+    
+        k_D = 1
+        k_L = 1
+
+        self.Normal = self.Weight-self.Lift-self.Thrust*np.sin(self.alpha)
+
+        dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-(self.Normal)*self.mu_f)/mass
+        return np.array([dxdt, dydt, dzdt, dv_dt])
 
 
     def Condition(self):

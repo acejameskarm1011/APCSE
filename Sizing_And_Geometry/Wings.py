@@ -45,12 +45,17 @@ class Wings(Aircraft):
 
         #######################
         # Wing Theory evaluation
-        from Wing_Theory.wing_analysis import C_L_0, C_L_alpha, C_l_max
+        from Wing_Theory.wing_analysis import C_l_max
+        self.method = "AVL"
+        if self.method == "LLT":
+            from Wing_Theory.wing_analysis import C_L_0, C_L_alpha
+        elif self.method == "AVL":
+            from AVL.wing_analysis import C_L_0, C_L_alpha
+            print("Using AVL code for lift performance")
         self.C_L_0 = C_L_0
         self.C_L_alpha = C_L_alpha
         self.C_L_max = C_l_max
         self.alpha_crit = int((self.C_L_max - self.C_L_0)/self.C_L_alpha)
-        self.method = "LLT"
         #######################
 
         self.Ground_Effect = 1

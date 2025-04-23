@@ -140,7 +140,7 @@ class Control(Aviation):
         
         print("Gathering Data...")
         Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
-        Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
+        Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type)
 
 
     def Gather_States(self):

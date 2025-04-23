@@ -14,7 +14,7 @@ filepath = current_directory + "\\DataFiles\\" + "{}_{}_{}\\".format(month,day,y
 if not os.path.exists(filepath):
     os.makedirs(filepath)
 
-def Save_to_CSV(*Phases):
+def Save_to_CSV(*Phases, missionType = "Conventional"):
     """
     This function takes multiple phases of flight, sorts the data, and then exports the aircraft and flight data into a csv.
     """
@@ -23,7 +23,7 @@ def Save_to_CSV(*Phases):
         Phase = Phase.__dict__()
         df = pd.DataFrame(Phase)
 
-        PhaseString = filepath + PhaseName + ".csv"
+        PhaseString = filepath + PhaseName + missionType + ".csv"
 
         df.to_csv(PhaseString)
     return None

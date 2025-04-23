@@ -159,10 +159,10 @@ plt.show()
 
 """
 ControlArcher = Control(ArcherAircraft)
-
-
-
 ControlArcher.Pattern_Cycle()
+
+# ElectricControlArcher = Control(ElectricArcherAircraft)
+# ElectricControlArcher.Pattern_Cycle()
 
 
 

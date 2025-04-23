@@ -28,13 +28,12 @@ date = "{}_{}_{}".format(month,day,year)
 
 filepath = "DataFiles\\{}\\".format(date)
 
-# dataTO = pd.read_excel("ExcelFiles\\03_20_2025\\Conventional_Full_Pattern_Mission.xlsx".format(""), sheet_name = "Take-Off", header=None).to_numpy()
-# dataClimb = pd.read_excel("ExcelFiles\\03_20_2025\\Conventional_Full_Pattern_Mission.xlsx".format(""), sheet_name = "Climb", header=None).to_numpy()
-# dataCruise = pd.read_excel("ExcelFiles\\03_20_2025\\Conventional_Full_Pattern_Mission.xlsx".format(""), sheet_name = "Climb", header=None).to_numpy()
-# dataDescent = pd.read_excel("ExcelFiles\\03_20_2025\\Conventional_Full_Pattern_Mission.xlsx".format(""), sheet_name = "Climb", header=None).to_numpy()
-# dataLanding = pd.read_excel("ExcelFiles\\03_20_2025\\Conventional_Full_Pattern_Mission.xlsx".format(""), sheet_name = "Climb", header=None).to_numpy()
 
-dataTO = pd.read_csv(filepath + "Take-Off.csv", header=None).to_numpy()
+
+
+
+dataTO = pd.read_csv(filepath + "Take-Off{}.csv".format("Conventional"), header=None).to_numpy()
+dataTO = pd.read_csv(filepath + "Take-Off{}.csv".format("Electric"), header=None).to_numpy()
 
 attrTO = dataTO[0,1:].astype(str)
 
