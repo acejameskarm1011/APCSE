@@ -1,5 +1,5 @@
 from ImportAPCSE import *
-AircraftName = "Piper_testv0"
+AircraftName = "Piper Archer III"
 
 
 ArcherWings = Wings(AircraftName, PiperArcherIII_Dict)

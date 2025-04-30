@@ -158,7 +158,7 @@ plt.grid()
 plt.show()
 
 """
-ControlArcher = Control(ArcherAircraft)
+ControlArcher = Control(ElectricArcherAircraft)
 ControlArcher.Pattern_Cycle()
 
 # ElectricControlArcher = Control(ElectricArcherAircraft)

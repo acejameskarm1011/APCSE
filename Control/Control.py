@@ -85,10 +85,6 @@ class Control(Aviation):
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
-        # print("MGTOW Percent: {}\nGround Roll: {}\nFinal Percent {}".format(self.MGTOW_Percent, self.Take_Off_GroundRoll, self.Take_Off.Percent))
-        # print("CO2: {}, CH4: {}, NOx: {}, Pb: {}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
-        # print("{}\t{}\t{}\t{}".format(*Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off))))
-        # TakeOff_Plot(self.Take_Off)
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
@@ -138,6 +134,7 @@ class Control(Aviation):
         self.Landing.Time_List += self.Descent.Time_List[-1]
         self.Phase_Change.append(self.Descent.Time_List[-1])
         
+        print("Final energy capacity: {} %".format(round(self.Landing.Percent, 3)))
         print("Gathering Data...")
         Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
         Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type)
