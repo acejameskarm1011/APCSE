@@ -1,5 +1,5 @@
 from Control.Control import Control
-from Propulsion.Engine import ElectricEngineTest
+from Propulsion.Engine import ElectricEngineTest, EMRAX_268_Engine
 import numpy as np
 class MissionPhase(Control):
     weather = "Good"
@@ -25,7 +25,7 @@ class MissionPhase(Control):
         self.alpha = self.Aircraft.alpha
         self.g = self.Aircraft.g
         
-        if isinstance(self.Aircraft.Engine, ElectricEngineTest):
+        if str(self.Aircraft.Engine)=="Electric":
             self.Percent = 100*self.Aircraft.BatteryPercent
         else:
             self.Percent = 100*self.Aircraft.FuelPercent

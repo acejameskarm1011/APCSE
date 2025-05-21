@@ -31,7 +31,7 @@ date = "{}_{}_{}".format(month,day,year)
 
 filepath = "DataFiles\\{}\\".format(date)
 
-missionType = "Conventional"
+missionType = "Electric"
 
 
 dataTO = pd.read_csv(filepath + "Take-Off{}.csv".format(missionType), header=None).to_numpy()
@@ -125,7 +125,7 @@ ax[0,1].xaxis.set_major_locator(MaxNLocator(prune='lower'))
 ax[0,1].legend(fontsize = labelfont)
 
 for phase, label in zip(phases, phases_label):
-    ax[0,1].plot([phase/60, phase/60], [0, Drag.max()*scale], "k--", label = label, lw = 1)
+    ax[0,1].plot([phase/60, phase/60], [0, Lift.max()*scale], "k--", label = label, lw = 1)
 time_ax = ax[0,1].get_lines()[:4]
 labelLines(time_ax, fontsize = labelfont*0.8)
 
@@ -166,6 +166,5 @@ ax[1,1].set_ylabel(r"Percent [\%]")
 ax[1,1].xaxis.set_major_locator(MaxNLocator(prune='lower'))
 # ax[1,1].xaxis.set_major_locator(MaxNLocator(prune='lower'))
 # ax[1,1].legend(fontsize = labelfont)
-
 plt.show()
 os.chdir(image_dir)

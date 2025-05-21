@@ -38,6 +38,8 @@ class Aviation:
     lbf_to_kg = sp.constants.pound
     N_to_lbf = 0.2248089431
     h_to_s = 60**2
+    Wh_to_J = 60**2
+    J_to_Wh = 1/60**2
 
     def __init__(self, Altitude = 0) -> None:
         self.Altitude = Altitude

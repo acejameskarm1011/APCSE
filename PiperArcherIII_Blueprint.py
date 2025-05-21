@@ -10,11 +10,13 @@ ArcherFuselage = Fuselage(AircraftName, PiperArcherIII_Dict)
 ArcherPropeller = Propeller("Sensenich", "76EM8S14-0-62", 76, 76/8)
 ArcherEngine = PistonEngine(AircraftName, ArcherPropeller)
 
-
+##########################################################
+# Mass Properties Testing
 from scipy import constants
 Pilot_Mass = ((150+472)*constants.lb) # ((150+472)*constants.lb)
 Rear_Mass = 15*constants.lb
 Baggage = 25*constants.lb
+##########################################################
 
 
 
@@ -41,7 +43,7 @@ ArcherMass = Mass(PiperArcherIII_Dict, Pilot_Mass, Rear_Mass, Baggage, Tabs=Fals
 
 
 
-ElectricArcherEngine = ElectricEngineTest(AircraftName, ArcherPropeller)
+ElectricArcherEngine = EMRAX_268_Engine(AircraftName, ArcherPropeller)
 ElectricArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
                           Wings = ArcherWings, 
                           HorizontalStabilizer = ArcherHorizontalStabilizer, 

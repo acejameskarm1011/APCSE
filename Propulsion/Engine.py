@@ -272,6 +272,8 @@ class PistonEngine(Powerplant):
                     # For high power settings, a lower air to fuel ratio is required
                     # i.e. more fuel to air
                     self.Mixture = "RICH"
+    def __str__(self) -> str:
+        return "Piston"
 
 
 
@@ -313,6 +315,63 @@ class ElectricEngineTest(PistonEngine):
         self.Power = self.MaxPower*self.Throttle
     def __repr__(self) -> str:
           return "ElectricEngineTest: {}".format(self.Name)
+    def __str__(self) -> str:
+        return "Electric"
+    
+
+class EMRAX_268_Engine(PistonEngine):
+    def __init__(self, Name, AircraftPropeller, MaxBreakHorsePower=210/1.34102) -> None:
+        self.Condition = "Continuous"
+        # Since this is a test class, we will use the general "Name" to keep track of what the class is
+        self.Propeller = AircraftPropeller
+        # Propeller information is different between props, so we have a class for those properties
+        self.MaxBreakHorsePower = MaxBreakHorsePower
+        # Units in Horse Power
+        self.eta = 0.93
+        # self.eta = 0.9
+        # Current Model for the engine to propeller efficiency is unknown
+        self.BreakHorsePower = self.MaxBreakHorsePower
+        # Power of the engine in terms of horsepower
+        self.MaxBreakPower = self.MaxBreakHorsePower * self.hp_to_watt 
+        # We define the engine's max break power to be in terms of Watts so fundementals equations can be applied
+        self.Power = self.MaxBreakPower * self.eta
+        self.MaxPower = self.Power
+        self.PowerRating = self.BreakHorsePower/self.MaxBreakHorsePower
+        self.MaxPower_SL = self.MaxPower
+        # Current acutual power the aircraft is experiencing
+
+
+        self.MaxRPM = 4000 
+        self.Altitude = 0
+        self.Atmosphere_attr()
+        # Setting Sea Level Parameters
+        self.RPM = self.MaxRPM
+        self.MaxBreakPower = MaxBreakHorsePower
+        self.RPM = 0
+        self.Name = Name + ": Electric Engine"
+    def Get_FuelConsumption(self):
+        return 0
+    def Get_EnergyDrain(self, dt, eta = 0.93):
+        PowerWatt = self.Power
+        Delta_Energy = -PowerWatt*dt/eta
+        return Delta_Energy
+    
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        # TYP the RPM will always be defined first as the POH usually dictates the RPM
+        if name == "RPM":
+            self.Get_Power() 
+            # RPM affects power, so if the RPM changes, then so must the power
+    
+    def Get_Power(self):
+        if self.Condition == "Peak":
+            self.Power = self.RPM * 0.05207458633766463*1e3
+        elif self.Condition == "Continuous":
+            self.Power = self.RPM * 0.022055423626601994*1e3
+        else:
+            raise ValueError("Does not recognize Condition: {}\nself.Condition must be either 'Peak' or 'Continuous'".format(self.Condition))
+    def __repr__(self) -> str:
+          return "EMRAX 268" # Should just be the engine model
     def __str__(self) -> str:
         return "Electric"
     

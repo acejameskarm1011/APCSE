@@ -20,6 +20,7 @@ class Control(Aviation):
     def __init__(self, AircraftInstance) -> None:
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
         self.Aircraft = AircraftInstance
+        print("Using {} Engine".format(self.Aircraft.Engine.__repr__()))
         self.Aircraft_Type = str(self.Aircraft.Engine)
         self.MGTOW_Percent = self.Aircraft.MGTOW_Percent
         self.reset(self.MGTOW_Percent)
@@ -30,16 +31,18 @@ class Control(Aviation):
         RPM_Factor = MGTOW_Percent
         if self.Aircraft_Type == "Conventional":
             RPM_des_Cruise = 2306*RPM_Factor # Found using quasi - cruise
-            RPM_des_Descent = 1600*RPM_Factor
+            cruise_to_descent = 1600/2306
         elif self.Aircraft_Type == "Electric":
             RPM_des_Cruise = 1900*RPM_Factor # Found using quasi - cruise
-            RPM_des_Descent = 1200*RPM_Factor
+            cruise_to_descent = 0.25
         else:
             raise Exception("Missing an Aircraft Type...")
         
         self.Take_Off = Take_Off(self.Aircraft)
         self.Climb = Climb(self.Aircraft)
         self.Cruise = Cruise(self.Aircraft, RPM_des_Cruise)
+        RPM_des_Cruise = self.Cruise.RPM_des
+        RPM_des_Descent = RPM_des_Cruise * cruise_to_descent
         self.Descent = Descent(self.Aircraft, RPM_des_Descent)
         self.Landing = Landing(self.Aircraft)
 
@@ -135,6 +138,10 @@ class Control(Aviation):
         self.Phase_Change.append(self.Descent.Time_List[-1])
         
         print("Final energy capacity: {} %".format(round(self.Landing.Percent, 3)))
+        if str(self.Aircraft.Engine)=="Electric":
+            print("Final energy usage: {} Wh".format(round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh, -1)))
+        if str(self.Aircraft.Engine)=="Piston":
+            print("Final fuel burn: {} gal".format(round((100-self.Landing.Percent) * self.Aircraft.MaxFuel*self.lbf_to_kg/6, 0)))
         print("Gathering Data...")
         Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
         Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type)

@@ -26,12 +26,14 @@ class Cruise(MissionPhase):
         self.Aircraft.Altitude = 700
         self.Aircraft.Set_Lift()
 
+        i = 0
         while np.abs(deltamV) > .1:
             self.Aircraft.Set_Lift()
             self.Get_Aircraft_Attr(True)
             deltamV = (self.Drag - self.Thrust*np.cos(self.alpha))
             self.RPM += deltamV
-            if self.RPM == 250:
+            i+= 1
+            if self.RPM == 250 or i > 1000:
                 raise ValueError("This ain't correct")
         
         self.Aircraft.V_infty = vInfty

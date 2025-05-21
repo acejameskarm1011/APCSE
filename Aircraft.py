@@ -1,6 +1,6 @@
 import numpy as np
 from Aviation import Aviation
-from Propulsion.Engine import ElectricEngineTest
+from Propulsion.Engine import ElectricEngineTest, EMRAX_268_Engine
 from Aerodynamic_Classes.Coefficients import Coefficients
 import scipy as sp
 
@@ -74,12 +74,12 @@ class Aircraft(Aviation):
         self.MaxEnergy = 0.
         self.alpha = 0
 
-        if isinstance(self.Engine, ElectricEngineTest):
+        if str(self.Engine)=="Electric":
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
             BatteryDensity = 250. # Wh/kg
             BatteryEta = 0.5 # A source should be used to back this up
-            self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * 60**2
+            self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * self.Wh_to_J
             self.FuelMass = 0.
             self.MaxFuel = 1
             self.MaxEnergy = self.BatteryEnergy
@@ -156,7 +156,7 @@ class Aircraft(Aviation):
         self.TotalMass += mdot*delta_t
         self.Masses.append(self.TotalMass)
         self.FuelPercent = self.FuelMass/self.MaxFuel
-        if isinstance(self.Engine, ElectricEngineTest):
+        if str(self.Engine)=="Electric":
             BatteryDrain = self.Engine.Get_EnergyDrain(delta_t)
             self.BatteryEnergy += BatteryDrain
             self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
@@ -317,7 +317,7 @@ class Aircraft(Aviation):
         return "Aircraft({}, {},\n\tWings = {},\n\tHorizontalStabilizer = {},\n\tFuselage = {},\n\tVerticalStabilizer = {},\n\tEngine = {},\n\tMass = {})".format(self.AircraftName, self.AircraftDict, self.Wings, self.HorizontalStabilizer, self.Fuselage, self.VerticalStabilizer, self.Engine, self.Mass)
 
     def __str__(self):
-        if not isinstance(self.Engine, ElectricEngineTest):
+        if not isinstance(self.Engine, (ElectricEngineTest, EMRAX_268_Engine)):
             Battery = "0"
         else:
             Battery = self.BatteryPercent
