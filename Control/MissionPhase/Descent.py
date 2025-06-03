@@ -4,14 +4,51 @@ from Control.MissionPhase.Climb import Climb
 from math import copysign
 
 class Descent(Climb):
-    def __init__(self, AircraftInstance, RPM_des) -> None:
+    def __init__(self, AircraftInstance) -> None:
         super().__init__(AircraftInstance)
-        self.RPM_des = RPM_des
-        self.tick = 0
-        
+        self.glideSlope = 3
+        self.setDes_RPM()
 
+        
+    def setDes_RPM(self, h_p=700., V_des=80.):
+        # print("working on check: ", self.call)
+        self.Aircraft.Wings.Flaps(15)
+        vInfty = self.Aircraft.V_infty
+        alt = h_p
+        alpha = self.Aircraft.alpha
+        Pitch = self.Aircraft.Pitch
+
+        RPM_des = 1000
+        self.RPM = RPM_des
+        deltamV = 100
+        print("Starting here")
+
+        self.Aircraft.V_infty = V_des * self.knots_to_mps
+        self.Aircraft.Altitude = h_p
+        self.Aircraft.Pitch = - self.glideSlope/180*np.pi
+        self.Aircraft.Set_Lift()
+        i = 0
+        while np.abs(deltamV) > .1:
+            self.Aircraft.Set_Lift()
+            self.Get_Aircraft_Attr(True)
+            deltamV = (self.Thrust*np.cos(self.alpha) - self.Weight*np.sin(self.Aircraft.Pitch) - self.Drag)
+            self.RPM -= deltamV/5
+            i += 1
+
+            if self.RPM == 0 or i > 200:
+                print("RPM: ", self.RPM)
+                print(i, "Iterations")
+                raise ValueError("This ain't correct")
+        
+        self.Aircraft.V_infty = vInfty
+        self.Aircraft.Altitude = alt
+        self.Aircraft.alpha = alpha
+        self.Aircraft.Pitch = Pitch
+        self.Aircraft.Aircraft_Forces()
+        self.RPM_des = round(self.RPM)
+        print("RPM desired for Descent: ", self.RPM_des)
    
-    def Approach_Descent(self, tmax = 1.9*60, delta_t = 1e-2):
+    def Approach_Descent(self, h_f = 0, tmax = 10*60, delta_t = 1e-2, printing = False):
         """
         This method of evaluating the aircraft's descent uses the same EOM as Climb's "Pattern_Work_Climb_Solve()" except there's a controller 
         that determines the what the engine's power setting should be based on the aircraft's state. 
@@ -21,19 +58,20 @@ class Descent(Climb):
         Currently this method holds the pitch angle constant at 3 deg, and it utilized a closed loop controller to constrain engine RPM withssssssss
         velocity
         """
-        print("Beginning the descent phase")
+        if printing:
+            print("Beginning the descent phase")
         self.delta_t = delta_t
-        Ground_Altitude = 0
-        self.z_min = Ground_Altitude
-        self.V_des = 80 * self.knots_to_mps
+        Ground_Altitude = h_f
+        self.z_min = Ground_Altitude * self.ft_to_m
+        
 
         self.RPM = self.RPM_des
 
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
         
-        self.Pitch = -5/180*np.pi
-        self.Aircraft.Wings.Flaps(15)
+        self.Pitch = -self.glideSlope/180*np.pi
+        self.Aircraft.Wings.Flaps(30)
         self.Aircraft.Pitch = self.Pitch
         self.Position = self.Aircraft.Position
         self.V_infty = self.Aircraft.V_infty
@@ -43,8 +81,8 @@ class Descent(Climb):
         Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Pitch_EOM, tmax, delta_t)
 
 
-
-        print("Descent is phase completed, now loading data")
+        if printing:
+            print("Descent is phase completed, now loading data")
         z = Solution[:,2]
         self.Position_x = Solution[:,0]
         self.Position_y = Solution[:,1]
@@ -61,11 +99,12 @@ class Descent(Climb):
         self.Percent_List = self.Percent_List
         self.Altitude_List = self.Altitude_List
         
-        print("Time elapsed during descent: {} min".format(round(self.Time_List[-1]/60, 3)))
+        if printing:
+            print("Time elapsed during descent: {} min".format(round(self.Time_List[-1]/60, 3)))
         if not np.any(z < Ground_Altitude):
             from Plotting.Plotting import Descent_Plot
             Descent_Plot(self, title = "Descent Failed")
-            raise Exception("Simulation Failed. The aircraft was unable to descent to zero velocity.")
+            raise Exception("Simulation Failed. The aircraft was unable to descent to zero Altitude.")
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
 
     def Pitch_EOM(self, State, mass):
@@ -81,11 +120,11 @@ class Descent(Climb):
         self.Aircraft.Pitch = Pitch
 
         Pitch_Factor = 0
-        if Pitch < -3*np.pi/180 and z*self.m_to_ft < 170:
+        if Pitch < -self.glideSlope*np.pi/180 and z*self.m_to_ft < 170:
             Pitch_Factor = (-3*np.pi/180-Pitch)*1.5
-        if Pitch < 0 and z*self.m_to_ft < 20:
-            Pitch_Factor = .1
-            self.RPM = 1000
+        # if Pitch < 0 and z*self.m_to_ft < 20:
+        #     Pitch_Factor = .1
+        #     self.RPM = 100
         
         self.Get_Aircraft_Attr(set)
         dPosition_dt = V_infty*np.array([np.cos(Pitch), 0, np.sin(Pitch)])
@@ -137,6 +176,10 @@ class Descent(Climb):
             self.RPM_List.append(self.RPM)
 
 
+    def reset(self):
+        super().reset()
+        delattr(self, "RPM_List")
+        self.V_des = 80 * self.knots_to_mps
 
     def __repr__(self) -> str:
           return "Descent"

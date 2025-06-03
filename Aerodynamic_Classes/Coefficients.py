@@ -25,6 +25,7 @@ class Coefficients(Aviation):
         External_Components : list
             All of the currently known external components for the aircraft
         """
+        self.missionPhase = "Nominal"
         from Sizing_And_Geometry.ImportComponents import Wings, HorizontalStabilizer, VerticalStabilizer, Fuselage, LandingGear
         
         self.External_Components = External_Components
@@ -105,8 +106,8 @@ class Coefficients(Aviation):
     def Get_C_D(self):
         
 
-        C_D0 = self.Get_CD0_Wing() + self.Get_CD0_VerticalStabilizer() + self.Get_CD0_HorizontalStabilizer() + self.Get_CD0_Fuselage()
-        C_Di = self.Get_CDi_Wing() + self.Get_CDi_HorizontalStabilizer() + self.Get_CDi_Fuselage()
+        self.C_D0 = self.Get_CD0_Wing() + self.Get_CD0_VerticalStabilizer() + self.Get_CD0_HorizontalStabilizer() + self.Get_CD0_Fuselage()
+        self.C_Di = self.Get_CDi_Wing() + self.Get_CDi_HorizontalStabilizer() + self.Get_CDi_Fuselage()
         CD_misc_cons = 0.05
         CDo_pyl = 0
         CDo_nac = 0
@@ -114,7 +115,8 @@ class Coefficients(Aviation):
                                    self.Get_CD0_VerticalStabilizer(), self.Get_CD0_HorizontalStabilizer(),CD_misc_cons)
  
 
-        C_D = C_D0 + C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val + self.Wings.C_D_flaps # I do not remember what this is for +  0.003
+        C_D = self.C_D0 + self.C_Di*self.Ground_Effect + CDo_pyl + CDo_nac + CD_misc_val + self.Wings.C_D_flaps # I do not remember what this is for +  0.003
+        self.C_D = C_D
         return C_D
     
 # Roskam Part 6 Chapter 4
@@ -183,7 +185,7 @@ class Coefficients(Aviation):
                 self.Mach = self.V_infty / self.acousic_v
                 self.density = self.rho / sp.constants.slug*sp.constants.foot**3
                 self.visc = self.mu / sp.constants.slug*sp.constants.foot
-                if value < self.b_wing:
+                if value < self.b_wing and self.missionPhase != "Reserves":
                     self.Ground_Effect = (16*value/self.b_wing)**2/(1 + (16*value/self.b_wing)**2) # McCormick Appoximation for Ground Effect
                 else:
                     self.Ground_Effect = 1

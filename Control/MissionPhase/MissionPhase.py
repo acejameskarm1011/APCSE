@@ -124,7 +124,7 @@ class MissionPhase(Control):
     def __setattr__(self, name, value) -> None:
         if name == "RPM":
             max = self.MaxRPM
-            min = 250
+            min = 0
             if value > max:
                 value = max
             elif value < min:
@@ -137,9 +137,14 @@ class MissionPhase(Control):
         if name == "Altitude":
             self.Aircraft.Altitude = value
 
+    def reset(self):
+        delattr(self, "Lift_List")
+        delattr(self, "Thrust_List")
+        delattr(self, "Drag_List")
+        delattr(self, "Weight_List")
+        delattr(self, "Percent_List")
     def __repr__(self) -> str:
           return "MissionPhase"
-    
     def __dict__(self):
         return {
             "Time [s]" : self.Time_List,

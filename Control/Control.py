@@ -7,6 +7,9 @@ from Save_to_CSV import Save_to_CSV
 
 import pandas as pd
 
+import pickle
+
+
 class Control(Aviation):
     """
     This class handles and operates on the Aircraft class.
@@ -29,21 +32,18 @@ class Control(Aviation):
         self.Aircraft.reset()
         from Control.ImportControl import Take_Off, Climb, Cruise, Descent, Landing
         RPM_Factor = MGTOW_Percent
-        if self.Aircraft_Type == "Conventional":
-            RPM_des_Cruise = 2306*RPM_Factor # Found using quasi - cruise
+        if self.Aircraft_Type == "Piston":
             cruise_to_descent = 1600/2306
         elif self.Aircraft_Type == "Electric":
-            RPM_des_Cruise = 1900*RPM_Factor # Found using quasi - cruise
             cruise_to_descent = 0.25
         else:
             raise Exception("Missing an Aircraft Type...")
         
         self.Take_Off = Take_Off(self.Aircraft)
         self.Climb = Climb(self.Aircraft)
-        self.Cruise = Cruise(self.Aircraft, RPM_des_Cruise)
-        RPM_des_Cruise = self.Cruise.RPM_des
-        RPM_des_Descent = RPM_des_Cruise * cruise_to_descent
-        self.Descent = Descent(self.Aircraft, RPM_des_Descent)
+        self.Cruise = Cruise(self.Aircraft)
+        self.Reserves = Cruise(self.Aircraft)
+        self.Descent = Descent(self.Aircraft)
         self.Landing = Landing(self.Aircraft)
 
         self.TotalEmissions_List = []
@@ -75,27 +75,124 @@ class Control(Aviation):
         Save_to_CSV(self.Take_Off, self.Climb)
         
 
-    def Pattern_Cycle(self):
+    def Pattern_Cycle(self, iterations = 3):
         """
         This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
         """
-        # from Plotting.Plotting import ClimbPlot, CruisePlot, Descent_Plot, TakeOff_Plot
+        self.Phase_Change = []
+        for i in range(iterations):
+            # with open("test_05-27_0.pickle", 'rb') as file:
+            #     self.Aircraft = pickle.load(file)
+            self.Aircraft.reset()
+
+            self.Cruise.setDes_RPM(700, 90)
+
+
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Take_Off.Ground_Roll_Sim_ODESolve()
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+            self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
+            self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+            if i > 0:
+                self.Take_Off.Time_List += self.Landing.Time_List[-1]
+            
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Climb.Pattern_Work_Climb_Solve(tmax=3*60., Pattern_Altitude=self.Pattern_Altitude)
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+
+            # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
+
+            # ClimbPlot(self.Climb)
+            self.Climb.Time_List += self.Take_Off.Time_List[-1]
+            self.Phase_Change.append(self.Take_Off.Time_List[-1])
+            
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Cruise.Downwind_Solve_1(tmax=2*60.)
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+            # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
+
+            # CruisePlot(self.Cruise)
+            
+            self.Cruise.Time_List += self.Climb.Time_List[-1]
+            self.Phase_Change.append(self.Climb.Time_List[-1])
+
+
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Descent.Approach_Descent(tmax=10.*60., printing=True)
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+            # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
+
+            # Descent_Plot(self.Descent)
+            self.Descent.Time_List += self.Cruise.Time_List[-1]
+            self.Phase_Change.append(self.Cruise.Time_List[-1])
+
+
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Landing.Ground_Roll()
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+            # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
+
+            # TakeOff_Plot(self.Landing)
+            self.Landing.Time_List += self.Descent.Time_List[-1]
+            self.Phase_Change.append(self.Descent.Time_List[-1])
+            # with open("test_05-27_0.pickle", "wb") as file:
+            #     pickle.dump(self.Aircraft, file)
+            print("Round {} energy capacity: {} %".format(i+1,round(self.Landing.Percent, 3)))
+            if str(self.Aircraft.Engine)=="Electric":
+                print("Final energy usage: {} kWh".format(round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh/1000, 3)))
+            if str(self.Aircraft.Engine)=="Piston":
+                print("Final fuel burn: {} gal".format(round((100-self.Landing.Percent) * self.Aircraft.MaxFuel/self.lbf_to_kg/6/100, 0)))
+            print("Gathering Data... round {}...".format(i+1))
+            # Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission_{}".format(i+1), self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
+            Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type + "-lap-{}".format(i+1))
+            self.Take_Off.reset()
+            self.Climb.reset()
+            self.Cruise.reset()
+            self.Descent.reset()
+            self.Landing.reset()
+    
+    def Range_Mission(self, Range, h_cruise, v_cruise, runReserves = True, saveData = False, saveTotalFile = False, printing = False):
+        """
+        This method runs the basic pattern phase with a Take-Off -> Climb -> Cruise -> Descent -> Descent Phase
+        """
+        self.Aircraft.Coefficients.missionPhase = "Nominal" # This ensures ground effect is being utilized
+        self.Cruise.setDes_RPM(h_cruise,v_cruise)
         self.Phase_Change = []
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Take_Off.Ground_Roll_Sim_ODESolve()
+        self.Take_Off.Ground_Roll_Sim_ODESolve(printing=printing)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
         self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
 
+        if self.Take_Off.Percent < 0:
+            print("Engine failure during Take-Off")
+            # return "Take-Off", False
+
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Climb.Pattern_Work_Climb_Solve(tmax=3*60., Pattern_Altitude=self.Pattern_Altitude)
+        self.Climb.climb_to_altitude(h_cruise, tmax=h_cruise/100*60, delta_t=0.05, printing=printing)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
 
+        if self.Climb.Percent < 0:
+            print("Engine failure during climb")
+            # return "Climb", False
+
+        # print("Percent after climb", self.Climb.Percent)
+        # exit()
         # ClimbPlot(self.Climb)
         self.Climb.Time_List += self.Take_Off.Time_List[-1]
         self.Phase_Change.append(self.Take_Off.Time_List[-1])
@@ -103,12 +200,14 @@ class Control(Aviation):
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Cruise.Downwind_Solve_1(tmax=2*60.)
+        self.Cruise.cruise_at_range(Range, v_cruise, printing=printing)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
 
-        # CruisePlot(self.Cruise)
+        if self.Cruise.Percent < 0:
+            print("Engine failure at Cruise")
+            # return "Cruise", False
         
         self.Cruise.Time_List += self.Climb.Time_List[-1]
         self.Phase_Change.append(self.Climb.Time_List[-1])
@@ -116,7 +215,7 @@ class Control(Aviation):
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Descent.Approach_Descent(tmax=1.2*60.)
+        self.Descent.Approach_Descent(tmax=h_cruise/100*60, delta_t=0.1, printing=printing)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
@@ -125,27 +224,77 @@ class Control(Aviation):
         self.Descent.Time_List += self.Cruise.Time_List[-1]
         self.Phase_Change.append(self.Cruise.Time_List[-1])
 
+        if self.Descent.Percent < 0:
+            print("Engine failure at Descent")
+            # return "Descent", False
+        
+        if runReserves:
+
+            M_1 = self.Aircraft.TotalMass
+            E_1 = self.Aircraft.BatteryEnergy
+            self.Reserves.Reserves(70, printing=printing)
+            M_2 = self.Aircraft.TotalMass
+            E_2 = self.Aircraft.BatteryEnergy
+            # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
+
+            if self.Reserves.Percent < 0:
+                print("Engine failure at reserves")
+                # return "Reserves", False
+            # Descent_Plot(self.Descent)
+            self.Reserves.Time_List += self.Descent.Time_List[-1]
+            self.Phase_Change.append(self.Descent.Time_List[-1])
+            self.Aircraft.Coefficients.missionPhase = "Nominal"
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Landing.Ground_Roll()
+        self.Landing.Ground_Roll(printing=printing)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
 
+        if self.Landing.Percent < 0:
+            print("Engine failure during landing")
+            # return "Landing", False
         # TakeOff_Plot(self.Landing)
-        self.Landing.Time_List += self.Descent.Time_List[-1]
-        self.Phase_Change.append(self.Descent.Time_List[-1])
+        if runReserves:
+            self.Landing.Time_List += self.Reserves.Time_List[-1]
+            self.Phase_Change.append(self.Reserves.Time_List[-1])
+        else:
+            self.Landing.Time_List += self.Descent.Time_List[-1]
+            self.Phase_Change.append(self.Descent.Time_List[-1])
         
+        data = {
+            "take-off ground roll [ft]" : self.Take_Off_GroundRoll,
+            "landing ground roll [ft]" : self.Landing.groundRoll,
+            "percent" : self.Landing.Percent,
+            "range [nmi]" : Range,
+            "h_p [ft]" : h_cruise,
+            "vInfty [knots]" : v_cruise
+        }
+
         print("Final energy capacity: {} %".format(round(self.Landing.Percent, 3)))
         if str(self.Aircraft.Engine)=="Electric":
-            print("Final energy usage: {} Wh".format(round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh, -1)))
+            energyUsage = round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh, -1)
+            data["energy usage [Wh]"] = energyUsage
+            print("Final energy usage: {} Wh".format(energyUsage))
         if str(self.Aircraft.Engine)=="Piston":
-            print("Final fuel burn: {} gal".format(round((100-self.Landing.Percent) * self.Aircraft.MaxFuel*self.lbf_to_kg/6, 0)))
-        print("Gathering Data...")
-        Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission", self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
-        Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type)
+            fuelBurn = round((100-self.Landing.Percent) * self.Aircraft.MaxFuel*self.lbf_to_kg/6)
+            data["fuel burn [gal]"] = fuelBurn
+            print("Final fuel burn: {} gal".format(fuelBurn, 0))
 
+
+        self.Take_Off.reset()
+        self.Climb.reset()
+        self.Cruise.reset()
+        self.Reserves.reset()
+        self.Descent.reset()
+        self.Landing.reset()
+
+        if saveTotalFile:
+            print("Gathering Data...")
+            Save_to_Excel(self.Aircraft_Type + "{}_{}_Full_Pattern_Mission".format(h_cruise,v_cruise), self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
+            Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type)
+        return data, True
 
     def Gather_States(self):
         """

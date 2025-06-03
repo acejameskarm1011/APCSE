@@ -8,7 +8,7 @@ class Take_Off(MissionPhase):
     This is the class that holds the methods required for running a Take-Off simulation. 
     """
     
-    def Ground_Roll_Sim_ODESolve(self, tmax = 60, delta_t = 5e-3):
+    def Ground_Roll_Sim_ODESolve(self, tmax = 60, delta_t = 5e-3, h_p=0., printing = True):
         """
         This method runs the ground roll simulation of the Aircraft. The class stores no data past the rotation speed, however, this method will return all paramters from 
         the entire timeframe from t=0 to t=tmax.
@@ -30,16 +30,16 @@ class Take_Off(MissionPhase):
         """
         self.RPM = self.MaxRPM
         self.Aircraft.Set_RPM(self.RPM)
-        self.reset()
         self.V_r = self.Aircraft.RotationSpeed
-        V_r = self.V_r
         self.Get_Aircraft_Attr()
         self.Pitch = 0
+        self.Aircraft.Pitch = 0
+        self.Altitude = h_p
 
         tArr = np.arange(0, tmax, delta_t)
         tArr = np.append(tArr, tmax + delta_t)
 
-        Initial = np.zeros(4, float)
+        Initial = np.array([*self.Aircraft.Position, 0.])
         
         Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.TakeOff_ODE, tmax, delta_t)
 
@@ -53,10 +53,11 @@ class Take_Off(MissionPhase):
 
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         self.Aircraft.Endurance = self.Time_List[-1]
-        self.GroundRoll = self.Position_x[-1]*self.m_to_ft
-        print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
-        print("POH Ground Roll at ISA SL - 1,050 ft")
-        print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots), "knots")
+        self.GroundRoll = (self.Position_x[-1]-Initial[0])*self.m_to_ft
+        if printing:
+            print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
+            print("POH Ground Roll at ISA SL - 1,050 ft")
+            print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots), "knots")
 
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State
@@ -81,14 +82,12 @@ class Take_Off(MissionPhase):
     def reset(self, ground_level = 0):
         """
         ONLY RUN IF YOU WANT THE Aircraft TO HAVE THE BASE STATE OF TAKE-OFF.
-
-        This method starts the Aircraft off at a state at ground level and with zero.
         """
+        super().reset()
+        delattr(self, "Alpha_List")
         self.Altitude = ground_level
         self.Atmosphere_attr()
         self.Aircraft.Altitude = ground_level
-        self.Aircraft.Velocity = np.zeros(3, float)
-        self.Aircraft.Position = np.zeros(3, float)
     
     def Condition(self):
         Bool = self.Normal >= -5*self.lbf_to_kg*self.g

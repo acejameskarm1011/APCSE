@@ -2,7 +2,12 @@ import os
 from AtmosphereFunction import AtmosphereFunctionSI
 from Aviation import Aviation
 import scipy as sp
+import scipy.linalg as la
+from scipy.interpolate import make_smoothing_spline
 import numpy as np
+import pandas as pd
+
+
 
 class Powerplant(Aviation):
     hp_to_watt = 745.7
@@ -89,6 +94,9 @@ class PistonEngine(Powerplant):
 
         self.MaxRPM = 2700
         self.Throttle = 1
+
+        self.altVoltage = 28   # Piper Archer III alternator draws energy from here
+        self.altAmpere = 70   # Piper Archer III alternator draws energy from here
 
 
         self.Altitude = 0
@@ -191,6 +199,26 @@ class PistonEngine(Powerplant):
         # Note: There is no real world basis for this to be correct whatsoever. The engine model for the air inside the chamber
         # still has much further to go to be of an adequate fidelity
 
+    def getR_m(self):
+                #####################################################################
+        # Testing for engine performance
+        tau_arr = np.array([0, 2265, 2405, 2515, 2700])/2700
+        rating_arr = np.array([0, 55, 65, 75, 100])/100
+        R_m_func = make_smoothing_spline(tau_arr, rating_arr, lam=0)
+        return R_m_func(self.Throttle)
+        """
+        tau_arr_new = np.linspace(0,1,100)
+        plt.close()
+        plt.figure(figsize=(8,8))
+        plt.plot(tau_arr_new*2700, R_m_func(tau_arr_new)*100, label = "Spline model")
+        plt.plot(tau_arr*2700, rating_arr*100, "r+", label = "Real data [POH]")
+        plt.xlabel(r"RPM")
+        plt.ylabel(r"Power Rating [%]")
+        plt.legend()
+        plt.show()
+        exit()
+        """
+        #####################################################################
     def Get_Power(self):
         """
         This returns the current power output [W] of the engine based on altitude and RPM setting
@@ -206,12 +234,14 @@ class PistonEngine(Powerplant):
         ######################################################################################     
         # This is old code, found to overestimate the power output during flight - needs tailoring   
         R_m = 0.6*np.sin(self.Throttle**6.5*np.pi/2) + 0.4 # the 0.4 has been validated to be valid from a paper about emissions (WTF) 
-        ######################################################################################
-       
         R_m = 0.9*np.sin(self.Throttle**6.5*np.pi/2) + 0.1 # This is now in progress again
+        ######################################################################################
+        R_m = self.getR_m()
+   
+
         if np.isclose(1.0, self.Throttle):
             R_m = 0.999999
-            
+        
         self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097))
         return self.Power
 
@@ -220,10 +250,11 @@ class PistonEngine(Powerplant):
         The fuel consumption is derived from the air and fuel density ratio, volume of the chambers [compression ratio corrected], and the RPM.
         The output is in terms of kg/s so that other methods can determine the exact mass draw for a time step.
         """
+        etaFuel = (self.Power-self.altAmpere*self.altVoltage)/self.Power
         self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # m^3
-        self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60  # kg/s
+        self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60/etaFuel  # kg/s
         mdot = - self.Fuel_Consumption
-        gal_hour = self.Fuel_Consumption/self.Fuel_Density*60**2/sp.constants.gallon
+        self.gal_hour = self.Fuel_Consumption/self.Fuel_Density*60**2/sp.constants.gallon
 
         # gal_hour.append()
         # print("Fuel burn: {} gal/hour\nWith RPM: {}".format(round(gal_hour, 2), round(self.RPM)))
@@ -237,7 +268,7 @@ class PistonEngine(Powerplant):
         # It is helpful to define the attributes first since that allows us to use it's specific name rather than the term "value"
         if name == "RPM":
             max = self.MaxRPM
-            min = 250
+            min = 0
             if value > max:
                 value = max
             elif value < min:
@@ -248,7 +279,7 @@ class PistonEngine(Powerplant):
         if name == "RPM":
             self.Throttle = self.RPM/self.MaxRPM
             self.Get_Power() 
-            self.PowerRating = self.Power/self.MaxBreakPower
+            self.PowerRating = self.Power/self.MaxBreakPower*100
             # RPM affects power, so if the RPM changes, then so must the power
         
         ######################
@@ -272,6 +303,8 @@ class PistonEngine(Powerplant):
                     # For high power settings, a lower air to fuel ratio is required
                     # i.e. more fuel to air
                     self.Mixture = "RICH"
+    def __repr__(self) -> str:
+          return "Lycoming O-360-A4M"
     def __str__(self) -> str:
         return "Piston"
 
@@ -299,7 +332,7 @@ class ElectricEngineTest(PistonEngine):
         super().__setattr__(name, value)
         if name == "RPM":
             max = self.MaxRPM
-            min = 250
+            min = 0
             if value > max:
                 value = max
             elif value < min:
@@ -340,6 +373,8 @@ class EMRAX_268_Engine(PistonEngine):
         self.MaxPower_SL = self.MaxPower
         # Current acutual power the aircraft is experiencing
 
+        self.altVoltage = 28   # Piper Archer III alternator draws energy from here
+        self.altAmpere = 70   # Piper Archer III alternator draws energy from here
 
         self.MaxRPM = 4000 
         self.Altitude = 0
@@ -349,13 +384,24 @@ class EMRAX_268_Engine(PistonEngine):
         self.MaxBreakPower = MaxBreakHorsePower
         self.RPM = 0
         self.Name = Name + ": Electric Engine"
+        if os.getcwd()[-5:] == "APCSE":
+            filepath = os.getcwd() + "\\Propulsion"
+        else:
+            raise Exception("Engine.py is not configured to be ran outside of the 'APCSE' directory")
+        data = pd.read_csv(filepath+"\\"+"Continuous Efficiency.csv", header=None).to_numpy().T
+        self.RPM_data, self.eta_data = data
     def Get_FuelConsumption(self):
         return 0
-    def Get_EnergyDrain(self, dt, eta = 0.93):
-        PowerWatt = self.Power
-        Delta_Energy = -PowerWatt*dt/eta
+    def Get_EnergyDrain(self, dt):
+        PowerWatt = self.Power + self.altVoltage*self.altAmpere*1.2
+        Delta_Energy = -PowerWatt*dt/self.eta / self.motorEta()
         return Delta_Energy
+    def motorEta(self):
+        funkyTime = make_smoothing_spline(self.RPM_data, self.eta_data, lam = 0)
+        return funkyTime(self.RPM)/100
     
+
+
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
         # TYP the RPM will always be defined first as the POH usually dictates the RPM
@@ -370,26 +416,17 @@ class EMRAX_268_Engine(PistonEngine):
             self.Power = self.RPM * 0.022055423626601994*1e3
         else:
             raise ValueError("Does not recognize Condition: {}\nself.Condition must be either 'Peak' or 'Continuous'".format(self.Condition))
+
     def __repr__(self) -> str:
           return "EMRAX 268" # Should just be the engine model
     def __str__(self) -> str:
         return "Electric"
     
 
+# import matplotlib.pyplot as plt
+# from matplotlib.gridspec import GridSpec
+# import scienceplots
 
-
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import scienceplots
-
-
-plt.style.use(["science","grid"])
-textsize = 18
-plt.rcParams.update({'font.size': textsize})
-
-
-
-
-
-    
-
+# plt.style.use(["science","grid"])
+# textsize = 18
+# plt.rcParams.update({'font.size': textsize})

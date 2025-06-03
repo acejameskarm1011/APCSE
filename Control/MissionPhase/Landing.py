@@ -8,7 +8,7 @@ class Landing(Take_Off):
     This is the class that holds the methods required for running a Landing simulation. 
     """
 
-    def Ground_Roll(self, tmax = 60, delta_t = 5e-3):
+    def Ground_Roll(self, h_p=0., tmax = 60, delta_t = 5e-3, printing = False):
         """
         This method runs the ground roll simulation of the Aircraft during landing. The class stores no data past the rotation speed, however, this method will return all paramters from 
         the entire timeframe from t=0 to t=tmax.
@@ -28,7 +28,7 @@ class Landing(Take_Off):
         
         Notes: The restricted ground roll is stored inside the instance of the Take_Off class
         """
-        self.Altitude = 0
+        self.Altitude = h_p
         self.Atmosphere_attr()
         self.Aircraft.Set_RPM(0)
         self.RPM = self.Aircraft.Engine.RPM
@@ -68,7 +68,9 @@ class Landing(Take_Off):
         #     raise Exception("Simulation did not run long enough to stop. Ajust and increase the time length so that the Aircraft can reach 0 speed.")
         
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
-        print("Ground Rolls is: {} ft with a dt of {}".format(round((self.Position_x[-1]-self.Position[0])*self.m_to_ft), delta_t))
+        self.groundRoll = round((self.Position_x[-1]-Initial[0])*self.m_to_ft)
+        if printing:
+            print("Ground Rolls is: {} ft with a dt of {}".format(self.groundRoll, delta_t))
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State
         self.V_infty = V_infty
@@ -81,6 +83,8 @@ class Landing(Take_Off):
         k_L = 1
 
         self.Normal = self.Weight-self.Lift-self.Thrust*np.sin(self.alpha)
+        if self.Normal < 0:
+            self.Normal = 0
 
         dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-(self.Normal)*self.mu_f)/mass
         return np.array([dxdt, dydt, dzdt, dv_dt])

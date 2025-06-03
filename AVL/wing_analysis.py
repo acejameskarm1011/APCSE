@@ -47,6 +47,7 @@ l_2 = l_1 + 2.4631   # ft
 
 
 S_ref = 2*(l_1*(c_root+delta_c) + 1/2*(l_2-l_2)*(2*c_root+delta_c) + (l_3-l_2)*(c_root) + 1/2*(span/2-l_3)*(c_root+c_tip))
+
 AR = span**2/S_ref
 
 taper = c_tip/c_root
@@ -273,27 +274,26 @@ for AOA in angleOfAttack_arr:
 CL_tot_arr = np.array(CL_tot_list)
 CD_tot_arr = np.array(CD_tot_list)
 
-fig, ax = plt.subplots(1,2,figsize=(12,7), constrained_layout = True)
+plotting = False
+if plotting:
+    fig, ax = plt.subplots(1,2,figsize=(12,7), constrained_layout = True)
+    ax[0].plot(angleOfAttack_arr, CL_tot_arr, "r.", label = "AVL")
+    ax[0].set_xlabel("AOA")
+    ax[0].set_ylabel("$C_L$")
+    ax[0].plot(angleOfAttack_arr, C_L_0 + angleOfAttack_arr*C_L_alpha, "b.", label = "LLT")
+    ax[0].set_xlabel("AOA")
+    ax[0].set_ylabel("$C_L$")
+    ax[0].legend()
 
-ax[0].plot(angleOfAttack_arr, CL_tot_arr, "r.", label = "AVL")
-ax[0].set_xlabel("AOA")
-ax[0].set_ylabel("$C_L$")
-ax[0].plot(angleOfAttack_arr, C_L_0 + angleOfAttack_arr*C_L_alpha, "b.", label = "LLT")
-ax[0].set_xlabel("AOA")
-ax[0].set_ylabel("$C_L$")
-ax[0].legend()
-
-ax[1].plot(CD_tot_arr, CL_tot_arr, "r.", label = "AVL")
-ax[1].set_ylabel("$C_L$")
-ax[1].set_xlabel("$C_D$")
-ax[1].plot((C_L_0 + angleOfAttack_arr*C_L_alpha)**2/(np.pi*AR*spaneff), C_L_0 + angleOfAttack_arr*C_L_alpha, "b.", label = "LLT")
-ax[1].set_ylabel("$C_L$")
-ax[1].set_xlabel("$C_D$")
-ax[1].legend()
-# plt.savefig("AVL_vs_LLT_comparison.png")
-
-# plt.show()
-C_L_0 = C_L_0_avl
-C_L_alpha = np.mean(CL_tot_arr[1:] - CL_tot_arr[:-1])
-
+    ax[1].plot(CD_tot_arr, CL_tot_arr, "r.", label = "AVL")
+    ax[1].set_ylabel("$C_L$")
+    ax[1].set_xlabel("$C_D$")
+    ax[1].plot((C_L_0 + angleOfAttack_arr*C_L_alpha)**2/(np.pi*AR*spaneff), C_L_0 + angleOfAttack_arr*C_L_alpha, "b.", label = "LLT")
+    ax[1].set_ylabel("$C_L$")
+    ax[1].set_xlabel("$C_D$")
+    ax[1].legend()
+    plt.savefig("AVL_vs_LLT_comparison.png")
+    plt.show()
+    C_L_0 = C_L_0_avl
+    C_L_alpha = np.mean(CL_tot_arr[1:] - CL_tot_arr[:-1])
 os.chdir(cwd)

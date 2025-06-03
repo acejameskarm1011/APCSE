@@ -1,8 +1,8 @@
 #PA28
 from numpy import pi
 PA_28_181_wings_dict = dict({
-    "S_wing" : [171.8, "ft2"], # sourced from https://www.planeandpilotmag.com/article/piper-archer-iii/
-    # "S_wing" : [140.37456642666666, "ft2"], # sourced wing planfrom geometry - This value seems to blow up the drag
+    # "S_wing" : [171.8, "ft2"], # sourced from https://www.planeandpilotmag.com/article/piper-archer-iii/
+    "S_wing" : [148.47242976, "ft2"], # sourced wing planfrom geometry - This value seems to blow up the drag
     "b_wing" : [35.5, "ft"],
     "S_wet" : [362.34, "ft2"],
     "c_bar" : [4.829, "ft"],
@@ -14,6 +14,12 @@ PA_28_181_wings_dict = dict({
     "c_root" : [5.25, "ft"],
     "C_l_alpha" : [0.11031, "None"],
     "C_l_0" : [0.347, "None"],
+    "F_flap" : [0.0074, "None"],
+    "c_f" : [0.81, "ft"],
+    "S_flapped" : [38.3775 + 37.7480, "ft2"],
+    "k_f" : [0.28, "None"],
+    "Sweep_HL" : [0, "deg"],
+    "dCl_max" : [1.3, "None"],
     "rle" : [0.07217848, "None"] # Rough calculation ended up with 0.0875
 })
 
@@ -61,13 +67,18 @@ PA_28_181_Performance_dict = dict({
 
 PA_28_181_Mass_dict = dict({
     "MGTOW" : [2550., "lbf"],
+    "massForCG" : [2050., "lbf"],
     "MaxFuel" : [48*6., "lbf"],
     "EmptyMass" : [1600, "lbf"],
+    "forCG"  : [82, "in"],
+    "midCG"  : [88.5, "in"],
+    "aftCG"  : [93, "in"],
     "EmptyMass_Arm" : [87.5, "in"],
     "FrontSeat_Arm" : [80.5, "in"],
     "RearSeat_Arm" : [118.1, "in"],
     "Fuel_Arm" : [95, "in"],
-    "Baggage_Arm" : [142.8, "in"]
+    "Baggage_Arm" : [142.8, "in"],
+    "baggageMaxMass" : [200, "lbf"]
 })
 
 PA_28_181_VSpeed_dict = dict({

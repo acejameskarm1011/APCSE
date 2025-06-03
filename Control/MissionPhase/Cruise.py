@@ -11,38 +11,44 @@ class Cruise(MissionPhase):
     Parameters
     ---------
     """
-    def __init__(self, AircraftInstance, RPM_des) -> None:
+    def __init__(self, AircraftInstance) -> None:
         super().__init__(AircraftInstance)
+        self.call = 0
+        self.setDes_RPM()
+        
 
+    def setDes_RPM(self, h_p=700., V_des=90.):
+        # print("working on check: ", self.call)
         vInfty = self.Aircraft.V_infty
-        alt = self.Aircraft.Altitude
+        alt = h_p
         alpha = self.Aircraft.alpha
 
         RPM_des = 2700
         self.RPM = RPM_des
         deltamV = 100
 
-        self.Aircraft.V_infty = 90 * self.knots_to_mps
-        self.Aircraft.Altitude = 700
+        self.Aircraft.V_infty = V_des * self.knots_to_mps
+        self.Aircraft.Altitude = h_p
         self.Aircraft.Set_Lift()
-
         i = 0
         while np.abs(deltamV) > .1:
             self.Aircraft.Set_Lift()
             self.Get_Aircraft_Attr(True)
-            deltamV = (self.Drag - self.Thrust*np.cos(self.alpha))
-            self.RPM += deltamV
-            i+= 1
-            if self.RPM == 250 or i > 1000:
+            deltamV = (self.Thrust*np.cos(self.alpha) - self.Drag)
+            self.RPM -= deltamV/5
+            i += 1
+            if self.RPM == 0 or i > 200:
+                # print("Testing here")
+                # exit()
                 raise ValueError("This ain't correct")
         
         self.Aircraft.V_infty = vInfty
         self.Aircraft.Altitude = alt
         self.Aircraft.alpha = alpha
         self.Aircraft.Aircraft_Forces()
-
         self.RPM_des = round(self.RPM)
-        print("RPM desired: ", self.RPM_des)
+        self.call += 1
+        # print("RPM desired: ", self.RPM_des)
 
     def Downwind_Solve_1(self, tmax = 60., delta_t = 1e-2):
         print("{} is now Cruising".format(self.Aircraft.AircraftName))
@@ -77,12 +83,88 @@ class Cruise(MissionPhase):
             from Plotting.Plotting import CruisePlot
             CruisePlot(self, title = "Cruise Failed")
             raise Exception("Unexpected error occured, needs to be checked")
+        
+
+    def cruise_at_range(self, Range, V_des, tmax = 100*60., delta_t = 1, printing = False):
+        self.Range = 0
+        self.Range_des = Range
+        if printing:
+            print("{} is now Cruising at {} ft for {} nmi".format(self.Aircraft.AircraftName, round(self.Aircraft.Altitude), Range))
+        self.alpha = self.Aircraft.alpha
+        self.Aircraft.alpha = self.alpha
+        self.Aircraft.Wings.alpha = self.alpha
+        self.V_des = V_des*self.knots_to_mps
+        self.RPM = self.Aircraft.Engine.RPM
+        
+        self.Altitude = self.Aircraft.Altitude
+        self.Atmosphere_attr()
+        V_infty = self.Aircraft.V_infty
+        self.Pitch = 0
+        self.Aircraft.Pitch = self.Pitch
+        self.Aircraft.Wings.Phase = "Cruise"
+        self.Get_Aircraft_Attr(set=True) 
+        Position = self.Aircraft.Position
+
+        self.tick = False
+        Initial = np.block([Position, V_infty, self.RPM])
+        Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, tmax, delta_t)
+        
+
+        self.Position_x = Solution[:,0]
+        self.Position_y = Solution[:,1]
+        self.Position_z = Solution[:,2]
+        self.Velocity_List = Solution[:,3]
+        self.Time_List = tArr
+        self.List_to_Array()
+        self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
+        if self.V_infty < 60*sp.constants.knot:
+            from Plotting.Plotting import CruisePlot
+            CruisePlot(self, title = "Cruise Failed")
+            raise Exception("Aircraft stalled, figure out why this happened...")
+        
+    def Reserves(self, V_des, delta_t = 1., printing = False):
+        if printing:
+            print("{} is now undergoing Reserves".format(self.Aircraft.AircraftName))
+        self.Aircraft.Coefficients.missionPhase = "Reserves"
+        self.setDes_RPM(0, V_des)
+        self.alpha = self.Aircraft.alpha
+        self.Aircraft.alpha = self.alpha
+        self.Aircraft.Wings.alpha = self.alpha
+        self.V_des = V_des*self.knots_to_mps
+        self.RPM = self.Aircraft.Engine.RPM
+        
+        self.Altitude = 0
+        self.Aircraft.Altitude = 0
+        self.Atmosphere_attr()
+        V_infty = self.Aircraft.V_infty
+        self.Pitch = 0
+        self.Aircraft.Pitch = self.Pitch
+        self.Aircraft.Wings.Phase = "Reserves"
+        self.Get_Aircraft_Attr(set=True) 
+        Position = self.Aircraft.Position
+
+        self.tick = False
+        Initial = np.block([Position, V_infty, self.RPM])
+        Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, 30*60, delta_t)
+
+        self.Position_x = Solution[:,0]
+        self.Position_y = Solution[:,1]
+        self.Position_z = Solution[:,2]
+        self.Velocity_List = Solution[:,3]
+        self.Time_List = tArr
+        self.List_to_Array()
+        self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
+        if self.V_infty < 60*sp.constants.knot:
+            from Plotting.Plotting import CruisePlot
+            CruisePlot(self, title = "Cruise Failed")
+            raise Exception("Aircraft stalled, figure out why this happened...")
 
         
 
 
     def Cruise_EOM(self, State, mass):
         x, y, z, V_infty, RPM = State
+        self.Range = x * self.m_to_nmi
         self.V_infty = V_infty
 
         self.Aircraft.V_infty = V_infty
@@ -113,8 +195,10 @@ class Cruise(MissionPhase):
 
 
     def Condition(self):
-        Bool = True
-        Bool = self.V_infty > 60*sp.constants.knot
+        if hasattr(self, "Range_des"):
+            Bool = self.V_infty > 60*sp.constants.knot and self.Range < self.Range_des
+        else:
+            Bool = self.V_infty > 60*sp.constants.knot
         return Bool
 
 
@@ -162,6 +246,10 @@ class Cruise(MissionPhase):
         else:
             self.Alpha_List.append(self.Aircraft.alpha)
 
+    def reset(self):
+        super().reset()
+        delattr(self, "RPM_List")
+        delattr(self, "Alpha_List")
 
     def Get_Aircraft_Attr(self, set=False):
         super().Get_Aircraft_Attr(set)

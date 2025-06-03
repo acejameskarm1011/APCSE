@@ -60,48 +60,45 @@ class Aircraft(Aviation):
         self.GlideSpeed = AircraftDict["VSpeed"]["GlideSpeed"]
         self.BestClimbSpeed = AircraftDict["VSpeed"]["BestClimbSpeed"]
         self.MaxMass = self.Mass.MaxMass
-        self.FuelMass = self.Mass.FuelMass
-        self.MaxFuel = self.FuelMass
-        self.FuelPercent = self.FuelMass/self.MaxFuel
         self.TotalMass = self.Mass.TotalMass
         self.MGTOW_Percent = self.MaxMass/self.Mass.MGTOW
-        self.Aircraft_Forces()
-
-
 
         self.Masses = [self.TotalMass] # A quirk that is required so that preivous masses can be used when employing multistep methods
-        self.BatteryEnergy = 0.
-        self.MaxEnergy = 0.
-        self.alpha = 0
 
         if str(self.Engine)=="Electric":
             # If it is detected that the engine used is an electric one, then the aircraft class
             # automatically switches to an electric model of evaluation
-            BatteryDensity = 250. # Wh/kg
-            BatteryEta = 0.5 # A source should be used to back this up
-            self.BatteryEnergy = self.FuelMass * BatteryDensity * BatteryEta * self.Wh_to_J
+            BatteryDensity = self.Mass.energyDensity # Wh/kg
+            self.BatteryEnergy = BatteryDensity * self.Wh_to_J * self.Mass.batteryMass
             self.FuelMass = 0.
             self.MaxFuel = 1
             self.MaxEnergy = self.BatteryEnergy
             self.BatteryPercent = self.BatteryEnergy/self.MaxEnergy
-
-
-    def reset(self):
-        self.Altitude = 0.
-        self.V_infty = 0.
-        self.Position = np.array([0,0,0], float)
-        self.TotalMass = self.MaxMass
-        self.FuelMass = self.MaxFuel
-        self.BatteryEnergy = self.MaxEnergy
-
-        self.Set_RPM(2700)
-        self.Wings.reset()
-        self.alpha = (self.Wings.alpha-3)/180*np.pi
-
+        else:
+            self.BatteryEnergy = 0.
+            self.FuelMass = self.Mass.FuelMass
+            self.MaxFuel = self.FuelMass
+            self.FuelPercent = self.FuelMass/self.MaxFuel
+            self.MaxEnergy = 0.
+        self.alpha = 0
         self.Aircraft_Forces()
 
-    def Switch_Tabs(self):
-        pass
+
+    def reset(self, type = "Go-Again"):
+        if type == "Go-Again":
+            print("Resetting aircraft to static position")
+        else:
+            self.Position = np.array([0,0,0], float)
+            self.TotalMass = self.MaxMass
+            self.FuelMass = self.MaxFuel
+            self.BatteryEnergy = self.MaxEnergy
+        self.Wings.Flaps(0)
+        self.Altitude = 0.
+        self.V_infty = 0.
+        self.Set_RPM(2700)
+        self.Wings.reset() # Resets AOA
+        self.alpha = (self.Wings.alpha-3)/180*np.pi
+        self.Aircraft_Forces()
 
 
     def GetTotalThrust(self):
@@ -292,7 +289,8 @@ class Aircraft(Aviation):
         """
         object.__setattr__(self, name, value)
         if name == "Lift":
-            self.Coefficients.Lift = value
+            self.Coefficients.Lift = 1/2 * self.rho * self.V_infty**2 * self.Wings.S_ref * self.Wings.C_L_clean
+
         if name == "Altitude":
             if isinstance(value, (float, int)):
                 self.Atmosphere_attr()

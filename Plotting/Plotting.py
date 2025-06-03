@@ -208,7 +208,7 @@ def ClimbPlot(Climb, title = "Climb Plots"):
     # axs[1,0].set_ylim((0, Altitude.max()*1.2))
     axs[1,1].set_ylim((0, Percent.max()*1.2))
     fig.suptitle(title)
-    plt.savefig(image_dir + r"\\Climb_Performance\\" + title.replace(" ", "_")+".png")
+    # plt.savefig(image_dir + r"\\Climb_Performance\\" + title.replace(" ", "_")+".png")
     plt.show()
 
 

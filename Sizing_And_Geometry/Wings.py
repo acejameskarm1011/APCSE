@@ -131,9 +131,9 @@ class Wings(Aircraft):
             self.C_L = self.C_l*self.AR/(self.AR+2)
             return self.C_L
         else:
-            C_L = self.C_L_0 + self.C_l_alpha*self.alpha + self.C_L_flaps
-            self.C_L = C_L
-            return C_L
+            self.C_L_clean = self.C_L_0 + self.C_l_alpha*self.alpha
+            self.C_L = self.C_L_clean + self.C_L_flaps
+            return self.C_L
     
 
 
@@ -154,6 +154,7 @@ class Wings(Aircraft):
             C_l = self.C_L*(self.AR+2)/self.AR
             self.alpha = ThreeDim_Interp(Re = self.V_infty*self.rho*self.c_bar/self.mu, C_l = C_l)
         else:
+            self.C_L_clean = C_L - self.C_L_flaps
             self.alpha = (C_L - self.C_L_0-self.C_L_flaps)/(self.C_L_alpha)
 
 
@@ -163,8 +164,15 @@ class Wings(Aircraft):
 
     def Flaps(self, deg):
         factor = deg / 40
-        self.C_L_flaps = 0.02 * factor
-        self.C_D_flaps = 0.08 * factor
+        
+        self.C_L_flaps = 0.9 * self.dCl_max * self.S_flapped / self.S_ref * np.cos(self.Sweep_HL) * factor
+        if deg < 10:
+            deg = 10
+        self.C_D0_flaps = self.F_flap * self.c_f/self.c_root * self.S_flapped/self.S_ref * (deg - 10)
+        self.C_Di_flaps = self.k_f**2 * (self.C_L_flaps)**2 * np.cos(self.Sweep_HL)
+        self.C_D_flaps = self.C_D0_flaps + self.C_Di_flaps
+        # self.C_L_flaps = 0.02 * factor
+        # self.C_D_flaps = 0.08 * factor
 
 
 

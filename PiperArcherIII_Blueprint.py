@@ -15,7 +15,7 @@ ArcherEngine = PistonEngine(AircraftName, ArcherPropeller)
 from scipy import constants
 Pilot_Mass = ((150+472)*constants.lb) # ((150+472)*constants.lb)
 Rear_Mass = 15*constants.lb
-Baggage = 25*constants.lb
+Baggage = 200
 ##########################################################
 
 
@@ -25,7 +25,7 @@ Baggage = 25*constants.lb
 
 
 
-ArcherMass = Mass(PiperArcherIII_Dict, Pilot_Mass, Rear_Mass, Baggage, Tabs=False)
+ArcherMass = Mass(PiperArcherIII_Dict, 362, 100, Baggage, Tabs=False)
 
 ArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
                           Wings = ArcherWings, 
@@ -44,10 +44,10 @@ ArcherMass = Mass(PiperArcherIII_Dict, Pilot_Mass, Rear_Mass, Baggage, Tabs=Fals
 
 
 ElectricArcherEngine = EMRAX_268_Engine(AircraftName, ArcherPropeller)
-ElectricArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
-                          Wings = ArcherWings, 
-                          HorizontalStabilizer = ArcherHorizontalStabilizer, 
-                          Fuselage = ArcherFuselage, 
-                          VerticalStabilizer = ArcherVerticalStabilizer, 
-                          Engine = ElectricArcherEngine,
-                          Mass = ArcherMass)
+# ElectricArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
+#                           Wings = ArcherWings, 
+#                           HorizontalStabilizer = ArcherHorizontalStabilizer, 
+#                           Fuselage = ArcherFuselage, 
+#                           VerticalStabilizer = ArcherVerticalStabilizer, 
+#                           Engine = ElectricArcherEngine,
+#                           Mass = ArcherMass)
