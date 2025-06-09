@@ -4,6 +4,11 @@
 All imports that are required for the code to run entirely will be written and stored here for ease of access. 
 If there is an issue with a file not existing, the error will likely appear here.
 """
+from matplotlib.ticker import MaxNLocator
+from matplotlib.gridspec import GridSpec
+from labellines import labelLines
+import matplotlib.patches as mpatches
+import matplotlib as mpl
 
 
 from Aviation import *

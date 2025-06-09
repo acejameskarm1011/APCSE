@@ -138,7 +138,7 @@ labelLines(time_ax, fontsize = labelfont*0.8)
 ax_pit = ax[1,0].plot(Time/60, Pitch, "g-", label = "Pitch")
 ax[1,0].set_xlim(left=0)
 ax[1,0].set_xlabel("Time [min]")
-ax[1,0].set_ylabel("Pitch [lb]")
+ax[1,0].set_ylabel("Flight Angle [deg]")
 ax[1,0].xaxis.set_major_locator(MaxNLocator(prune='lower'))
 ax[1,0].legend(fontsize = labelfont)
 

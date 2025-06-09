@@ -55,6 +55,7 @@ class Wings(Aircraft):
         self.C_L_0 = C_L_0
         self.C_L_alpha = C_L_alpha
         self.C_L_max = C_l_max
+        self.C_L_max = 2550 / (0.002377 * 0.5 * (61 * self.knots_to_fps)**2 * (self.S_ref * self.m_to_ft**2))
         self.alpha_crit = int((self.C_L_max - self.C_L_0)/self.C_L_alpha)
         #######################
 
@@ -182,7 +183,11 @@ class Wings(Aircraft):
         object.__setattr__(self, name, value)
         if name == "Altitude":
             if value < self.b_wing:
-                self.Ground_Effect = (16*(value+10)/self.b_wing)**2/(1 + (16*(value+10)/self.b_wing)**2) # McCormick Appoximation for Ground Effect
+                h_archer = 2.1352 * self.ft_to_m
+                self.Ground_Effect = (16*(value+h_archer)/self.b_wing)**2/(1 + (16*(value+h_archer)/self.b_wing)**2) # McCormick Appoximation for Ground Effect
+                limit = 0.5
+                if self.Ground_Effect < limit:
+                    self.Ground_Effect = limit
             self.Atmosphere_attr()
             if hasattr(self, "V_infty"):
                 self.Mach = self.V_infty / self.acousic_v

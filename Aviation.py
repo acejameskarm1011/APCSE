@@ -3,7 +3,21 @@ import matplotlib.pyplot as plt
 from AtmosphereFunction import AtmosphereFunctionSI
 import os
 import scipy as sp
-
+m_to_ft = 1/sp.constants.foot
+ft_to_m = sp.constants.foot
+m_to_nmi = 1/sp.constants.nautical_mile
+nmi_to_m = sp.constants.nautical_mile
+knots_to_mps = sp.constants.knot
+mps_to_knots = 1/sp.constants.knot
+fps_to_knots = sp.constants.foot/sp.constants.knot
+knots_to_fps = sp.constants.knot/sp.constants.foot
+lbf_to_kg = sp.constants.pound
+N_to_lbf = 0.2248089431
+h_to_s = 60**2
+Wh_to_J = 60**2
+J_to_Wh = 1/60**2
+hp_to_watt = 745.7
+watt_to_hp = 1/hp_to_watt
 class Aviation: 
     """
     Stores data that needs to be held within every class in the program. 
@@ -40,6 +54,8 @@ class Aviation:
     h_to_s = 60**2
     Wh_to_J = 60**2
     J_to_Wh = 1/60**2
+    hp_to_watt = 745.7
+    watt_to_hp = 1/hp_to_watt
 
     def __init__(self, Altitude = 0) -> None:
         self.Altitude = Altitude

@@ -29,6 +29,7 @@ class Take_Off(MissionPhase):
         Notes: The restricted ground roll is stored inside the instance of the Take_Off class
         """
         self.RPM = self.MaxRPM
+        self.mu_f = 0.04
         self.Aircraft.Set_RPM(self.RPM)
         self.V_r = self.Aircraft.RotationSpeed
         self.Get_Aircraft_Attr()
@@ -53,11 +54,11 @@ class Take_Off(MissionPhase):
 
         self.Aircraft.Position = np.array([self.Position_x[-1], self.Position_y[-1], self.Position_z[-1]])
         self.Aircraft.Endurance = self.Time_List[-1]
-        self.GroundRoll = (self.Position_x[-1]-Initial[0])*self.m_to_ft
+        self.groundRoll = (self.Position_x[-1]-Initial[0])*self.m_to_ft
         if printing:
-            print("Ground Rolls is: {} ft".format(round(self.GroundRoll)))
+            print("Ground Rolls is: {} ft".format(round(self.groundRoll)))
             print("POH Ground Roll at ISA SL - 1,050 ft")
-            print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots), "knots")
+            print("Final take-off velocity: ", round(self.V_infty*self.mps_to_knots, 2), "knots")
 
     def TakeOff_ODE(self, State, mass):
         x, y, z, V_infty = State
@@ -68,15 +69,15 @@ class Take_Off(MissionPhase):
         dzdt = 0
 
         if V_infty > self.V_r:
-            self.Aircraft.alpha = 5/180*np.pi
+            self.Aircraft.alpha = 3/180*np.pi
 
-        k_D = 1
+        k_D = 1.
         k_L = 1
 
         self.Normal = self.Weight-self.Lift-self.Thrust*np.sin(self.alpha)
         if self.Normal < 0:
             self.mu_f = 0
-        dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-(self.Normal)*self.mu_f)/mass
+        dv_dt = (self.Thrust*np.cos(self.alpha)-k_D*self.Drag-(self.Normal)*self.mu_f)/mass
         return np.array([dxdt, dydt, dzdt, dv_dt])
     
     def reset(self, ground_level = 0):
@@ -113,6 +114,6 @@ class Take_Off(MissionPhase):
         dict["Altitude [ft]"] = self.Altitude
         dict["Range [nmi]"] = self.Position_x * self.m_to_nmi
         dict["RPM [rev/min]"] = self.MaxRPM
-        dict["Ground Roll [ft]"] = self.Position_x * self.m_to_ft
+        dict["Ground Roll [ft]"] = self.groundRoll
         dict["AOA [deg]"] = self.Alpha_arr / np.pi*180
         return dict

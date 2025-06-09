@@ -47,7 +47,7 @@ class Control(Aviation):
         self.Landing = Landing(self.Aircraft)
 
         self.TotalEmissions_List = []
-        self.Take_Off_GroundRoll_List = []
+        self.Take_Off_groundRoll_List = []
         self.key = -1.05 # Factor used to determine where one phase begins and another one begins
         self.Pattern_Altitude = 750
 
@@ -58,7 +58,7 @@ class Control(Aviation):
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
-        self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+        self.Take_Off_groundRoll = self.Take_Off.groundRoll
         Save_to_Excel("Take-Off_Only", self.Take_Off)
         Save_to_CSV(self.Take_Off)
 
@@ -94,7 +94,7 @@ class Control(Aviation):
             M_2 = self.Aircraft.TotalMass
             E_2 = self.Aircraft.BatteryEnergy
             self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
-            self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+            self.Take_Off_groundRoll = self.Take_Off.groundRoll
             if i > 0:
                 self.Take_Off.Time_List += self.Landing.Time_List[-1]
             
@@ -112,7 +112,7 @@ class Control(Aviation):
             
             M_1 = self.Aircraft.TotalMass
             E_1 = self.Aircraft.BatteryEnergy
-            self.Cruise.Downwind_Solve_1(tmax=2*60.)
+            self.Cruise.Downwind_Solve_1(tmax=3*60.)
             M_2 = self.Aircraft.TotalMass
             E_2 = self.Aircraft.BatteryEnergy
             # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
@@ -137,7 +137,7 @@ class Control(Aviation):
 
             M_1 = self.Aircraft.TotalMass
             E_1 = self.Aircraft.BatteryEnergy
-            self.Landing.Ground_Roll()
+            self.Landing.Ground_Roll(printing=True)
             M_2 = self.Aircraft.TotalMass
             E_2 = self.Aircraft.BatteryEnergy
             # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Landing)))
@@ -147,11 +147,11 @@ class Control(Aviation):
             self.Phase_Change.append(self.Descent.Time_List[-1])
             # with open("test_05-27_0.pickle", "wb") as file:
             #     pickle.dump(self.Aircraft, file)
-            print("Round {} energy capacity: {} %".format(i+1,round(self.Landing.Percent, 3)))
+            print("Round {} energy capacity: {} %".format(i+1,round(self.Landing.Percent, 4)))
             if str(self.Aircraft.Engine)=="Electric":
-                print("Final energy usage: {} kWh".format(round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh/1000, 3)))
+                print("Final energy usage: {} kWh".format(round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh/1000, 4)))
             if str(self.Aircraft.Engine)=="Piston":
-                print("Final fuel burn: {} gal".format(round((100-self.Landing.Percent) * self.Aircraft.MaxFuel/self.lbf_to_kg/6/100, 0)))
+                print("Final fuel burn: {} gal".format(round((100-self.Landing.Percent) * self.Aircraft.MaxFuel/self.lbf_to_kg/6/100, 4)))
             print("Gathering Data... round {}...".format(i+1))
             # Save_to_Excel(self.Aircraft_Type + "_Full_Pattern_Mission_{}".format(i+1), self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing)
             Save_to_CSV(self.Take_Off, self.Climb, self.Cruise, self.Descent, self.Landing, missionType=self.Aircraft_Type + "-lap-{}".format(i+1))
@@ -174,7 +174,7 @@ class Control(Aviation):
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Take_Off)))
-        self.Take_Off_GroundRoll = self.Take_Off.GroundRoll
+        self.Take_Off_groundRoll = self.Take_Off.groundRoll
 
         if self.Take_Off.Percent < 0:
             print("Engine failure during Take-Off")
@@ -200,7 +200,7 @@ class Control(Aviation):
 
         M_1 = self.Aircraft.TotalMass
         E_1 = self.Aircraft.BatteryEnergy
-        self.Cruise.cruise_at_range(Range, v_cruise, printing=printing)
+        self.Cruise.cruise_at_range(Range, v_cruise, printing=printing, tmax=6.*60**2)
         M_2 = self.Aircraft.TotalMass
         E_2 = self.Aircraft.BatteryEnergy
         # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
@@ -229,7 +229,6 @@ class Control(Aviation):
             # return "Descent", False
         
         if runReserves:
-
             M_1 = self.Aircraft.TotalMass
             E_1 = self.Aircraft.BatteryEnergy
             self.Reserves.Reserves(70, printing=printing)
@@ -264,7 +263,7 @@ class Control(Aviation):
             self.Phase_Change.append(self.Descent.Time_List[-1])
         
         data = {
-            "take-off ground roll [ft]" : self.Take_Off_GroundRoll,
+            "take-off ground roll [ft]" : self.Take_Off_groundRoll,
             "landing ground roll [ft]" : self.Landing.groundRoll,
             "percent" : self.Landing.Percent,
             "range [nmi]" : Range,
@@ -276,9 +275,9 @@ class Control(Aviation):
         if str(self.Aircraft.Engine)=="Electric":
             energyUsage = round((self.Aircraft.MaxEnergy - self.Aircraft.BatteryEnergy)*self.J_to_Wh, -1)
             data["energy usage [Wh]"] = energyUsage
-            print("Final energy usage: {} Wh".format(energyUsage))
+            print("Final energy usage: {} WWh".format(energyUsage))
         if str(self.Aircraft.Engine)=="Piston":
-            fuelBurn = round((100-self.Landing.Percent) * self.Aircraft.MaxFuel*self.lbf_to_kg/6)
+            fuelBurn = round((100-self.Landing.Percent)/100 * self.Aircraft.MaxFuel/self.lbf_to_kg/6, 2)
             data["fuel burn [gal]"] = fuelBurn
             print("Final fuel burn: {} gal".format(fuelBurn, 0))
 
@@ -289,6 +288,7 @@ class Control(Aviation):
         self.Reserves.reset()
         self.Descent.reset()
         self.Landing.reset()
+        self.Aircraft.reset(type = "else")
 
         if saveTotalFile:
             print("Gathering Data...")
@@ -391,8 +391,8 @@ class Control(Aviation):
         self.Total_CO2, self.Total_CH4, self.Total_N2O, self.Total_Pb = self.TotalEmissions
 
     def __setattr__(self, name, value):
-        if name == "Take_Off_GroundRoll":
-            self.Take_Off_GroundRoll_List.append(value)
+        if name == "Take_Off_groundRoll":
+            self.Take_Off_groundRoll_List.append(value)
         object.__setattr__(self, name, value)
 
 

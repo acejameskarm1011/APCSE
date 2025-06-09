@@ -147,60 +147,10 @@ class PistonEngine(Powerplant):
         Thrust_Static = self.Thrust_Static()
         self.Thrust = Thrust_Static + (3*Thrust_Max-2*Thrust_Static)/Velocity_Max*V + (Thrust_Static-2*Thrust_Max)/Velocity_Max**2*V**2
         return self.Thrust
-    
-    def Set_Thrust(self, Thrust, V_des, Velocity_NE, tol = 5, P_min = 0):
-        """
-        Using Thrust, Velocity, and the chosen RPM, we can evaluate what the power output of the engine is in Break Horse Power
-        and set those parameters within the class.
 
-        Parameters
-        ----------
-        Thrust : float or int
-            Desired thrust for the state that the aircraft is in. Used in cases where required thrust is known based on the EOM.
-
-        V_des : float or int
-            Similar to thrust; based on the desired state of the aircraft, we use the aircraft's current velocity
-
-        RPM : float or int
-            This is used to update the aircraft's RPM setting, which is important for determining the fuel drain
-
-        Velocity_NE : float or int
-            Maximum velocity possible for the aircraft
-
-        Returns
-        -------
-        None
-        """
-        Velocity_Max = Velocity_NE
-        Thrust_Max = self.Power/Velocity_Max
-        nu = V_des/Velocity_NE
-        A_2, eta_A = self.Propeller.Get_Area_and_AreaEfficiency()
-        # PArr = np.arange(P_min, self.Power + tol*2, tol)
-        PArr = self.PArr
-        Left = (Thrust + (2*nu**2-3*nu)*PArr/Velocity_Max)/(nu**2-2*nu+1)
-        Right = 0.85*PArr**(2/3)*(2*self.rho*A_2)**(1/3)*eta_A
-        TrueDiff = Left-Right
-        Diff = np.abs(TrueDiff)
-        min_1 = Diff.min()
-        Diffm1 = Diff.tolist()
-        Diffm1.remove(min_1)
-        Diffm1 = np.array(Diffm1)
-        min_2 = Diffm1.min()
-        val_1 = TrueDiff[Diff == min_1][0]
-        val_2 = TrueDiff[Diff == min_2][0]
-        x_percent = (0-val_1)/(val_2-val_1)
-        P_1 = PArr[Diff == min_1][0]
-        P_2 = PArr[Diff == min_2][0]
-        P_est = P_1 + (P_2-P_1)*x_percent
-        self.RPM = self.MaxRPM*(P_est/self.MaxPower)**(1/4)
-
-        # Use an assumption for how power scales with RPM
-        # (P/P_max) = (RPM/RPM_max)^4 
-        # Note: There is no real world basis for this to be correct whatsoever. The engine model for the air inside the chamber
-        # still has much further to go to be of an adequate fidelity
 
     def getR_m(self):
-                #####################################################################
+        #####################################################################
         # Testing for engine performance
         tau_arr = np.array([0, 2265, 2405, 2515, 2700])/2700
         rating_arr = np.array([0, 55, 65, 75, 100])/100
@@ -228,7 +178,9 @@ class PistonEngine(Powerplant):
         self.Power : float
             Current power output of the propeller [W]
         """
-        sigma = self.rho/self.rho_SL
+        # sigma = self.rho/self.rho_SL
+        sigma = (1-0.0000068756*self.Altitude)**(4.2561)
+
         input = self.Throttle
         
         ######################################################################################     
@@ -242,7 +194,11 @@ class PistonEngine(Powerplant):
         if np.isclose(1.0, self.Throttle):
             R_m = 0.999999
         
-        self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097))
+        self.Power_SL = self.MaxPower_SL * R_m
+
+        self.Power = self.Power_SL * R_m * sigma # Simple Altitude Model
+        self.Power = self.Power_SL * R_m * (sigma-0.117)/0.883 # Gagg and Farrar Model
+        # self.Power = self.MaxPower_SL*(R_m*(sigma-R_m**(0.8097))+(R_m**(0.8097)-0.117)/0.883*(1-sigma))/(1-R_m**(0.8097)) # Petty Equation
         return self.Power
 
     def Get_FuelConsumption(self):
@@ -268,7 +224,7 @@ class PistonEngine(Powerplant):
         # It is helpful to define the attributes first since that allows us to use it's specific name rather than the term "value"
         if name == "RPM":
             max = self.MaxRPM
-            min = 0
+            min = 1
             if value > max:
                 value = max
             elif value < min:
@@ -332,7 +288,7 @@ class ElectricEngineTest(PistonEngine):
         super().__setattr__(name, value)
         if name == "RPM":
             max = self.MaxRPM
-            min = 0
+            min = 1
             if value > max:
                 value = max
             elif value < min:

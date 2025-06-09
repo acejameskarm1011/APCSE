@@ -31,6 +31,7 @@ class Landing(Take_Off):
         self.Altitude = h_p
         self.Atmosphere_attr()
         self.Aircraft.Set_RPM(0)
+        self.Aircraft.Wings.Flaps(40)
         self.RPM = self.Aircraft.Engine.RPM
         self.Aircraft.Wings.Phase = "Landing"
         self.Pitch = 0
@@ -41,7 +42,7 @@ class Landing(Take_Off):
         self.Get_Aircraft_Attr()
 
         self.mu_f = 0.4
-        self.Aircraft.Wings.Flaps(40)
+        # self.Aircraft.Wings.Flaps(40)
         self.Aircraft.alpha = 0
 
         tArr = np.arange(0, tmax, delta_t)
@@ -79,14 +80,14 @@ class Landing(Take_Off):
         dydt = 0
         dzdt = 0
     
-        k_D = 1
+        k_D = 2
         k_L = 1
 
         self.Normal = self.Weight-self.Lift-self.Thrust*np.sin(self.alpha)
         if self.Normal < 0:
             self.Normal = 0
 
-        dv_dt = (self.Thrust*np.cos(self.alpha)-self.Drag-(self.Normal)*self.mu_f)/mass
+        dv_dt = (self.Thrust*np.cos(self.alpha)-k_D*self.Drag-(self.Normal)*self.mu_f)/mass
         return np.array([dxdt, dydt, dzdt, dv_dt])
 
 

@@ -40,6 +40,8 @@ class Descent(Climb):
                 print(i, "Iterations")
                 raise ValueError("This ain't correct")
         
+        # print("AOA", self.Aircraft.alpha/np.pi*180)
+        # exit()
         self.Aircraft.V_infty = vInfty
         self.Aircraft.Altitude = alt
         self.Aircraft.alpha = alpha
@@ -122,9 +124,8 @@ class Descent(Climb):
         Pitch_Factor = 0
         if Pitch < -self.glideSlope*np.pi/180 and z*self.m_to_ft < 170:
             Pitch_Factor = (-3*np.pi/180-Pitch)*1.5
-        # if Pitch < 0 and z*self.m_to_ft < 20:
-        #     Pitch_Factor = .1
-        #     self.RPM = 100
+        elif self.Aircraft.Wings.alpha > 6:
+            Pitch_Factor = -0.5
         
         self.Get_Aircraft_Attr(set)
         dPosition_dt = V_infty*np.array([np.cos(Pitch), 0, np.sin(Pitch)])

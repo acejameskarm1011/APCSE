@@ -125,13 +125,16 @@ class Cruise(MissionPhase):
     def Reserves(self, V_des, delta_t = 1., printing = False):
         if printing:
             print("{} is now undergoing Reserves".format(self.Aircraft.AircraftName))
+        self.Aircraft.Wings.Phase = "Reserves"
         self.Aircraft.Coefficients.missionPhase = "Reserves"
         self.setDes_RPM(0, V_des)
         self.alpha = self.Aircraft.alpha
         self.Aircraft.alpha = self.alpha
         self.Aircraft.Wings.alpha = self.alpha
-        self.V_des = V_des*self.knots_to_mps
-        self.RPM = self.Aircraft.Engine.RPM
+        self.Aircraft.V_infty = V_des*self.knots_to_mps
+        self.RPM = self.RPM_des
+        self.Aircraft.RPM = self.RPM
+        self.V_des = V_des * self.knots_to_mps
         
         self.Altitude = 0
         self.Aircraft.Altitude = 0
@@ -139,12 +142,12 @@ class Cruise(MissionPhase):
         V_infty = self.Aircraft.V_infty
         self.Pitch = 0
         self.Aircraft.Pitch = self.Pitch
-        self.Aircraft.Wings.Phase = "Reserves"
         self.Get_Aircraft_Attr(set=True) 
         Position = self.Aircraft.Position
 
         self.tick = False
         Initial = np.block([Position, V_infty, self.RPM])
+
         Solution, tArr = self.Adam_Bashforth_Solve(Initial, self.Cruise_EOM, 30*60, delta_t)
 
         self.Position_x = Solution[:,0]

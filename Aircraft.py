@@ -292,7 +292,7 @@ class Aircraft(Aviation):
             self.Coefficients.Lift = 1/2 * self.rho * self.V_infty**2 * self.Wings.S_ref * self.Wings.C_L_clean
 
         if name == "Altitude":
-            if isinstance(value, (float, int)):
+            if isinstance(value, (float, int, np.int32)):
                 self.Atmosphere_attr()
                 self.Engine.Altitude = value
                 self.Coefficients.Altitude = value

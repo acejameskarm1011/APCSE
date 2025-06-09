@@ -52,7 +52,7 @@ AR = span**2/S_ref
 
 taper = c_tip/c_root
 MAC = 2/3*c_root*(1+taper+taper**2)/(1+taper)
-wingDihedral = 3/180*np.pi
+wingDihedral = 7/180*np.pi
 
 Sweep = 0
 Sweep_LE = np.arctan(np.tan(Sweep) + (1-taper)/(AR*(1+taper)))

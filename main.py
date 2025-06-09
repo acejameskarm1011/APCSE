@@ -15,7 +15,7 @@ Motor = [21, 90/12*0.3048]
 Inverter = [10, 90/12*0.3048]
 BP = [[262., 91/12*0.3048]]
 ECU = [86.5, 90/12*0.3048]
-BMS = [39.89467616, 90/12*0.3048]
+BMS = [39.9, 90/12*0.3048]
 energyDensity = 265
 energyDensity_ESS = energyDensity * 0.6238738739 # Wh/kg
 MGTOWCase.electrify(*Motor, *Inverter, *ECU, *BMS, energyDensity_ESS, BP)
@@ -35,6 +35,15 @@ plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
 
+
+
+ArcherAircraft.V_infty = 66 * knots_to_mps
+ArcherAircraft.Altitude = 0
+print(ArcherAircraft.Weight * N_to_lbf)
+ArcherAircraft.Set_Lift()
+print(ArcherAircraft.Wings.C_L_flaps)
+print(ArcherAircraft.Wings.alpha)
+exit()
 
 
 ControlArcher = Control(ElectricArcherAircraft)

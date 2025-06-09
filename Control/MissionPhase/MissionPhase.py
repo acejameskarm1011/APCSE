@@ -3,8 +3,8 @@ from Propulsion.Engine import ElectricEngineTest, EMRAX_268_Engine
 import numpy as np
 class MissionPhase(Control):
     weather = "Good"
-    mu_f = 0.04
-    mu_br = 0.4
+    mu_f = 0.04 # rolling
+    mu_br = 0.4 # Braking
     def __init__(self, AircraftInstance) -> None:
         self.Aircraft = AircraftInstance
         self.MaxRPM = self.Aircraft.Engine.MaxRPM
@@ -24,6 +24,7 @@ class MissionPhase(Control):
         self.Thrust = self.Aircraft.Thrust
         self.alpha = self.Aircraft.alpha
         self.g = self.Aircraft.g
+        self.Power = self.Aircraft.Engine.Power
         
         if str(self.Aircraft.Engine)=="Electric":
             self.Percent = 100*self.Aircraft.BatteryPercent
@@ -91,6 +92,7 @@ class MissionPhase(Control):
         self.Drag_List = np.array(self.Drag_List)
         self.Weight_List = np.array(self.Weight_List)
         self.Percent_List = np.array(self.Percent_List)
+        self.Power_List = np.array(self.Power_List)
 
     @classmethod
     def changeweather(cls, text):
@@ -121,10 +123,15 @@ class MissionPhase(Control):
         else:
             self.Percent_List.append(self.Percent)
 
+        if not hasattr(self, "Power_List"):
+            self.Power_List = [self.Power]
+        else:
+            self.Power_List.append(self.Power)
+
     def __setattr__(self, name, value) -> None:
         if name == "RPM":
             max = self.MaxRPM
-            min = 0
+            min = 1
             if value > max:
                 value = max
             elif value < min:
@@ -143,6 +150,7 @@ class MissionPhase(Control):
         delattr(self, "Drag_List")
         delattr(self, "Weight_List")
         delattr(self, "Percent_List")
+        delattr(self, "Power_List")
     def __repr__(self) -> str:
           return "MissionPhase"
     def __dict__(self):
@@ -151,8 +159,9 @@ class MissionPhase(Control):
             "Thrust [lb]" : self.Thrust_List*self.N_to_lbf,
             "Lift [lb]" : self.Lift_List*self.N_to_lbf,
             "Drag [lb]" : self.Drag_List*self.N_to_lbf,
+            "Power [hp]" : self.Power_List, 
             "Weight [lb]" : self.Weight_List*self.N_to_lbf,
-            "Percent [%]" : self.Percent_List
+            "Percent [%]" : self.Percent_List,
         }
 
 class subphase(MissionPhase):

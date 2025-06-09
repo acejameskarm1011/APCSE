@@ -148,12 +148,7 @@ l_2 = l_1 + 2.4631   # ft
 
 Sref = 2*(l_1*(c_root+delta_c) + 1/2*(l_2-l_2)*(2*c_root+delta_c) + (l_3-l_2)*(c_root) + 1/2*(span/2-l_3)*(c_root+c_tip))
 AR = span**2/Sref
-# print(AR)
-# print("Sref", Sref)
-print("DOUBLE CHECK THE AREA CALCULATION IN WING_ANALYSIS.py!!!")
-# exit()
-# print("Pringing aspect ratio in wing analysis")
-# exit()
+
 def chord_y(y):
     y = np.abs(y)
     chord = c_tip*np.ones(y.shape)

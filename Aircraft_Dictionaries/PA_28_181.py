@@ -23,8 +23,6 @@ PA_28_181_wings_dict = dict({
     "rle" : [0.07217848, "None"] # Rough calculation ended up with 0.0875
 })
 
-print("Look into the dimensions of the PA28")
-
 PA_28_181_HorizontalStabilizer_dict = dict({
     "b_h" : [12 + 10.48/12,"ft"],
     "c_root_h" : [16.858332177318598 - 14.28583225600806, "ft"],
