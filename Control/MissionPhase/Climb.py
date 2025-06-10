@@ -212,9 +212,7 @@ class Climb(MissionPhase):
             self.stopPitch = True
             self.Aircraft.alpha = self.idealAlpha
             dgamma_dt = 0
-            # self.set = True
-        # elif np.abs(V_des - V_infty) > 2*self.knots_to_mps:
-        #     dgamma_dt -= (V_des - V_infty)/10
+
         return np.array([dxdt, dydt, dzdt, dv_dt, dgamma_dt])
 
 

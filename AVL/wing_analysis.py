@@ -275,14 +275,13 @@ CL_tot_arr = np.array(CL_tot_list)
 CD_tot_arr = np.array(CD_tot_list)
 
 plotting = False
+
 if plotting:
     fig, ax = plt.subplots(1,2,figsize=(12,7), constrained_layout = True)
     ax[0].plot(angleOfAttack_arr, CL_tot_arr, "r.", label = "AVL")
-    ax[0].set_xlabel("AOA")
+    ax[0].set_xlabel("Angle of Attack [deg]")
     ax[0].set_ylabel("$C_L$")
     ax[0].plot(angleOfAttack_arr, C_L_0 + angleOfAttack_arr*C_L_alpha, "b.", label = "LLT")
-    ax[0].set_xlabel("AOA")
-    ax[0].set_ylabel("$C_L$")
     ax[0].legend()
 
     ax[1].plot(CD_tot_arr, CL_tot_arr, "r.", label = "AVL")

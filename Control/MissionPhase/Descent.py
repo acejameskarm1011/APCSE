@@ -12,7 +12,7 @@ class Descent(Climb):
         
     def setDes_RPM(self, h_p=700., V_des=80.):
         # print("working on check: ", self.call)
-        self.Aircraft.Wings.Flaps(15)
+        self.Aircraft.Wings.Flaps(15) # Needs aircraft to descend more
         vInfty = self.Aircraft.V_infty
         alt = h_p
         alpha = self.Aircraft.alpha
@@ -46,6 +46,7 @@ class Descent(Climb):
         self.Aircraft.Altitude = alt
         self.Aircraft.alpha = alpha
         self.Aircraft.Pitch = Pitch
+        self.Aircraft.Wings.Flaps(0)
         self.Aircraft.Aircraft_Forces()
         self.RPM_des = round(self.RPM)
         print("RPM desired for Descent: ", self.RPM_des)

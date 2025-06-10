@@ -35,19 +35,10 @@ plt.style.use(["science","grid"])
 textsize = 18
 plt.rcParams.update({'font.size': textsize})
 
-
-
-ArcherAircraft.V_infty = 66 * knots_to_mps
-ArcherAircraft.Altitude = 0
-print(ArcherAircraft.Weight * N_to_lbf)
-ArcherAircraft.Set_Lift()
-print(ArcherAircraft.Wings.C_L_flaps)
-print(ArcherAircraft.Wings.alpha)
-exit()
+ControlArcher = Control(ArcherAircraft)
+ControlArcher.Pattern_Cycle()
 
 
 ControlArcher = Control(ElectricArcherAircraft)
 ControlArcher.Pattern_Cycle()
 
-ControlArcher = Control(ArcherAircraft)
-ControlArcher.Pattern_Cycle()

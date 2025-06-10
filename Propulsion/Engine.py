@@ -156,18 +156,20 @@ class PistonEngine(Powerplant):
         rating_arr = np.array([0, 55, 65, 75, 100])/100
         R_m_func = make_smoothing_spline(tau_arr, rating_arr, lam=0)
         return R_m_func(self.Throttle)
-        """
+        import matplotlib.pyplot as plt
+        
         tau_arr_new = np.linspace(0,1,100)
         plt.close()
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(12,8))
         plt.plot(tau_arr_new*2700, R_m_func(tau_arr_new)*100, label = "Spline model")
         plt.plot(tau_arr*2700, rating_arr*100, "r+", label = "Real data [POH]")
         plt.xlabel(r"RPM")
-        plt.ylabel(r"Power Rating [%]")
+        plt.ylabel(r"Lycoming Power Rating [\%]")
+        plt.savefig("RPM-Power.png")
         plt.legend()
         plt.show()
         exit()
-        """
+        
         #####################################################################
     def Get_Power(self):
         """
@@ -207,6 +209,8 @@ class PistonEngine(Powerplant):
         The output is in terms of kg/s so that other methods can determine the exact mass draw for a time step.
         """
         etaFuel = (self.Power-self.altAmpere*self.altVoltage)/self.Power
+        if etaFuel < 0.9:
+            etaFuel = 0.9
         self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # m^3
         self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60/etaFuel  # kg/s
         mdot = - self.Fuel_Consumption
@@ -332,8 +336,9 @@ class EMRAX_268_Engine(PistonEngine):
         self.altVoltage = 28   # Piper Archer III alternator draws energy from here
         self.altAmpere = 70   # Piper Archer III alternator draws energy from here
 
-        self.MaxRPM = 4000 
+        self.MaxRPM = 2700 
         self.Altitude = 0
+        self.N_motors = 2
         self.Atmosphere_attr()
         # Setting Sea Level Parameters
         self.RPM = self.MaxRPM
@@ -367,9 +372,9 @@ class EMRAX_268_Engine(PistonEngine):
     
     def Get_Power(self):
         if self.Condition == "Peak":
-            self.Power = self.RPM * 0.05207458633766463*1e3
+            self.Power = self.RPM * 0.05207458633766463*1e3 * self.N_motors
         elif self.Condition == "Continuous":
-            self.Power = self.RPM * 0.022055423626601994*1e3
+            self.Power = self.RPM * 0.022055423626601994*1e3 * self.N_motors
         else:
             raise ValueError("Does not recognize Condition: {}\nself.Condition must be either 'Peak' or 'Continuous'".format(self.Condition))
 

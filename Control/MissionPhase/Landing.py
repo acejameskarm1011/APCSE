@@ -31,6 +31,7 @@ class Landing(Take_Off):
         self.Altitude = h_p
         self.Atmosphere_attr()
         self.Aircraft.Set_RPM(0)
+        # print(self.Aircraft.V_infty)
         self.Aircraft.Wings.Flaps(40)
         self.RPM = self.Aircraft.Engine.RPM
         self.Aircraft.Wings.Phase = "Landing"

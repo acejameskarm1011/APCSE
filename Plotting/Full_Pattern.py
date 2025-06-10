@@ -223,7 +223,7 @@ if collected:
 
 
 else:
-    figsize = (10,7)
+    figsize = (11,7)
     plt.figure(figsize=figsize)
     scale = 1.2
     phases = [Time_TO,Time_Climb,Time_Cruise,Time_Descent]

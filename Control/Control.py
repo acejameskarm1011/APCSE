@@ -86,7 +86,7 @@ class Control(Aviation):
             self.Aircraft.reset()
 
             self.Cruise.setDes_RPM(700, 90)
-
+            
 
             M_1 = self.Aircraft.TotalMass
             E_1 = self.Aircraft.BatteryEnergy
@@ -117,6 +117,7 @@ class Control(Aviation):
             E_2 = self.Aircraft.BatteryEnergy
             # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Cruise)))
 
+            
             # CruisePlot(self.Cruise)
             
             self.Cruise.Time_List += self.Climb.Time_List[-1]
@@ -130,6 +131,7 @@ class Control(Aviation):
             E_2 = self.Aircraft.BatteryEnergy
             # self.TotalEmissions_List.append(Emissions(M_1-M_2, E_1-E_2, str(self.Descent)))
 
+            
             # Descent_Plot(self.Descent)
             self.Descent.Time_List += self.Cruise.Time_List[-1]
             self.Phase_Change.append(self.Cruise.Time_List[-1])

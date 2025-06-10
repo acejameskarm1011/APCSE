@@ -186,9 +186,6 @@ class Cruise(MissionPhase):
             self.RPM_des += .1
         
         factor = 1
-        if np.abs(dv_dt) > .5:
-            factor = np.abs(dv_dt)
-            factor = 1
         
         dRPM_dt = self.delta_RPM(V_infty, RPM)*factor
         if self.tick:

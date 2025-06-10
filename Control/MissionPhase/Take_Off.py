@@ -69,7 +69,7 @@ class Take_Off(MissionPhase):
         dzdt = 0
 
         if V_infty > self.V_r:
-            self.Aircraft.alpha = 3/180*np.pi
+            self.Aircraft.alpha = 5/180*np.pi
 
         k_D = 1.
         k_L = 1

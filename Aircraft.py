@@ -211,6 +211,7 @@ class Aircraft(Aviation):
         self.BatteryEnergy = self.BatteryMass*BatteryDensity
 
     def Set_Lift(self):
+        self.Weight = self.TotalMass*self.g
         self.GetTotalThrust()
         self.Lift = self.Weight*np.cos(self.Pitch)-self.Thrust*np.sin(self.alpha)
         S = self.Wings.S_wing

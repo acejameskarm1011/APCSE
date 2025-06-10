@@ -55,7 +55,7 @@ class Wings(Aircraft):
         self.C_L_0 = C_L_0
         self.C_L_alpha = C_L_alpha
         self.C_L_max = C_l_max
-        self.C_L_max = 2550 / (0.002377 * 0.5 * (61 * self.knots_to_fps)**2 * (self.S_ref * self.m_to_ft**2))
+        self.C_L_max = 2550 / (0.002377 * 0.5 * (60 * self.knots_to_fps)**2 * (self.S_ref * self.m_to_ft**2))
         self.alpha_crit = int((self.C_L_max - self.C_L_0)/self.C_L_alpha)
         #######################
 
