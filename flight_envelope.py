@@ -89,7 +89,7 @@ vmax = convMax
 if eMax > convMax:
     vmax = eMax
 
-figsize = (8,10)
+figsize = (6,7)
 
 plt.figure(figsize=figsize)
 plt.plot([np.sqrt(Weight/(0.5*rho(PA28_service_ceiling)*S_ref*C_L_max))*mps_to_knots, KTAS_NE], [PA28_service_ceiling, PA28_service_ceiling], "--", color = "k", label = "POH Service Ceiling")
@@ -107,14 +107,14 @@ plt.ylabel(r"Altitude ($h$) [ft]")
 plt.xlim(0,KTAS_NE*stretch)
 plt.gca().xaxis.set_major_locator(MaxNLocator(prune='lower'))
 plt.savefig("Images_From_Code\\Flight_Envelope\\Flight_Envelope_Piston.png")
-plt.show()
+# plt.show()
 
 plt.figure(figsize=figsize)
 plt.plot([np.sqrt(Weight/(0.5*rho(PA28_service_ceiling)*S_ref*C_L_max))*mps_to_knots, KTAS_NE], [PA28_service_ceiling, PA28_service_ceiling], "--", color = "k", label = "POH Service Ceiling")
 plt.plot(KTAS_Stall, h_arr, "k--", label = "Stall")
 plt.plot(KTAS_NE*np.ones(h_arr.shape), h_arr, "k--", label = "Structural Limit")
 lines = plt.gca().get_lines()
-labelLines(lines, fontsize = 14, xvals=[119, 68.9, 182], yoffsets=[0,0,10000])
+labelLines(lines, fontsize = 11, xvals=[119, 68.9, 182], yoffsets=[0,0,10000])
 contour = plt.contourf(vTensor, hTensor, EPsTensor, levels = 50, cmap="plasma", vmin = 0, vmax = vmax)
 bar = plt.colorbar(contour)
 bar.set_label("$P_s$ [ft/s]")
@@ -125,4 +125,4 @@ plt.ylabel(r"Altitude ($h$) [ft]")
 plt.xlim(0,KTAS_NE*stretch)
 plt.gca().xaxis.set_major_locator(MaxNLocator(prune='lower'))
 plt.savefig("Images_From_Code\\Flight_Envelope\\Flight_Envelope_Electric.png")
-plt.show()
+# plt.show()

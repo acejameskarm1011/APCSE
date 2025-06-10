@@ -2,29 +2,6 @@ from ImportAPCSE import *
 from PiperArcherIII_Blueprint import *
 import pickle
 
-MGTOWCase = Mass(PiperArcherIII_Dict, 340, 0, 0, 0)
-Motor = [21, 90/12*0.3048]
-Inverter = [10, 90/12*0.3048]
-BP = [[262., 91/12*0.3048]]
-ECU = [86.5, 90/12*0.3048]
-BMS = [39.9, 90/12*0.3048]
-energyDensity = 265
-energyDensity_ESS = energyDensity * 0.6238738739 # Wh/kg
-MGTOWCase.electrify(*Motor, *Inverter, *ECU, *BMS, energyDensity_ESS, BP)
-
-
-ElectricArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict, 
-                          Wings = ArcherWings, 
-                          HorizontalStabilizer = ArcherHorizontalStabilizer, 
-                          Fuselage = ArcherFuselage, 
-                          VerticalStabilizer = ArcherVerticalStabilizer, 
-                          Engine = ElectricArcherEngine,
-                          Mass = MGTOWCase)
-
-
-
-
-
 
 
 ####################################################
@@ -39,13 +16,9 @@ ElectricArcherAircraft = Aircraft(AircraftName, PiperArcherIII_Dict,
 # exit()
 ####################################################
 tol = 0.1
-h_pMax = 1000
-dist = 0
+
 
 percent = 100
-
-h_p = 500
-vInfty = 80
 
 useReserve = True
 electric = True
@@ -56,27 +29,40 @@ else:
     reserveText = "no-reserves"
 
 
-filepath = "DataFiles\\range_trade_dump\\electric\\energy-density-{}Wh_kg\\{}\\".format(energyDensity, reserveText)
 filepath = "DataFiles\\range_trade_dump\\piston\\".format(energyDensity, reserveText)
+filepath = "DataFiles\\range_trade_dump\\electric\\energy-density-{}Wh_kg\\{}\\".format(energyDensity, reserveText)
 
 if not os.path.exists(filepath):
     os.makedirs(filepath)
 
 
+char = filepath[27]
+
 #################################################################################
 vInfty_arr = np.array([70, 80, 90, 100, 110, 120, 130, 140]).astype(float)
-vInfty_arr = [140]
+# vInfty_arr = [140]
 h_p_arr = np.arange(500, 10500, 1000).astype(float)
-h_p_arr = [9500]
-controlArcher = Control(ArcherAircraft)
+# h_p_arr = [9500]
+if char == "e":
+    controlArcher = Control(ElectricArcherAircraft)
+elif char == "p":
+    controlArcher = Control(ArcherAircraft)
+else:
+    raise Exception("There's an error here buddy!")
 #################################################################################
+
 
 for vInfty in vInfty_arr:
     # Iterate over a range of velocities
     for h_p in h_p_arr:
         # Iterate over a range of altitudes
-        Range = 200
-        Range = 350
+        if char == "e":
+            Range = 20
+        elif char == "p":
+            Range = 300
+        else:
+            raise Exception("There's an error here buddy!")
+        
         percent = 100
         # h_p = 10500; vInfty = 140
         while np.abs(percent) > tol or percent < 0:
@@ -93,7 +79,12 @@ for vInfty in vInfty_arr:
             if np.abs(percent) < tol and percent < 0:
                 Range -= tol*0.9
             else:
-                Range += percent * 4.0
+                if char == "e":
+                    Range += percent
+                elif char == "p":
+                    Range += percent * 3.0
+                else:
+                    raise Exception("There's an error here buddy!")
 
         filename = "vInfty-{}_h_p-{}.pickle".format(vInfty,h_p,data["range [nmi]"])
         with open(filepath+filename, "wb") as file:

@@ -32,9 +32,8 @@ class Descent(Climb):
             self.Aircraft.Set_Lift()
             self.Get_Aircraft_Attr(True)
             deltamV = (self.Thrust*np.cos(self.alpha) - self.Weight*np.sin(self.Aircraft.Pitch) - self.Drag)
-            self.RPM -= deltamV/5
+            self.RPM -= deltamV/2
             i += 1
-
             if self.RPM == 0 or i > 200:
                 print("RPM: ", self.RPM)
                 print(i, "Iterations")

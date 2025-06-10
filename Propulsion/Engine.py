@@ -153,7 +153,7 @@ class PistonEngine(Powerplant):
         #####################################################################
         # Testing for engine performance
         tau_arr = np.array([0, 2265, 2405, 2515, 2700])/2700
-        rating_arr = np.array([0, 55, 65, 75, 100])/100
+        rating_arr = np.array([5, 55, 65, 75, 100])/100
         R_m_func = make_smoothing_spline(tau_arr, rating_arr, lam=0)
         return R_m_func(self.Throttle)
         import matplotlib.pyplot as plt
@@ -213,6 +213,8 @@ class PistonEngine(Powerplant):
             etaFuel = 0.9
         self.V_Fuel = self.V_displacement/(1+self.AirFuel_ratio*self.Fuel_Density/self.rho) # m^3
         self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(self.RPM/2)/60/etaFuel  # kg/s
+        if self.RPM < 250:
+            self.Fuel_Consumption = self.V_Fuel*self.Fuel_Density*(150)/60/etaFuel
         mdot = - self.Fuel_Consumption
         self.gal_hour = self.Fuel_Consumption/self.Fuel_Density*60**2/sp.constants.gallon
 
